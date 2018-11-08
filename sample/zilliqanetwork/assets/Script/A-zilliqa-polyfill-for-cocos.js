@@ -1,12 +1,12 @@
+//*****IMPORTANT*********make sure this file must be load first!
 
 //import googleProtobuf from './google-protobuf'
 
 
 "use strict";
 
-(function() {
-    
-    if ('undefined' == typeof window.crypto) {
+(function() {    
+    if ('undefined' == typeof window.crypto) {		
         window.crypto = {};
         window.crypto.getRandomValues = function(arr) {
             for (var i = 0; i < arr.length; i++) {
@@ -20,13 +20,14 @@
         }
     }
 	
-	if (!window.location) {
+	if ('undefined' == typeof window.location) {		
 		window.location = {
-			protocol: ''
-		}
-			
+			protocol: 'https'
+		}		
+	} else if ('undefined' == window.location.protocol) {
+		window.location.protocol = 'https';
 	}
-		
+	console.log('window.location.protocol:', window.location.protocol);	
 	//if (!window.XMLHttpRequest) {
 	//	window.XMLHttpRequest = require('./XMLHttpRequest').XMLHttpRequest
 	//}

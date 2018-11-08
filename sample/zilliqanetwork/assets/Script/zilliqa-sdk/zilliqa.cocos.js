@@ -8725,7 +8725,7 @@ module.exports = function(module) {
 /* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ClientRequest = __webpack_require__(128)
+/* WEBPACK VAR INJECTION */(function(global) {var ClientRequest = __webpack_require__(128)
 var response = __webpack_require__(58)
 var extend = __webpack_require__(137)
 var statusCodes = __webpack_require__(138)
@@ -8734,7 +8734,6 @@ var url = __webpack_require__(17)
 var http = exports
 
 http.request = function (opts, cb) {
-	console.log('http.request', opts.url);
 	if (typeof opts === 'string')
 		opts = url.parse(opts)
 	else
@@ -8743,7 +8742,7 @@ http.request = function (opts, cb) {
 	// Normally, the page is loaded from http or https, so not specifying a protocol
 	// will result in a (valid) protocol-relative url. However, this won't work if
 	// the protocol is something else, like 'file:'
-	var defaultProtocol = '';//window.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
+	var defaultProtocol = "";//global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
 
 	var protocol = opts.protocol || defaultProtocol
 	var host = opts.hostname || opts.host
@@ -8811,6 +8810,7 @@ http.METHODS = [
 	'UNLOCK',
 	'UNSUBSCRIBE'
 ]
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(3)))
 
 /***/ }),
 /* 37 */
@@ -11969,12 +11969,11 @@ function getXHR () {
 	return xhr
 }
 
-function checkTypeSupport (type) {
-	return true;
+function checkTypeSupport (type) { return true;
 	var xhr = getXHR()
 	if (!xhr) return false
 	try {
-		xhr.responseType = type
+		//xhr.responseType = type
 		return xhr.responseType === type
 	} catch (e) {}
 	return false
@@ -12161,13 +12160,12 @@ IncomingMessage.prototype._read = function () {
 	}
 }
 
-IncomingMessage.prototype._onXHRProgress = function () {
+IncomingMessage.prototype._onXHRProgress = function () {this._mode="text";
 	var self = this
 
 	var xhr = self._xhr
 
 	var response = null
-	self._mode = 'text'
 	switch (self._mode) {
 		case 'text:vbarray': // For IE9
 			if (xhr.readyState !== rStates.DONE)
@@ -14347,7 +14345,7 @@ function oldBrowser () {
 }
 
 var Buffer = __webpack_require__(15).Buffer
-var crypto = global.crypto || global.msCrypto
+var crypto = window.crypto || global.msCrypto
 
 if (crypto && crypto.getRandomValues) {
   module.exports = randomBytes
@@ -21006,7 +21004,6 @@ var rStates = response.readyStates
 
 function decideMode (preferBinary, useFetch) {
 	if (capability.fetch && useFetch) {
-		return 'text'
 		return 'fetch'
 	} else if (capability.mozchunkedarraybuffer) {
 		return 'moz-chunked-arraybuffer'

@@ -8,46 +8,56 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
-const {ccclass, property} = cc._decorator;
-
+//const {ccclass, property} = cc._decorator;
+//import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
 //import Zilliqa from './zilliqa-sdk/zilliqa';
-
-@ccclass
-export default class NewClass extends cc.Component {
-
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
-
-    // LIFE-CYCLE CALLBACKS:
-
-    signIn(){
-        // let URL = 'https://api-scilla.zilliqa.com'
-        //     let zilliqa = new Zilliqa({
-        //         nodeUrl: URL
-        //     });
-
-        //     let node = zilliqa.getNode();
-
-        //     let privateKey = zilliqa.util.generatePrivateKey();
-        //     let address = zilliqa.util.getAddressFromPrivateKey(privateKey);
-            
-        //     node.getBalance({ address: 'E8A67C0B1F19DF61A28E8E8FB5D830377045BCC7' }, (err, data) => {
-        //         if (err || data.error) {
-        //             console.log('Error')
-        //         } else {
-        //             console.log(data.result)
-        //         }
-        //     });
+import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
+declare type callback = (error: any, data: any) => any;
+//@ccclass
+export default class ZilliqaNetwork{
+   
+    private static instance: ZilliqaNetwork = null;
+    
+    private constructor() {
     }
 
-    // onLoad () {}
+    public static getInstance() {
+        if (this.instance === null || this.instance === undefined) {
+            this.instance = new ZilliqaNetwork();
+        }
+        return this.instance;
+    } 
 
-    start () {
+    public zilliqaClient: Zilliqa = null;
 
+    
+    connect(cb: callback){
+        if(Zilliqa == null){
+            console.log('Zilliqa is undefined!');	
+            cb('Zilliqa is undefined!', null);		
+        } else{
+            //greet();
+            let URL = 'https://dev-test-api.aws.z7a.xyz'
+            this.zilliqaClient = new Zilliqa({
+                nodeUrl: URL
+            });            
+            this.zilliqaClient.node.isConnected(cb);
+        }  
     }
 
-    // update (dt) {}
+    getBalance(cb: callback){
+        if(this.zilliqaClient == null){            	
+            cb('Please connect to network first!', null);		
+        } else{
+            this.zilliqaClient.node.getBalance({ address: '8DF0010571B2142329E13D80D530407E298FDE8E' }, cb);
+        }  
+    }
+
+    getNetworkId(cb: callback){
+        if(this.zilliqaClient == null){            	
+            cb('Please connect to network first!', null);		
+        } else{
+            this.zilliqaClient.node.getNetworkId(cb);
+        }  
+    }
 }
