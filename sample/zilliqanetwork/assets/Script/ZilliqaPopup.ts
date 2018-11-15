@@ -97,7 +97,7 @@ export default class ZilliqaPopup extends cc.Component {
     getBalance(){
         var that = this;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().getBalance(function(err, data) {
+        ZilliqaNetwork.getInstance().getBalance('', function(err, data) {
             if (err || data.error) {                
                 that.handleError(err, data);
             } else {               
@@ -123,11 +123,11 @@ export default class ZilliqaPopup extends cc.Component {
     sendFaucetRequest() {
         var that = this;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().sendFaucetRequest(function(err, data) {
-            if (err || data.error) {                
-                that.handleError(err, data);
+        ZilliqaNetwork.getInstance().sendFaucetRequest(function(err) {
+            if (err) {                
+                that.handleError(err, {});
             } else {            
-                that.responseText.string = JSON.stringify(data.result);
+                that.responseText.string = 'Done';
             }
             that.connectingNode.active = false;
         });
@@ -149,12 +149,11 @@ export default class ZilliqaPopup extends cc.Component {
     deployHelloWorld(){
         var that = this;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().deployHelloWorld(function(err, data) {
-            if (err || data.error) {                
-                that.handleError(err, data);
-            } else {                            
-                console.log(JSON.stringify(data.result));
-                that.responseText.string = JSON.stringify(data.result);
+        ZilliqaNetwork.getInstance().deployHelloWorld(function(err) {
+            if (err) {                
+                that.handleError(err, {});
+            } else {            
+                that.responseText.string = 'Done';
             }
             that.connectingNode.active = false;
         });
