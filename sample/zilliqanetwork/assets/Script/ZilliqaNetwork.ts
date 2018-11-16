@@ -12,7 +12,6 @@
 //import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
 //import Zilliqa from './zilliqa-sdk/zilliqa';
 import {Zilliqa, BN} from './zilliqa-sdk/zilliqa.cocos'
-import * as Crypto from 'crypto'
 
 
 declare type callback = (error: any, data: any) => any;
@@ -33,17 +32,20 @@ export default class ZilliqaNetwork{
     } 
 
     public zilliqaClient: Zilliqa = null;
-    private privateKey: string = null;//'79A965ED6F516933838C4EC94D3B9512EB888DC02DC84115C40D274B7B76C99D';
+    //private privateKey: string = null;//'79A965ED6F516933838C4EC94D3B9512EB888DC02DC84115C40D274B7B76C99D';
     private address: string = null;//'8df0010571b2142329e13d80d530407e298fde8e';
     private encryptedData: string = null;
     
     private static s_dataFileName: string = 'UserKeyStore';
 
     getUserAddress() {return this.address;}
-    wasAuthenticated() {return this.privateKey != null;}
+    wasAuthenticated() {return this.zilliqaClient && this.zilliqaClient.wallet.defaultAccount;}
 
     logOut() {
-        this.privateKey = null;
+        if(this.zilliqaClient.wallet.defaultAccount != null){
+            this.zilliqaClient.wallet.remove(this.zilliqaClient.wallet.defaultAccount.address);
+            this.zilliqaClient.wallet.defaultAccount = null;
+        }        
     }
 
     loadKeyStore() {
@@ -162,39 +164,47 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
         }
-        this.privateKey = this.zilliqaClient.util.generatePrivateKey();
-        this.address = this.zilliqaClient.util.getAddressFromPrivateKey(this.privateKey);
-        this.zilliqaClient.wallet.addByPrivateKey(this.privateKey);
-        this.zilliqaClient.wallet.setDefault(this.address.toLowerCase());
-        try {
-            const cipher = Crypto.createCipher('aes192', password);
 
-            let encrypted = cipher.update(this.privateKey, 'utf8', 'hex');
-            encrypted += cipher.final('hex');
-            this.encryptedData = encrypted;
-                        
-            this.saveKeyStore();
+        this.address = this.zilliqaClient.wallet.create();        
+        this.zilliqaClient.wallet.setDefault(this.address.toLowerCase());
+        var that = this;
+        try {
+            
+            this.zilliqaClient.wallet.export(this.address.toLowerCase(), password, 'scrypt')
+            .then((encryptJson) => {                                        
+                console.log('encryptJson', encryptJson);
+                that.encryptedData = encryptJson;
+                that.saveKeyStore();
+                cb(null, that.address);
+            })
+            .catch((err) => {                                   
+                console.log('encryptJson', err);
+                cb(err, null);
+            });
+          
         } catch (exception) {
             return cb(exception.message, null);            
-        }
-
-        cb(null, this.address);
+        }        
     }
 
     authorizeAccount(password:string, cb: callback){
-        try {            
-            const decipher = Crypto.createDecipher('aes192', password);        
-            let decrypted = decipher.update(this.encryptedData, 'hex', 'utf8');
-            decrypted += decipher.final('utf8');
-            this.privateKey = decrypted;
+        var isJson = false;
+        try {
+            JSON.parse(this.encryptedData);
+            isJson = true;
+        } catch (e) {
+            return cb('Keystore corrupted!', null); 
+        }   
 
-            this.zilliqaClient.wallet.addByPrivateKey(this.privateKey);
-            this.zilliqaClient.wallet.setDefault(this.address.toLowerCase());
-        } catch (exception) {
-            return cb(exception.message, null);               
-        }
-        
-        cb(null, this.address);
+        var that = this;
+        this.zilliqaClient.wallet.addByKeystore(this.encryptedData, password)
+        .then((adr) => {                                                            
+            cb(null, that.address);
+            this.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
+        })
+        .catch((err) => {                                                       
+            cb(err, null);
+        });        
     }
 
     getBalance(address:string, cb: callback){
@@ -234,7 +244,7 @@ export default class ZilliqaNetwork{
         } else if(this.address == null){            	
             cb('Please login first!', null);		
         } else{
-            this.zilliqaClient.node.getSmartContracts({ address: this.address}, cb);
+            cb('Obsolete function', null);	
         }  
     }
 
@@ -242,7 +252,7 @@ export default class ZilliqaNetwork{
         return this.deployHelloWorldb(cb);
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
-        } else if(this.address == null || this.privateKey == null){            	
+        } else if(this.zilliqaClient.wallet.defaultAccount == null){            	
             cb('Please login first!', null);		
         } else{
             var that = this;
@@ -311,7 +321,7 @@ export default class ZilliqaNetwork{
     deployHelloWorldb(cb: callback){
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
-        } else if(this.address == null || this.privateKey == null){            	
+        } else if(this.zilliqaClient.wallet.defaultAccount == null){            	
             cb('Please login first!', null);		
         } else{
             var that = this;
@@ -366,7 +376,7 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
         } else{
-            this.zilliqaClient.node.getSmartContractState({ address: contractAddress}, cb);
+            cb('Obsolete function', null);	
         }  
     }
 
@@ -374,7 +384,7 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
         } else{
-            this.zilliqaClient.node.getSmartContractState({ address: contractAddress}, cb);
+            cb('Obsolete function', null);	
         }  
     }
 
@@ -382,7 +392,7 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
         } else{
-            this.zilliqaClient.node.getSmartContractState({ address: contractAddress}, cb);
+            cb('Obsolete function', null);	
         }  
     }
 

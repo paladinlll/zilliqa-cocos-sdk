@@ -6,7 +6,7 @@
 "use strict";
 
 (function() {
-	/*
+	
     if ('undefined' == typeof window.crypto) {		
         window.crypto = {};
         window.crypto.getRandomValues = function(arr) {
@@ -16,7 +16,7 @@
             }			
             return arr;
         }
-    }*/
+    }
 	
 	/*if (!window.Long) {
 		window.Long = require('./Long')

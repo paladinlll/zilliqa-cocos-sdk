@@ -1,3 +1,0 @@
-[submodule "deps/zilliqa-js"]
-	path = deps/zilliqa-js
-	url = https://github.com/Zilliqa/Zilliqa-JavaScript-Library.git
