@@ -139,10 +139,12 @@ export default class ZilliqaNetwork{
                 const tx = that.zilliqaClient.transactions.new({
                     version: 1,
                     toAddr: that.address,
-                    amount: new BN(120),
+                    amount: new BN(2510),
                     gasPrice: new BN(1),
                     gasLimit: new BN(10),
-                });                
+                });  
+                console.log('createTransaction');
+                console.log(JSON.stringify(tx));
                 that.zilliqaClient.blockchain
                     .createTransaction(tx)
                     .then((tx) => {                        
@@ -249,7 +251,7 @@ export default class ZilliqaNetwork{
     }
 
     deployHelloWorld(cb: callback){
-        return this.deployHelloWorldb(cb);
+        //return this.deployHelloWorldb(cb);
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
         } else if(this.zilliqaClient.wallet.defaultAccount == null){            	
@@ -268,8 +270,7 @@ export default class ZilliqaNetwork{
                         cb(err, null);
                         return;                
                     }
-                    
-                                
+                                                    
                     const init = [
                         {
                           vname: 'welcome_msg',
@@ -280,36 +281,46 @@ export default class ZilliqaNetwork{
                     const contract = that.zilliqaClient.contracts.new(code, init);
                     console.log(that.address);
                     // if you are in a function, you can also use async/await
-                    contract.deploy(new BN(1), new BN(2500))
-                        .then((contract) => {
-                            console.log('contract', JSON.stringify(contract));
-                            if (contract.isDeployed()) {
+                    contract.deploy(new BN(1), new BN(1000))
+                        .then((hello) => {
+                            console.log('contract.address', contract.address);
+                            console.log('hello.address', hello.address);
+                            if (hello.isDeployed()) {
                                 // do something with your contract
-                                return contract.call('setHello', [
+                                hello.call('setHello', [
                                     {
                                     vname: 'owner',
                                     type: 'ByStr20',
                                     value: that.address
                                     }
-                                ]);
-                                //cb(null, contract);
+                                ]).then((callTx) => {
+                                    console.log('callTx', JSON.stringify(callTx));
+                                    callTx.getState().then((state) => {
+                                        // do something
+                                        console.log('state', JSON.stringify(state));
+                                        cb(null, state);
+                                    }).catch((err) => {
+                                        // handle the error
+                                        console.log('callTx.getState err', JSON.stringify(err));
+                                        cb(err, null);
+                                    });
+                                }).catch((err) => {
+                                    // handle the error
+                                    console.log('hello.call err', JSON.stringify(err));
+                                    cb(err, null);
+                                });
+                                return;                             
                             }
 
-                            if (contract.isRejected()) {
-                                cb(contract, null);
+                            cb('Rejected', null);
+                            //if (hello.isRejected()) {
+                                
                                 // throw an error, or somehow handle the failed deployment
-                            }
-                        })
-                        .then((contract) => {
-                            return contract.getState();
-                        })
-                        .then((state) => {
-                            // do something
-                            cb(null, state);
-                        })
+                            //}
+                        })                       
                         .catch((err) => {
                             // handle the error
-                            console.log(JSON.stringify(err));
+                            console.log('contract.deploy err', JSON.stringify(err));
                             cb(err, null);
                         });
 
