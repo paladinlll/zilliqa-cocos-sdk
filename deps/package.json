@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@zilliqa-js/zilliqa": "^0.2.1-next.20181114",
+    "@zilliqa-js/zilliqa": "^0.2.2",
     "replace-in-file-webpack-plugin": "^1.0.6"
   },
   "devDependencies": {
