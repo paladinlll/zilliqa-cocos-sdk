@@ -162,11 +162,11 @@ export default class ZilliqaPopup extends cc.Component {
     getSmartContractState(){
         var that = this;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().getSmartContractState('83c425e960d54b0ae393c0395703c4489cda2e97', function(err, data) {
+        ZilliqaNetwork.getInstance().getSmartContractState('BB031E2B60330C4181F22CCFDACFB107B1AD2A3F80DDEFFB8C88B90A537224F2', function(err, data) {
             if (err || data.error) {                
                 that.handleError(err, data);
             } else {               
-                that.responseText.string = JSON.stringify(data.result);
+                that.responseText.string = 'success = ' + data.receipt.success;
             }
             that.connectingNode.active = false;
         });

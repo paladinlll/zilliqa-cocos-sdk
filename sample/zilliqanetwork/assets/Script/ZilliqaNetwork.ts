@@ -387,7 +387,16 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
         } else{
-            cb('Obsolete function', null);	
+            //cb('Obsolete function', null);	
+            this.zilliqaClient.blockchain.getTransaction(contractAddress)
+            .then((tx) => {      
+                console.log(JSON.stringify(tx));                      
+                cb(null, tx);
+            })
+            .catch((err) => {
+                console.log(JSON.stringify(err));                      
+                cb(err, null);
+            });    
         }  
     }
 

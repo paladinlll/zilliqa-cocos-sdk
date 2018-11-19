@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.2734375,
-      "y": 0.2734375,
+      "x": 0.671270601201392,
+      "y": 0.671270601201392,
       "z": 1
     },
     "_quat": {
@@ -4126,7 +4126,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 300,
-      "height": 390
+      "height": 290
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -4204,7 +4204,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 175,
+      "y": 125,
       "z": 0
     },
     "_scale": {
@@ -4464,7 +4464,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 125,
+      "y": 75,
       "z": 0
     },
     "_scale": {
@@ -4724,7 +4724,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 75,
+      "y": 25,
       "z": 0
     },
     "_scale": {
@@ -4984,7 +4984,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 25,
+      "y": -25,
       "z": 0
     },
     "_scale": {
@@ -5244,7 +5244,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -25,
+      "y": -75,
       "z": 0
     },
     "_scale": {
@@ -5504,7 +5504,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -75,
+      "y": -125,
       "z": 0
     },
     "_scale": {
@@ -5600,8 +5600,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "GetSmartContractState (sample)",
-    "_N$string": "GetSmartContractState (sample)",
+    "_string": "Get Transaction (sample)",
+    "_N$string": "Get Transaction (sample)",
     "_fontSize": 24,
     "_lineHeight": 40,
     "_enableWrapText": false,
@@ -5732,7 +5732,7 @@
         "__id__": 126
       }
     ],
-    "_active": true,
+    "_active": false,
     "_level": 5,
     "_components": [
       {
@@ -5992,7 +5992,7 @@
         "__id__": 132
       }
     ],
-    "_active": true,
+    "_active": false,
     "_level": 5,
     "_components": [
       {
@@ -6251,7 +6251,7 @@
     "_layoutSize": {
       "__type__": "cc.Size",
       "width": 300,
-      "height": 390
+      "height": 290
     },
     "_resize": 1,
     "_N$layoutType": 2,
