@@ -58,17 +58,8 @@ module.exports = {
 	new ReplaceInFileWebpackPlugin([{		
 		files: ['dist/zilliqa.cocos.js'],
 		rules: [{
-			search: '|| util$$1.inquire("long");',
-			replace: '//|| util$$1.inquire("long");'
-		}, {
-			search: 'tx.amount.toBuffer(',
-			replace: 'tx.amount.toArrayLike(Buffer,'
-		}, {
-			search: 'tx.gasPrice.toBuffer(',
-			replace: 'tx.gasPrice.toArrayLike(Buffer,'
-		}, {
-			search: 'tx.gasLimit.toBuffer(',
-			replace: 'tx.gasLimit.toArrayLike(Buffer,'
+			search: '|| util.inquire("long");',
+			replace: '//|| util.inquire("long");'
 		}]
 	}])
   ],

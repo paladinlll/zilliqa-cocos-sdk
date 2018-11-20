@@ -119,27 +119,27 @@ export default class ZilliqaNetwork{
         } else if(this.address == null){            	
             cb('Please login first!', null);		
         } else{            
-            this.zilliqaClient.wallet.addByPrivateKey('79A965ED6F516933838C4EC94D3B9512EB888DC02DC84115C40D274B7B76C99D');            
+            this.zilliqaClient.wallet.addByPrivateKey('3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8');            
             var that = this;
-            this.getBalance('8df0010571b2142329e13d80d530407e298fde8e', function(err, data) {
+            this.getBalance('8254b2c9acdf181d5d6796d63320fbb20d4edd12', function(err, data) {
                 if(err){
-                    that.zilliqaClient.wallet.remove('8df0010571b2142329e13d80d530407e298fde8e');                    
+                    that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');                    
                     cb(err, null);
                     return;                
                 }                  
-                if(data.result.balance < 200){
-                    that.zilliqaClient.wallet.remove('8df0010571b2142329e13d80d530407e298fde8e');                    
+                if(data.result.balance < 5000){
+                    that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');                    
                     cb('Master account has not enough balance', null);
                     return;                
                 }  
                 
                                 
-                that.zilliqaClient.wallet.setDefault('8df0010571b2142329e13d80d530407e298fde8e'.toLowerCase());                
+                that.zilliqaClient.wallet.setDefault('8254b2c9acdf181d5d6796d63320fbb20d4edd12'.toLowerCase());                
                 
                 const tx = that.zilliqaClient.transactions.new({
                     version: 1,
                     toAddr: that.address,
-                    amount: new BN(2510),
+                    amount: new BN(5000),
                     gasPrice: new BN(1),
                     gasLimit: new BN(10),
                 });  
@@ -149,13 +149,13 @@ export default class ZilliqaNetwork{
                     .createTransaction(tx)
                     .then((tx) => {                        
                         // do something with then confirmed tx
-                        that.zilliqaClient.wallet.remove('8df0010571b2142329e13d80d530407e298fde8e');
+                        that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');
                         that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
                         cb(null, tx);
                     })
                     .catch((err) => {                   
                         // handle the error
-                        that.zilliqaClient.wallet.remove('8df0010571b2142329e13d80d530407e298fde8e');
+                        that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');
                         that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
                         cb(err, null);
                     });                                
@@ -197,7 +197,7 @@ export default class ZilliqaNetwork{
         } catch (e) {
             return cb('Keystore corrupted!', null); 
         }   
-
+        
         var that = this;
         this.zilliqaClient.wallet.addByKeystore(this.encryptedData, password)
         .then((adr) => {                                                            
@@ -258,74 +258,69 @@ export default class ZilliqaNetwork{
             cb('Please login first!', null);		
         } else{
             var that = this;
-            this.getBalance(this.address, function(err, data) {
+            var url = cc.url.raw('resources/HelloWorld.scilla');                
+            cc.loader.load(url, function(err, code){
                 if(err){
+                    console.log('deployHelloWorld.load', err);
                     cb(err, null);
                     return;                
-                }                
-                var url = cc.url.raw('resources/HelloWorld.scilla');                
-                cc.loader.load(url, function(err, code){
-                    if(err){
-                        console.log('deployHelloWorld.load', err);
-                        cb(err, null);
-                        return;                
-                    }
-                                                    
-                    const init = [
-                        {
-                          vname: 'welcome_msg',
-                          type: 'String',
-                          value: 'Hello World',
-                        },
-                    ];
-                    const contract = that.zilliqaClient.contracts.new(code, init);
-                    console.log(that.address);
-                    // if you are in a function, you can also use async/await
-                    contract.deploy(new BN(1), new BN(1000))
-                        .then((hello) => {
-                            console.log('contract.address', contract.address);
-                            console.log('hello.address', hello.address);
-                            if (hello.isDeployed()) {
-                                // do something with your contract
-                                hello.call('setHello', [
-                                    {
-                                    vname: 'owner',
-                                    type: 'ByStr20',
-                                    value: that.address
-                                    }
-                                ]).then((callTx) => {
-                                    console.log('callTx', JSON.stringify(callTx));
-                                    callTx.getState().then((state) => {
-                                        // do something
-                                        console.log('state', JSON.stringify(state));
-                                        cb(null, state);
-                                    }).catch((err) => {
-                                        // handle the error
-                                        console.log('callTx.getState err', JSON.stringify(err));
-                                        cb(err, null);
-                                    });
-                                }).catch((err) => {
-                                    // handle the error
-                                    console.log('hello.call err', JSON.stringify(err));
-                                    cb(err, null);
-                                });
-                                return;                             
-                            }
+                }
+                                                
+                const init = [
+                    {
+                        vname: 'owner',
+                        type: 'ByStr20',
+                        value: '0x' + that.address.toLowerCase()
+                    },
+                ];
 
-                            cb('Rejected', null);
-                            //if (hello.isRejected()) {
-                                
-                                // throw an error, or somehow handle the failed deployment
-                            //}
-                        })                       
-                        .catch((err) => {
+                const contract = that.zilliqaClient.contracts.new(code, init);
+                console.log(that.address);
+                // if you are in a function, you can also use async/await
+                contract.deploy(new BN(1), new BN(2500))
+                .then((hello) => {
+                    console.log('contract.address', contract.address);
+                    console.log('hello.address', hello.address);
+                    if (hello.isDeployed()) {
+                        // do something with your contract
+                        hello.call('setHello', [
+                            {
+                                vname: 'msg',
+                                type: 'String',
+                                value: 'Hello World',
+                            }
+                        ]).then((callTx) => {
+                            console.log('callTx', JSON.stringify(callTx));
+                            hello.getState().then((state) => {
+                                // do something
+                                console.log('state', JSON.stringify(state));
+                                cb(null, state);
+                            }).catch((err) => {
+                                // handle the error
+                                console.log('callTx.getState err', JSON.stringify(err));
+                                cb(err, null);
+                            });
+                        }).catch((err) => {
                             // handle the error
-                            console.log('contract.deploy err', JSON.stringify(err));
+                            console.log('hello.call err', JSON.stringify(err));
                             cb(err, null);
                         });
+                        return;                             
+                    }
 
+                    cb('Rejected', null);
+                    //if (hello.isRejected()) {
+                        
+                        // throw an error, or somehow handle the failed deployment
+                    //}
+                })                       
+                .catch((err) => {
+                    // handle the error
+                    console.log('contract.deploy err', err);
+                    cb(err, null);
                 });
-            });     
+
+                });   
         }  
     }
 

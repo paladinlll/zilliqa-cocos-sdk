@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 76);
+/******/ 	return __webpack_require__(__webpack_require__.s = 79);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -206,9 +206,9 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 
 
 
-var base64 = __webpack_require__(81)
-var ieee754 = __webpack_require__(82)
-var isArray = __webpack_require__(40)
+var base64 = __webpack_require__(84)
+var ieee754 = __webpack_require__(85)
+var isArray = __webpack_require__(41)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -2044,7 +2044,7 @@ function isnan (val) {
 
   var Buffer;
   try {
-    Buffer = __webpack_require__(121).Buffer;
+    Buffer = __webpack_require__(140).Buffer;
   } catch (e) {
   }
 
@@ -5420,7 +5420,7 @@ function isnan (val) {
   };
 })( false || module, this);
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(120)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(139)(module)))
 
 /***/ }),
 /* 4 */
@@ -5431,15 +5431,15 @@ function isnan (val) {
 
 var elliptic = exports;
 
-elliptic.version = __webpack_require__(127).version;
-elliptic.utils = __webpack_require__(128);
-elliptic.rand = __webpack_require__(63);
-elliptic.curve = __webpack_require__(25);
-elliptic.curves = __webpack_require__(133);
+elliptic.version = __webpack_require__(146).version;
+elliptic.utils = __webpack_require__(147);
+elliptic.rand = __webpack_require__(66);
+elliptic.curve = __webpack_require__(27);
+elliptic.curves = __webpack_require__(152);
 
 // Protocols
-elliptic.ec = __webpack_require__(141);
-elliptic.eddsa = __webpack_require__(145);
+elliptic.ec = __webpack_require__(160);
+elliptic.eddsa = __webpack_require__(164);
 
 
 /***/ }),
@@ -5940,8 +5940,8 @@ process.umask = function() { return 0; };
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(1).Buffer
-var Transform = __webpack_require__(14).Transform
-var StringDecoder = __webpack_require__(31).StringDecoder
+var Transform = __webpack_require__(15).Transform
+var StringDecoder = __webpack_require__(32).StringDecoder
 var inherits = __webpack_require__(0)
 
 function CipherBase (hashMode) {
@@ -6045,6 +6045,428 @@ module.exports = CipherBase
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+var util = exports;
+
+// used to return a Promise where callback is omitted
+util.asPromise = __webpack_require__(89);
+
+// converts to / from base64 encoded strings
+util.base64 = __webpack_require__(90);
+
+// base class of rpc.Service
+util.EventEmitter = __webpack_require__(91);
+
+// float handling accross browsers
+util.float = __webpack_require__(92);
+
+// requires modules optionally and hides the call from bundlers
+util.inquire = __webpack_require__(93);
+
+// converts to / from utf8 encoded strings
+util.utf8 = __webpack_require__(94);
+
+// provides a node-like buffer pool in the browser
+util.pool = __webpack_require__(95);
+
+// utility to work with the low and high bits of a 64 bit value
+util.LongBits = __webpack_require__(96);
+
+// global object reference
+util.global = typeof window !== "undefined" && window
+           || typeof global !== "undefined" && global
+           || typeof self   !== "undefined" && self
+           || this; // eslint-disable-line no-invalid-this
+
+/**
+ * An immuable empty array.
+ * @memberof util
+ * @type {Array.<*>}
+ * @const
+ */
+util.emptyArray = Object.freeze ? Object.freeze([]) : /* istanbul ignore next */ []; // used on prototypes
+
+/**
+ * An immutable empty object.
+ * @type {Object}
+ * @const
+ */
+util.emptyObject = Object.freeze ? Object.freeze({}) : /* istanbul ignore next */ {}; // used on prototypes
+
+/**
+ * Whether running within node or not.
+ * @memberof util
+ * @type {boolean}
+ * @const
+ */
+util.isNode = Boolean(util.global.process && util.global.process.versions && util.global.process.versions.node);
+
+/**
+ * Tests if the specified value is an integer.
+ * @function
+ * @param {*} value Value to test
+ * @returns {boolean} `true` if the value is an integer
+ */
+util.isInteger = Number.isInteger || /* istanbul ignore next */ function isInteger(value) {
+    return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+};
+
+/**
+ * Tests if the specified value is a string.
+ * @param {*} value Value to test
+ * @returns {boolean} `true` if the value is a string
+ */
+util.isString = function isString(value) {
+    return typeof value === "string" || value instanceof String;
+};
+
+/**
+ * Tests if the specified value is a non-null object.
+ * @param {*} value Value to test
+ * @returns {boolean} `true` if the value is a non-null object
+ */
+util.isObject = function isObject(value) {
+    return value && typeof value === "object";
+};
+
+/**
+ * Checks if a property on a message is considered to be present.
+ * This is an alias of {@link util.isSet}.
+ * @function
+ * @param {Object} obj Plain object or message instance
+ * @param {string} prop Property name
+ * @returns {boolean} `true` if considered to be present, otherwise `false`
+ */
+util.isset =
+
+/**
+ * Checks if a property on a message is considered to be present.
+ * @param {Object} obj Plain object or message instance
+ * @param {string} prop Property name
+ * @returns {boolean} `true` if considered to be present, otherwise `false`
+ */
+util.isSet = function isSet(obj, prop) {
+    var value = obj[prop];
+    if (value != null && obj.hasOwnProperty(prop)) // eslint-disable-line eqeqeq, no-prototype-builtins
+        return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
+    return false;
+};
+
+/**
+ * Any compatible Buffer instance.
+ * This is a minimal stand-alone definition of a Buffer instance. The actual type is that exported by node's typings.
+ * @interface Buffer
+ * @extends Uint8Array
+ */
+
+/**
+ * Node's Buffer class if available.
+ * @type {Constructor<Buffer>}
+ */
+util.Buffer = (function() {
+    try {
+        var Buffer = util.inquire("buffer").Buffer;
+        // refuse to use non-node buffers if not explicitly assigned (perf reasons):
+        return Buffer.prototype.utf8Write ? Buffer : /* istanbul ignore next */ null;
+    } catch (e) {
+        /* istanbul ignore next */
+        return null;
+    }
+})();
+
+// Internal alias of or polyfull for Buffer.from.
+util._Buffer_from = null;
+
+// Internal alias of or polyfill for Buffer.allocUnsafe.
+util._Buffer_allocUnsafe = null;
+
+/**
+ * Creates a new buffer of whatever type supported by the environment.
+ * @param {number|number[]} [sizeOrArray=0] Buffer size or number array
+ * @returns {Uint8Array|Buffer} Buffer
+ */
+util.newBuffer = function newBuffer(sizeOrArray) {
+    /* istanbul ignore next */
+    return typeof sizeOrArray === "number"
+        ? util.Buffer
+            ? util._Buffer_allocUnsafe(sizeOrArray)
+            : new util.Array(sizeOrArray)
+        : util.Buffer
+            ? util._Buffer_from(sizeOrArray)
+            : typeof Uint8Array === "undefined"
+                ? sizeOrArray
+                : new Uint8Array(sizeOrArray);
+};
+
+/**
+ * Array implementation used in the browser. `Uint8Array` if supported, otherwise `Array`.
+ * @type {Constructor<Uint8Array>}
+ */
+util.Array = typeof Uint8Array !== "undefined" ? Uint8Array /* istanbul ignore next */ : Array;
+
+/**
+ * Any compatible Long instance.
+ * This is a minimal stand-alone definition of a Long instance. The actual type is that exported by long.js.
+ * @interface Long
+ * @property {number} low Low bits
+ * @property {number} high High bits
+ * @property {boolean} unsigned Whether unsigned or not
+ */
+
+/**
+ * Long.js's Long class if available.
+ * @type {Constructor<Long>}
+ */
+util.Long = /* istanbul ignore next */ util.global.dcodeIO && /* istanbul ignore next */ util.global.dcodeIO.Long
+         || /* istanbul ignore next */ util.global.Long
+         //|| util.inquire("long");
+
+/**
+ * Regular expression used to verify 2 bit (`bool`) map keys.
+ * @type {RegExp}
+ * @const
+ */
+util.key2Re = /^true|false|0|1$/;
+
+/**
+ * Regular expression used to verify 32 bit (`int32` etc.) map keys.
+ * @type {RegExp}
+ * @const
+ */
+util.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
+
+/**
+ * Regular expression used to verify 64 bit (`int64` etc.) map keys.
+ * @type {RegExp}
+ * @const
+ */
+util.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
+
+/**
+ * Converts a number or long to an 8 characters long hash string.
+ * @param {Long|number} value Value to convert
+ * @returns {string} Hash
+ */
+util.longToHash = function longToHash(value) {
+    return value
+        ? util.LongBits.from(value).toHash()
+        : util.LongBits.zeroHash;
+};
+
+/**
+ * Converts an 8 characters long hash string to a long or number.
+ * @param {string} hash Hash
+ * @param {boolean} [unsigned=false] Whether unsigned or not
+ * @returns {Long|number} Original value
+ */
+util.longFromHash = function longFromHash(hash, unsigned) {
+    var bits = util.LongBits.fromHash(hash);
+    if (util.Long)
+        return util.Long.fromBits(bits.lo, bits.hi, unsigned);
+    return bits.toNumber(Boolean(unsigned));
+};
+
+/**
+ * Merges the properties of the source object into the destination object.
+ * @memberof util
+ * @param {Object.<string,*>} dst Destination object
+ * @param {Object.<string,*>} src Source object
+ * @param {boolean} [ifNotSet=false] Merges only if the key is not already set
+ * @returns {Object.<string,*>} Destination object
+ */
+function merge(dst, src, ifNotSet) { // used by converters
+    for (var keys = Object.keys(src), i = 0; i < keys.length; ++i)
+        if (dst[keys[i]] === undefined || !ifNotSet)
+            dst[keys[i]] = src[keys[i]];
+    return dst;
+}
+
+util.merge = merge;
+
+/**
+ * Converts the first character of a string to lower case.
+ * @param {string} str String to convert
+ * @returns {string} Converted string
+ */
+util.lcFirst = function lcFirst(str) {
+    return str.charAt(0).toLowerCase() + str.substring(1);
+};
+
+/**
+ * Creates a custom error constructor.
+ * @memberof util
+ * @param {string} name Error name
+ * @returns {Constructor<Error>} Custom error constructor
+ */
+function newError(name) {
+
+    function CustomError(message, properties) {
+
+        if (!(this instanceof CustomError))
+            return new CustomError(message, properties);
+
+        // Error.call(this, message);
+        // ^ just returns a new error instance because the ctor can be called as a function
+
+        Object.defineProperty(this, "message", { get: function() { return message; } });
+
+        /* istanbul ignore next */
+        if (Error.captureStackTrace) // node
+            Error.captureStackTrace(this, CustomError);
+        else
+            Object.defineProperty(this, "stack", { value: (new Error()).stack || "" });
+
+        if (properties)
+            merge(this, properties);
+    }
+
+    (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
+
+    Object.defineProperty(CustomError.prototype, "name", { get: function() { return name; } });
+
+    CustomError.prototype.toString = function toString() {
+        return this.name + ": " + this.message;
+    };
+
+    return CustomError;
+}
+
+util.newError = newError;
+
+/**
+ * Constructs a new protocol error.
+ * @classdesc Error subclass indicating a protocol specifc error.
+ * @memberof util
+ * @extends Error
+ * @template T extends Message<T>
+ * @constructor
+ * @param {string} message Error message
+ * @param {Object.<string,*>} [properties] Additional properties
+ * @example
+ * try {
+ *     MyMessage.decode(someBuffer); // throws if required fields are missing
+ * } catch (e) {
+ *     if (e instanceof ProtocolError && e.instance)
+ *         console.log("decoded so far: " + JSON.stringify(e.instance));
+ * }
+ */
+util.ProtocolError = newError("ProtocolError");
+
+/**
+ * So far decoded message instance.
+ * @name util.ProtocolError#instance
+ * @type {Message<T>}
+ */
+
+/**
+ * A OneOf getter as returned by {@link util.oneOfGetter}.
+ * @typedef OneOfGetter
+ * @type {function}
+ * @returns {string|undefined} Set field name, if any
+ */
+
+/**
+ * Builds a getter for a oneof's present field name.
+ * @param {string[]} fieldNames Field names
+ * @returns {OneOfGetter} Unbound getter
+ */
+util.oneOfGetter = function getOneOf(fieldNames) {
+    var fieldMap = {};
+    for (var i = 0; i < fieldNames.length; ++i)
+        fieldMap[fieldNames[i]] = 1;
+
+    /**
+     * @returns {string|undefined} Set field name, if any
+     * @this Object
+     * @ignore
+     */
+    return function() { // eslint-disable-line consistent-return
+        for (var keys = Object.keys(this), i = keys.length - 1; i > -1; --i)
+            if (fieldMap[keys[i]] === 1 && this[keys[i]] !== undefined && this[keys[i]] !== null)
+                return keys[i];
+    };
+};
+
+/**
+ * A OneOf setter as returned by {@link util.oneOfSetter}.
+ * @typedef OneOfSetter
+ * @type {function}
+ * @param {string|undefined} value Field name
+ * @returns {undefined}
+ */
+
+/**
+ * Builds a setter for a oneof's present field name.
+ * @param {string[]} fieldNames Field names
+ * @returns {OneOfSetter} Unbound setter
+ */
+util.oneOfSetter = function setOneOf(fieldNames) {
+
+    /**
+     * @param {string} name Field name
+     * @returns {undefined}
+     * @this Object
+     * @ignore
+     */
+    return function(name) {
+        for (var i = 0; i < fieldNames.length; ++i)
+            if (fieldNames[i] !== name)
+                delete this[fieldNames[i]];
+    };
+};
+
+/**
+ * Default conversion options used for {@link Message#toJSON} implementations.
+ *
+ * These options are close to proto3's JSON mapping with the exception that internal types like Any are handled just like messages. More precisely:
+ *
+ * - Longs become strings
+ * - Enums become string keys
+ * - Bytes become base64 encoded strings
+ * - (Sub-)Messages become plain objects
+ * - Maps become plain objects with all string keys
+ * - Repeated fields become arrays
+ * - NaN and Infinity for float and double fields become strings
+ *
+ * @type {IConversionOptions}
+ * @see https://developers.google.com/protocol-buffers/docs/proto3?hl=en#json
+ */
+util.toJSONOptions = {
+    longs: String,
+    enums: String,
+    bytes: String,
+    json: true
+};
+
+// Sets up buffer utility according to the environment (called in index-minimal)
+util._configure = function() {
+    var Buffer = util.Buffer;
+    /* istanbul ignore if */
+    if (!Buffer) {
+        util._Buffer_from = util._Buffer_allocUnsafe = null;
+        return;
+    }
+    // because node 4.x buffers are incompatible & immutable
+    // see: https://github.com/dcodeIO/protobuf.js/pull/665
+    util._Buffer_from = Buffer.from !== Uint8Array.from && Buffer.from ||
+        /* istanbul ignore next */
+        function Buffer_from(value, encoding) {
+            return new Buffer(value, encoding);
+        };
+    util._Buffer_allocUnsafe = Buffer.allocUnsafe ||
+        /* istanbul ignore next */
+        function Buffer_allocUnsafe(size) {
+            return new Buffer(size);
+        };
+};
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)))
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6075,7 +6497,7 @@ module.exports = CipherBase
 
 /*<replacement>*/
 
-var pna = __webpack_require__(22);
+var pna = __webpack_require__(24);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -6090,12 +6512,12 @@ var objectKeys = Object.keys || function (obj) {
 module.exports = Duplex;
 
 /*<replacement>*/
-var util = __webpack_require__(15);
+var util = __webpack_require__(16);
 util.inherits = __webpack_require__(0);
 /*</replacement>*/
 
-var Readable = __webpack_require__(41);
-var Writable = __webpack_require__(30);
+var Readable = __webpack_require__(44);
+var Writable = __webpack_require__(31);
 
 util.inherits(Duplex, Readable);
 
@@ -6178,7 +6600,7 @@ Duplex.prototype._destroy = function (err, cb) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6224,7 +6646,7 @@ function randomBytes (size, cb) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(8)))
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(1).Buffer
@@ -6311,7 +6733,7 @@ module.exports = Hash
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {(function (global, factory) {
@@ -10027,7 +10449,7 @@ module.exports = Hash
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)))
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -10053,15 +10475,15 @@ module.exports = Hash
 
 module.exports = Stream;
 
-var EE = __webpack_require__(28).EventEmitter;
+var EE = __webpack_require__(29).EventEmitter;
 var inherits = __webpack_require__(0);
 
 inherits(Stream, EE);
-Stream.Readable = __webpack_require__(29);
-Stream.Writable = __webpack_require__(91);
-Stream.Duplex = __webpack_require__(92);
-Stream.Transform = __webpack_require__(93);
-Stream.PassThrough = __webpack_require__(94);
+Stream.Readable = __webpack_require__(30);
+Stream.Writable = __webpack_require__(110);
+Stream.Duplex = __webpack_require__(111);
+Stream.Transform = __webpack_require__(112);
+Stream.PassThrough = __webpack_require__(113);
 
 // Backwards-compat with node 0.4.x
 Stream.Stream = Stream;
@@ -10160,7 +10582,7 @@ Stream.prototype.pipe = function(dest, options) {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {// Copyright Joyent, Inc. and other Node contributors.
@@ -10274,15 +10696,15 @@ function objectToString(o) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var inherits = __webpack_require__(0)
-var MD5 = __webpack_require__(32)
-var RIPEMD160 = __webpack_require__(33)
-var sha = __webpack_require__(34)
+var MD5 = __webpack_require__(33)
+var RIPEMD160 = __webpack_require__(34)
+var sha = __webpack_require__(35)
 var Base = __webpack_require__(9)
 
 function Hash (hash) {
@@ -10311,7 +10733,7 @@ module.exports = function createHash (alg) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function xor (a, b) {
@@ -10328,7 +10750,7 @@ module.exports = function createHash (alg) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10427,38 +10849,38 @@ BlockHash.prototype._pad = function pad() {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var asn1 = exports;
 
 asn1.bignum = __webpack_require__(3);
 
-asn1.define = __webpack_require__(149).define;
-asn1.base = __webpack_require__(20);
-asn1.constants = __webpack_require__(69);
-asn1.decoders = __webpack_require__(155);
-asn1.encoders = __webpack_require__(157);
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var base = exports;
-
-base.Reporter = __webpack_require__(152).Reporter;
-base.DecoderBuffer = __webpack_require__(68).DecoderBuffer;
-base.EncoderBuffer = __webpack_require__(68).EncoderBuffer;
-base.Node = __webpack_require__(153);
+asn1.define = __webpack_require__(168).define;
+asn1.base = __webpack_require__(21);
+asn1.constants = __webpack_require__(72);
+asn1.decoders = __webpack_require__(174);
+asn1.encoders = __webpack_require__(176);
 
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var base = exports;
+
+base.Reporter = __webpack_require__(171).Reporter;
+base.DecoderBuffer = __webpack_require__(71).DecoderBuffer;
+base.EncoderBuffer = __webpack_require__(71).EncoderBuffer;
+base.Node = __webpack_require__(172);
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(80)) :
+   true ? factory(exports, __webpack_require__(83)) :
   undefined;
 }(this, (function (exports,fetch) { 'use strict';
 
@@ -10812,478 +11234,13 @@ base.Node = __webpack_require__(153);
 
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-if (!process.version ||
-    process.version.indexOf('v0.') === 0 ||
-    process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
-  module.exports = { nextTick: nextTick };
-} else {
-  module.exports = process
-}
-
-function nextTick(fn, arg1, arg2, arg3) {
-  if (typeof fn !== 'function') {
-    throw new TypeError('"callback" argument must be a function');
-  }
-  var len = arguments.length;
-  var args, i;
-  switch (len) {
-  case 0:
-  case 1:
-    return process.nextTick(fn);
-  case 2:
-    return process.nextTick(function afterTickOne() {
-      fn.call(null, arg1);
-    });
-  case 3:
-    return process.nextTick(function afterTickTwo() {
-      fn.call(null, arg1, arg2);
-    });
-  case 4:
-    return process.nextTick(function afterTickThree() {
-      fn.call(null, arg1, arg2, arg3);
-    });
-  default:
-    args = new Array(len - 1);
-    i = 0;
-    while (i < args.length) {
-      args[i++] = arguments[i];
-    }
-    return process.nextTick(function afterTick() {
-      fn.apply(null, args);
-    });
-  }
-}
-
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8)))
-
-/***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// based on the aes implimentation in triple sec
-// https://github.com/keybase/triplesec
-// which is in turn based on the one from crypto-js
-// https://code.google.com/p/crypto-js/
-
-var Buffer = __webpack_require__(1).Buffer
-
-function asUInt32Array (buf) {
-  if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf)
-
-  var len = (buf.length / 4) | 0
-  var out = new Array(len)
-
-  for (var i = 0; i < len; i++) {
-    out[i] = buf.readUInt32BE(i * 4)
-  }
-
-  return out
-}
-
-function scrubVec (v) {
-  for (var i = 0; i < v.length; v++) {
-    v[i] = 0
-  }
-}
-
-function cryptBlock (M, keySchedule, SUB_MIX, SBOX, nRounds) {
-  var SUB_MIX0 = SUB_MIX[0]
-  var SUB_MIX1 = SUB_MIX[1]
-  var SUB_MIX2 = SUB_MIX[2]
-  var SUB_MIX3 = SUB_MIX[3]
-
-  var s0 = M[0] ^ keySchedule[0]
-  var s1 = M[1] ^ keySchedule[1]
-  var s2 = M[2] ^ keySchedule[2]
-  var s3 = M[3] ^ keySchedule[3]
-  var t0, t1, t2, t3
-  var ksRow = 4
-
-  for (var round = 1; round < nRounds; round++) {
-    t0 = SUB_MIX0[s0 >>> 24] ^ SUB_MIX1[(s1 >>> 16) & 0xff] ^ SUB_MIX2[(s2 >>> 8) & 0xff] ^ SUB_MIX3[s3 & 0xff] ^ keySchedule[ksRow++]
-    t1 = SUB_MIX0[s1 >>> 24] ^ SUB_MIX1[(s2 >>> 16) & 0xff] ^ SUB_MIX2[(s3 >>> 8) & 0xff] ^ SUB_MIX3[s0 & 0xff] ^ keySchedule[ksRow++]
-    t2 = SUB_MIX0[s2 >>> 24] ^ SUB_MIX1[(s3 >>> 16) & 0xff] ^ SUB_MIX2[(s0 >>> 8) & 0xff] ^ SUB_MIX3[s1 & 0xff] ^ keySchedule[ksRow++]
-    t3 = SUB_MIX0[s3 >>> 24] ^ SUB_MIX1[(s0 >>> 16) & 0xff] ^ SUB_MIX2[(s1 >>> 8) & 0xff] ^ SUB_MIX3[s2 & 0xff] ^ keySchedule[ksRow++]
-    s0 = t0
-    s1 = t1
-    s2 = t2
-    s3 = t3
-  }
-
-  t0 = ((SBOX[s0 >>> 24] << 24) | (SBOX[(s1 >>> 16) & 0xff] << 16) | (SBOX[(s2 >>> 8) & 0xff] << 8) | SBOX[s3 & 0xff]) ^ keySchedule[ksRow++]
-  t1 = ((SBOX[s1 >>> 24] << 24) | (SBOX[(s2 >>> 16) & 0xff] << 16) | (SBOX[(s3 >>> 8) & 0xff] << 8) | SBOX[s0 & 0xff]) ^ keySchedule[ksRow++]
-  t2 = ((SBOX[s2 >>> 24] << 24) | (SBOX[(s3 >>> 16) & 0xff] << 16) | (SBOX[(s0 >>> 8) & 0xff] << 8) | SBOX[s1 & 0xff]) ^ keySchedule[ksRow++]
-  t3 = ((SBOX[s3 >>> 24] << 24) | (SBOX[(s0 >>> 16) & 0xff] << 16) | (SBOX[(s1 >>> 8) & 0xff] << 8) | SBOX[s2 & 0xff]) ^ keySchedule[ksRow++]
-  t0 = t0 >>> 0
-  t1 = t1 >>> 0
-  t2 = t2 >>> 0
-  t3 = t3 >>> 0
-
-  return [t0, t1, t2, t3]
-}
-
-// AES constants
-var RCON = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36]
-var G = (function () {
-  // Compute double table
-  var d = new Array(256)
-  for (var j = 0; j < 256; j++) {
-    if (j < 128) {
-      d[j] = j << 1
-    } else {
-      d[j] = (j << 1) ^ 0x11b
-    }
-  }
-
-  var SBOX = []
-  var INV_SBOX = []
-  var SUB_MIX = [[], [], [], []]
-  var INV_SUB_MIX = [[], [], [], []]
-
-  // Walk GF(2^8)
-  var x = 0
-  var xi = 0
-  for (var i = 0; i < 256; ++i) {
-    // Compute sbox
-    var sx = xi ^ (xi << 1) ^ (xi << 2) ^ (xi << 3) ^ (xi << 4)
-    sx = (sx >>> 8) ^ (sx & 0xff) ^ 0x63
-    SBOX[x] = sx
-    INV_SBOX[sx] = x
-
-    // Compute multiplication
-    var x2 = d[x]
-    var x4 = d[x2]
-    var x8 = d[x4]
-
-    // Compute sub bytes, mix columns tables
-    var t = (d[sx] * 0x101) ^ (sx * 0x1010100)
-    SUB_MIX[0][x] = (t << 24) | (t >>> 8)
-    SUB_MIX[1][x] = (t << 16) | (t >>> 16)
-    SUB_MIX[2][x] = (t << 8) | (t >>> 24)
-    SUB_MIX[3][x] = t
-
-    // Compute inv sub bytes, inv mix columns tables
-    t = (x8 * 0x1010101) ^ (x4 * 0x10001) ^ (x2 * 0x101) ^ (x * 0x1010100)
-    INV_SUB_MIX[0][sx] = (t << 24) | (t >>> 8)
-    INV_SUB_MIX[1][sx] = (t << 16) | (t >>> 16)
-    INV_SUB_MIX[2][sx] = (t << 8) | (t >>> 24)
-    INV_SUB_MIX[3][sx] = t
-
-    if (x === 0) {
-      x = xi = 1
-    } else {
-      x = x2 ^ d[d[d[x8 ^ x2]]]
-      xi ^= d[d[xi]]
-    }
-  }
-
-  return {
-    SBOX: SBOX,
-    INV_SBOX: INV_SBOX,
-    SUB_MIX: SUB_MIX,
-    INV_SUB_MIX: INV_SUB_MIX
-  }
-})()
-
-function AES (key) {
-  this._key = asUInt32Array(key)
-  this._reset()
-}
-
-AES.blockSize = 4 * 4
-AES.keySize = 256 / 8
-AES.prototype.blockSize = AES.blockSize
-AES.prototype.keySize = AES.keySize
-AES.prototype._reset = function () {
-  var keyWords = this._key
-  var keySize = keyWords.length
-  var nRounds = keySize + 6
-  var ksRows = (nRounds + 1) * 4
-
-  var keySchedule = []
-  for (var k = 0; k < keySize; k++) {
-    keySchedule[k] = keyWords[k]
-  }
-
-  for (k = keySize; k < ksRows; k++) {
-    var t = keySchedule[k - 1]
-
-    if (k % keySize === 0) {
-      t = (t << 8) | (t >>> 24)
-      t =
-        (G.SBOX[t >>> 24] << 24) |
-        (G.SBOX[(t >>> 16) & 0xff] << 16) |
-        (G.SBOX[(t >>> 8) & 0xff] << 8) |
-        (G.SBOX[t & 0xff])
-
-      t ^= RCON[(k / keySize) | 0] << 24
-    } else if (keySize > 6 && k % keySize === 4) {
-      t =
-        (G.SBOX[t >>> 24] << 24) |
-        (G.SBOX[(t >>> 16) & 0xff] << 16) |
-        (G.SBOX[(t >>> 8) & 0xff] << 8) |
-        (G.SBOX[t & 0xff])
-    }
-
-    keySchedule[k] = keySchedule[k - keySize] ^ t
-  }
-
-  var invKeySchedule = []
-  for (var ik = 0; ik < ksRows; ik++) {
-    var ksR = ksRows - ik
-    var tt = keySchedule[ksR - (ik % 4 ? 0 : 4)]
-
-    if (ik < 4 || ksR <= 4) {
-      invKeySchedule[ik] = tt
-    } else {
-      invKeySchedule[ik] =
-        G.INV_SUB_MIX[0][G.SBOX[tt >>> 24]] ^
-        G.INV_SUB_MIX[1][G.SBOX[(tt >>> 16) & 0xff]] ^
-        G.INV_SUB_MIX[2][G.SBOX[(tt >>> 8) & 0xff]] ^
-        G.INV_SUB_MIX[3][G.SBOX[tt & 0xff]]
-    }
-  }
-
-  this._nRounds = nRounds
-  this._keySchedule = keySchedule
-  this._invKeySchedule = invKeySchedule
-}
-
-AES.prototype.encryptBlockRaw = function (M) {
-  M = asUInt32Array(M)
-  return cryptBlock(M, this._keySchedule, G.SUB_MIX, G.SBOX, this._nRounds)
-}
-
-AES.prototype.encryptBlock = function (M) {
-  var out = this.encryptBlockRaw(M)
-  var buf = Buffer.allocUnsafe(16)
-  buf.writeUInt32BE(out[0], 0)
-  buf.writeUInt32BE(out[1], 4)
-  buf.writeUInt32BE(out[2], 8)
-  buf.writeUInt32BE(out[3], 12)
-  return buf
-}
-
-AES.prototype.decryptBlock = function (M) {
-  M = asUInt32Array(M)
-
-  // swap
-  var m1 = M[1]
-  M[1] = M[3]
-  M[3] = m1
-
-  var out = cryptBlock(M, this._invKeySchedule, G.INV_SUB_MIX, G.INV_SBOX, this._nRounds)
-  var buf = Buffer.allocUnsafe(16)
-  buf.writeUInt32BE(out[0], 0)
-  buf.writeUInt32BE(out[3], 4)
-  buf.writeUInt32BE(out[2], 8)
-  buf.writeUInt32BE(out[1], 12)
-  return buf
-}
-
-AES.prototype.scrub = function () {
-  scrubVec(this._keySchedule)
-  scrubVec(this._invKeySchedule)
-  scrubVec(this._key)
-}
-
-module.exports.AES = AES
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Buffer = __webpack_require__(1).Buffer
-var MD5 = __webpack_require__(32)
-
-/* eslint-disable camelcase */
-function EVP_BytesToKey (password, salt, keyBits, ivLen) {
-  if (!Buffer.isBuffer(password)) password = Buffer.from(password, 'binary')
-  if (salt) {
-    if (!Buffer.isBuffer(salt)) salt = Buffer.from(salt, 'binary')
-    if (salt.length !== 8) throw new RangeError('salt should be Buffer with 8 byte length')
-  }
-
-  var keyLen = keyBits / 8
-  var key = Buffer.alloc(keyLen)
-  var iv = Buffer.alloc(ivLen || 0)
-  var tmp = Buffer.alloc(0)
-
-  while (keyLen > 0 || ivLen > 0) {
-    var hash = new MD5()
-    hash.update(tmp)
-    hash.update(password)
-    if (salt) hash.update(salt)
-    tmp = hash.digest()
-
-    var used = 0
-
-    if (keyLen > 0) {
-      var keyStart = key.length - keyLen
-      used = Math.min(keyLen, tmp.length)
-      tmp.copy(key, keyStart, 0, used)
-      keyLen -= used
-    }
-
-    if (used < tmp.length && ivLen > 0) {
-      var ivStart = iv.length - ivLen
-      var length = Math.min(ivLen, tmp.length - used)
-      tmp.copy(iv, ivStart, used, used + length)
-      ivLen -= length
-    }
-  }
-
-  tmp.fill(0)
-  return { key: key, iv: iv }
-}
-
-module.exports = EVP_BytesToKey
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var curve = exports;
-
-curve.base = __webpack_require__(129);
-curve.short = __webpack_require__(130);
-curve.mont = __webpack_require__(131);
-curve.edwards = __webpack_require__(132);
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(Buffer) {var asn1 = __webpack_require__(148)
-var aesid = __webpack_require__(160)
-var fixProc = __webpack_require__(161)
-var ciphers = __webpack_require__(36)
-var compat = __webpack_require__(52)
-module.exports = parseKeys
-
-function parseKeys (buffer) {
-  var password
-  if (typeof buffer === 'object' && !Buffer.isBuffer(buffer)) {
-    password = buffer.passphrase
-    buffer = buffer.key
-  }
-  if (typeof buffer === 'string') {
-    buffer = new Buffer(buffer)
-  }
-
-  var stripped = fixProc(buffer, password)
-
-  var type = stripped.tag
-  var data = stripped.data
-  var subtype, ndata
-  switch (type) {
-    case 'CERTIFICATE':
-      ndata = asn1.certificate.decode(data, 'der').tbsCertificate.subjectPublicKeyInfo
-      // falls through
-    case 'PUBLIC KEY':
-      if (!ndata) {
-        ndata = asn1.PublicKey.decode(data, 'der')
-      }
-      subtype = ndata.algorithm.algorithm.join('.')
-      switch (subtype) {
-        case '1.2.840.113549.1.1.1':
-          return asn1.RSAPublicKey.decode(ndata.subjectPublicKey.data, 'der')
-        case '1.2.840.10045.2.1':
-          ndata.subjectPrivateKey = ndata.subjectPublicKey
-          return {
-            type: 'ec',
-            data: ndata
-          }
-        case '1.2.840.10040.4.1':
-          ndata.algorithm.params.pub_key = asn1.DSAparam.decode(ndata.subjectPublicKey.data, 'der')
-          return {
-            type: 'dsa',
-            data: ndata.algorithm.params
-          }
-        default: throw new Error('unknown key id ' + subtype)
-      }
-      throw new Error('unknown key type ' + type)
-    case 'ENCRYPTED PRIVATE KEY':
-      data = asn1.EncryptedPrivateKey.decode(data, 'der')
-      data = decrypt(data, password)
-      // falls through
-    case 'PRIVATE KEY':
-      ndata = asn1.PrivateKey.decode(data, 'der')
-      subtype = ndata.algorithm.algorithm.join('.')
-      switch (subtype) {
-        case '1.2.840.113549.1.1.1':
-          return asn1.RSAPrivateKey.decode(ndata.subjectPrivateKey, 'der')
-        case '1.2.840.10045.2.1':
-          return {
-            curve: ndata.algorithm.curve,
-            privateKey: asn1.ECPrivateKey.decode(ndata.subjectPrivateKey, 'der').privateKey
-          }
-        case '1.2.840.10040.4.1':
-          ndata.algorithm.params.priv_key = asn1.DSAparam.decode(ndata.subjectPrivateKey, 'der')
-          return {
-            type: 'dsa',
-            params: ndata.algorithm.params
-          }
-        default: throw new Error('unknown key id ' + subtype)
-      }
-      throw new Error('unknown key type ' + type)
-    case 'RSA PUBLIC KEY':
-      return asn1.RSAPublicKey.decode(data, 'der')
-    case 'RSA PRIVATE KEY':
-      return asn1.RSAPrivateKey.decode(data, 'der')
-    case 'DSA PRIVATE KEY':
-      return {
-        type: 'dsa',
-        params: asn1.DSAPrivateKey.decode(data, 'der')
-      }
-    case 'EC PRIVATE KEY':
-      data = asn1.ECPrivateKey.decode(data, 'der')
-      return {
-        curve: data.parameters.value,
-        privateKey: data.privateKey
-      }
-    default: throw new Error('unknown key type ' + type)
-  }
-}
-parseKeys.signature = asn1.signature
-function decrypt (data, password) {
-  var salt = data.algorithm.decrypt.kde.kdeparams.salt
-  var iters = parseInt(data.algorithm.decrypt.kde.kdeparams.iters.toString(), 10)
-  var algo = aesid[data.algorithm.decrypt.cipher.algo.join('.')]
-  var iv = data.algorithm.decrypt.cipher.iv
-  var cipherText = data.subjectPrivateKey
-  var keylen = parseInt(algo.split('-')[1], 10) / 8
-  var key = compat.pbkdf2Sync(password, salt, iters, keylen)
-  var cipher = ciphers.createDecipheriv(algo, key, iv)
-  var out = []
-  out.push(cipher.update(cipherText))
-  out.push(cipher.final())
-  return Buffer.concat(out)
-}
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function (global, factory) {
-     true ? factory(exports, __webpack_require__(13), __webpack_require__(83), __webpack_require__(14), __webpack_require__(45), __webpack_require__(21)) :
+/* WEBPACK VAR INJECTION */(function(Buffer, global) {(function (global, factory) {
+     true ? factory(exports, __webpack_require__(14), __webpack_require__(86), __webpack_require__(102), __webpack_require__(15), __webpack_require__(48), __webpack_require__(22)) :
     undefined;
-}(this, (function (exports,util,zcrypto,stream,crypto,core) { 'use strict';
+}(this, (function (exports,util,proto,zcrypto,stream,crypto,core) { 'use strict';
 
     stream = stream && stream.hasOwnProperty('default') ? stream['default'] : stream;
     crypto = crypto && crypto.hasOwnProperty('default') ? crypto['default'] : crypto;
@@ -11398,3951 +11355,6 @@ function decrypt (data, password) {
         return ar;
     }
 
-    var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-    function unwrapExports (x) {
-    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
-    }
-
-    function createCommonjsModule(fn, module) {
-    	return module = { exports: {} }, fn(module, module.exports), module.exports;
-    }
-
-    function getCjsExportFromNamespace (n) {
-    	return n && n.default || n;
-    }
-
-    var aspromise = asPromise;
-
-    /**
-     * Callback as used by {@link util.asPromise}.
-     * @typedef asPromiseCallback
-     * @type {function}
-     * @param {Error|null} error Error, if any
-     * @param {...*} params Additional arguments
-     * @returns {undefined}
-     */
-
-    /**
-     * Returns a promise from a node-style callback function.
-     * @memberof util
-     * @param {asPromiseCallback} fn Function to call
-     * @param {*} ctx Function context
-     * @param {...*} params Function arguments
-     * @returns {Promise<*>} Promisified function
-     */
-    function asPromise(fn, ctx/*, varargs */) {
-        var params  = new Array(arguments.length - 1),
-            offset  = 0,
-            index   = 2,
-            pending = true;
-        while (index < arguments.length)
-            params[offset++] = arguments[index++];
-        return new Promise(function executor(resolve, reject) {
-            params[offset] = function callback(err/*, varargs */) {
-                if (pending) {
-                    pending = false;
-                    if (err)
-                        reject(err);
-                    else {
-                        var params = new Array(arguments.length - 1),
-                            offset = 0;
-                        while (offset < params.length)
-                            params[offset++] = arguments[offset];
-                        resolve.apply(null, params);
-                    }
-                }
-            };
-            try {
-                fn.apply(ctx || null, params);
-            } catch (err) {
-                if (pending) {
-                    pending = false;
-                    reject(err);
-                }
-            }
-        });
-    }
-
-    var base64_1 = createCommonjsModule(function (module, exports) {
-
-    /**
-     * A minimal base64 implementation for number arrays.
-     * @memberof util
-     * @namespace
-     */
-    var base64 = exports;
-
-    /**
-     * Calculates the byte length of a base64 encoded string.
-     * @param {string} string Base64 encoded string
-     * @returns {number} Byte length
-     */
-    base64.length = function length(string) {
-        var p = string.length;
-        if (!p)
-            return 0;
-        var n = 0;
-        while (--p % 4 > 1 && string.charAt(p) === "=")
-            ++n;
-        return Math.ceil(string.length * 3) / 4 - n;
-    };
-
-    // Base64 encoding table
-    var b64 = new Array(64);
-
-    // Base64 decoding table
-    var s64 = new Array(123);
-
-    // 65..90, 97..122, 48..57, 43, 47
-    for (var i = 0; i < 64;)
-        s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
-
-    /**
-     * Encodes a buffer to a base64 encoded string.
-     * @param {Uint8Array} buffer Source buffer
-     * @param {number} start Source start
-     * @param {number} end Source end
-     * @returns {string} Base64 encoded string
-     */
-    base64.encode = function encode(buffer, start, end) {
-        var parts = null,
-            chunk = [];
-        var i = 0, // output index
-            j = 0, // goto index
-            t;     // temporary
-        while (start < end) {
-            var b = buffer[start++];
-            switch (j) {
-                case 0:
-                    chunk[i++] = b64[b >> 2];
-                    t = (b & 3) << 4;
-                    j = 1;
-                    break;
-                case 1:
-                    chunk[i++] = b64[t | b >> 4];
-                    t = (b & 15) << 2;
-                    j = 2;
-                    break;
-                case 2:
-                    chunk[i++] = b64[t | b >> 6];
-                    chunk[i++] = b64[b & 63];
-                    j = 0;
-                    break;
-            }
-            if (i > 8191) {
-                (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
-                i = 0;
-            }
-        }
-        if (j) {
-            chunk[i++] = b64[t];
-            chunk[i++] = 61;
-            if (j === 1)
-                chunk[i++] = 61;
-        }
-        if (parts) {
-            if (i)
-                parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
-            return parts.join("");
-        }
-        return String.fromCharCode.apply(String, chunk.slice(0, i));
-    };
-
-    var invalidEncoding = "invalid encoding";
-
-    /**
-     * Decodes a base64 encoded string to a buffer.
-     * @param {string} string Source string
-     * @param {Uint8Array} buffer Destination buffer
-     * @param {number} offset Destination offset
-     * @returns {number} Number of bytes written
-     * @throws {Error} If encoding is invalid
-     */
-    base64.decode = function decode(string, buffer, offset) {
-        var start = offset;
-        var j = 0, // goto index
-            t;     // temporary
-        for (var i = 0; i < string.length;) {
-            var c = string.charCodeAt(i++);
-            if (c === 61 && j > 1)
-                break;
-            if ((c = s64[c]) === undefined)
-                throw Error(invalidEncoding);
-            switch (j) {
-                case 0:
-                    t = c;
-                    j = 1;
-                    break;
-                case 1:
-                    buffer[offset++] = t << 2 | (c & 48) >> 4;
-                    t = c;
-                    j = 2;
-                    break;
-                case 2:
-                    buffer[offset++] = (t & 15) << 4 | (c & 60) >> 2;
-                    t = c;
-                    j = 3;
-                    break;
-                case 3:
-                    buffer[offset++] = (t & 3) << 6 | c;
-                    j = 0;
-                    break;
-            }
-        }
-        if (j === 1)
-            throw Error(invalidEncoding);
-        return offset - start;
-    };
-
-    /**
-     * Tests if the specified string appears to be base64 encoded.
-     * @param {string} string String to test
-     * @returns {boolean} `true` if probably base64 encoded, otherwise false
-     */
-    base64.test = function test(string) {
-        return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
-    };
-    });
-
-    var eventemitter = EventEmitter;
-
-    /**
-     * Constructs a new event emitter instance.
-     * @classdesc A minimal event emitter.
-     * @memberof util
-     * @constructor
-     */
-    function EventEmitter() {
-
-        /**
-         * Registered listeners.
-         * @type {Object.<string,*>}
-         * @private
-         */
-        this._listeners = {};
-    }
-
-    /**
-     * Registers an event listener.
-     * @param {string} evt Event name
-     * @param {function} fn Listener
-     * @param {*} [ctx] Listener context
-     * @returns {util.EventEmitter} `this`
-     */
-    EventEmitter.prototype.on = function on(evt, fn, ctx) {
-        (this._listeners[evt] || (this._listeners[evt] = [])).push({
-            fn  : fn,
-            ctx : ctx || this
-        });
-        return this;
-    };
-
-    /**
-     * Removes an event listener or any matching listeners if arguments are omitted.
-     * @param {string} [evt] Event name. Removes all listeners if omitted.
-     * @param {function} [fn] Listener to remove. Removes all listeners of `evt` if omitted.
-     * @returns {util.EventEmitter} `this`
-     */
-    EventEmitter.prototype.off = function off(evt, fn) {
-        if (evt === undefined)
-            this._listeners = {};
-        else {
-            if (fn === undefined)
-                this._listeners[evt] = [];
-            else {
-                var listeners = this._listeners[evt];
-                for (var i = 0; i < listeners.length;)
-                    if (listeners[i].fn === fn)
-                        listeners.splice(i, 1);
-                    else
-                        ++i;
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Emits an event by calling its listeners with the specified arguments.
-     * @param {string} evt Event name
-     * @param {...*} args Arguments
-     * @returns {util.EventEmitter} `this`
-     */
-    EventEmitter.prototype.emit = function emit(evt) {
-        var listeners = this._listeners[evt];
-        if (listeners) {
-            var args = [],
-                i = 1;
-            for (; i < arguments.length;)
-                args.push(arguments[i++]);
-            for (i = 0; i < listeners.length;)
-                listeners[i].fn.apply(listeners[i++].ctx, args);
-        }
-        return this;
-    };
-
-    var float_1 = factory(factory);
-
-    /**
-     * Reads / writes floats / doubles from / to buffers.
-     * @name util.float
-     * @namespace
-     */
-
-    /**
-     * Writes a 32 bit float to a buffer using little endian byte order.
-     * @name util.float.writeFloatLE
-     * @function
-     * @param {number} val Value to write
-     * @param {Uint8Array} buf Target buffer
-     * @param {number} pos Target buffer offset
-     * @returns {undefined}
-     */
-
-    /**
-     * Writes a 32 bit float to a buffer using big endian byte order.
-     * @name util.float.writeFloatBE
-     * @function
-     * @param {number} val Value to write
-     * @param {Uint8Array} buf Target buffer
-     * @param {number} pos Target buffer offset
-     * @returns {undefined}
-     */
-
-    /**
-     * Reads a 32 bit float from a buffer using little endian byte order.
-     * @name util.float.readFloatLE
-     * @function
-     * @param {Uint8Array} buf Source buffer
-     * @param {number} pos Source buffer offset
-     * @returns {number} Value read
-     */
-
-    /**
-     * Reads a 32 bit float from a buffer using big endian byte order.
-     * @name util.float.readFloatBE
-     * @function
-     * @param {Uint8Array} buf Source buffer
-     * @param {number} pos Source buffer offset
-     * @returns {number} Value read
-     */
-
-    /**
-     * Writes a 64 bit double to a buffer using little endian byte order.
-     * @name util.float.writeDoubleLE
-     * @function
-     * @param {number} val Value to write
-     * @param {Uint8Array} buf Target buffer
-     * @param {number} pos Target buffer offset
-     * @returns {undefined}
-     */
-
-    /**
-     * Writes a 64 bit double to a buffer using big endian byte order.
-     * @name util.float.writeDoubleBE
-     * @function
-     * @param {number} val Value to write
-     * @param {Uint8Array} buf Target buffer
-     * @param {number} pos Target buffer offset
-     * @returns {undefined}
-     */
-
-    /**
-     * Reads a 64 bit double from a buffer using little endian byte order.
-     * @name util.float.readDoubleLE
-     * @function
-     * @param {Uint8Array} buf Source buffer
-     * @param {number} pos Source buffer offset
-     * @returns {number} Value read
-     */
-
-    /**
-     * Reads a 64 bit double from a buffer using big endian byte order.
-     * @name util.float.readDoubleBE
-     * @function
-     * @param {Uint8Array} buf Source buffer
-     * @param {number} pos Source buffer offset
-     * @returns {number} Value read
-     */
-
-    // Factory function for the purpose of node-based testing in modified global environments
-    function factory(exports) {
-
-        // float: typed array
-        if (typeof Float32Array !== "undefined") (function() {
-
-            var f32 = new Float32Array([ -0 ]),
-                f8b = new Uint8Array(f32.buffer),
-                le  = f8b[3] === 128;
-
-            function writeFloat_f32_cpy(val, buf, pos) {
-                f32[0] = val;
-                buf[pos    ] = f8b[0];
-                buf[pos + 1] = f8b[1];
-                buf[pos + 2] = f8b[2];
-                buf[pos + 3] = f8b[3];
-            }
-
-            function writeFloat_f32_rev(val, buf, pos) {
-                f32[0] = val;
-                buf[pos    ] = f8b[3];
-                buf[pos + 1] = f8b[2];
-                buf[pos + 2] = f8b[1];
-                buf[pos + 3] = f8b[0];
-            }
-
-            /* istanbul ignore next */
-            exports.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
-            /* istanbul ignore next */
-            exports.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
-
-            function readFloat_f32_cpy(buf, pos) {
-                f8b[0] = buf[pos    ];
-                f8b[1] = buf[pos + 1];
-                f8b[2] = buf[pos + 2];
-                f8b[3] = buf[pos + 3];
-                return f32[0];
-            }
-
-            function readFloat_f32_rev(buf, pos) {
-                f8b[3] = buf[pos    ];
-                f8b[2] = buf[pos + 1];
-                f8b[1] = buf[pos + 2];
-                f8b[0] = buf[pos + 3];
-                return f32[0];
-            }
-
-            /* istanbul ignore next */
-            exports.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
-            /* istanbul ignore next */
-            exports.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
-
-        // float: ieee754
-        })(); else (function() {
-
-            function writeFloat_ieee754(writeUint, val, buf, pos) {
-                var sign = val < 0 ? 1 : 0;
-                if (sign)
-                    val = -val;
-                if (val === 0)
-                    writeUint(1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos);
-                else if (isNaN(val))
-                    writeUint(2143289344, buf, pos);
-                else if (val > 3.4028234663852886e+38) // +-Infinity
-                    writeUint((sign << 31 | 2139095040) >>> 0, buf, pos);
-                else if (val < 1.1754943508222875e-38) // denormal
-                    writeUint((sign << 31 | Math.round(val / 1.401298464324817e-45)) >>> 0, buf, pos);
-                else {
-                    var exponent = Math.floor(Math.log(val) / Math.LN2),
-                        mantissa = Math.round(val * Math.pow(2, -exponent) * 8388608) & 8388607;
-                    writeUint((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
-                }
-            }
-
-            exports.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
-            exports.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
-
-            function readFloat_ieee754(readUint, buf, pos) {
-                var uint = readUint(buf, pos),
-                    sign = (uint >> 31) * 2 + 1,
-                    exponent = uint >>> 23 & 255,
-                    mantissa = uint & 8388607;
-                return exponent === 255
-                    ? mantissa
-                    ? NaN
-                    : sign * Infinity
-                    : exponent === 0 // denormal
-                    ? sign * 1.401298464324817e-45 * mantissa
-                    : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
-            }
-
-            exports.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
-            exports.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
-
-        })();
-
-        // double: typed array
-        if (typeof Float64Array !== "undefined") (function() {
-
-            var f64 = new Float64Array([-0]),
-                f8b = new Uint8Array(f64.buffer),
-                le  = f8b[7] === 128;
-
-            function writeDouble_f64_cpy(val, buf, pos) {
-                f64[0] = val;
-                buf[pos    ] = f8b[0];
-                buf[pos + 1] = f8b[1];
-                buf[pos + 2] = f8b[2];
-                buf[pos + 3] = f8b[3];
-                buf[pos + 4] = f8b[4];
-                buf[pos + 5] = f8b[5];
-                buf[pos + 6] = f8b[6];
-                buf[pos + 7] = f8b[7];
-            }
-
-            function writeDouble_f64_rev(val, buf, pos) {
-                f64[0] = val;
-                buf[pos    ] = f8b[7];
-                buf[pos + 1] = f8b[6];
-                buf[pos + 2] = f8b[5];
-                buf[pos + 3] = f8b[4];
-                buf[pos + 4] = f8b[3];
-                buf[pos + 5] = f8b[2];
-                buf[pos + 6] = f8b[1];
-                buf[pos + 7] = f8b[0];
-            }
-
-            /* istanbul ignore next */
-            exports.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
-            /* istanbul ignore next */
-            exports.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
-
-            function readDouble_f64_cpy(buf, pos) {
-                f8b[0] = buf[pos    ];
-                f8b[1] = buf[pos + 1];
-                f8b[2] = buf[pos + 2];
-                f8b[3] = buf[pos + 3];
-                f8b[4] = buf[pos + 4];
-                f8b[5] = buf[pos + 5];
-                f8b[6] = buf[pos + 6];
-                f8b[7] = buf[pos + 7];
-                return f64[0];
-            }
-
-            function readDouble_f64_rev(buf, pos) {
-                f8b[7] = buf[pos    ];
-                f8b[6] = buf[pos + 1];
-                f8b[5] = buf[pos + 2];
-                f8b[4] = buf[pos + 3];
-                f8b[3] = buf[pos + 4];
-                f8b[2] = buf[pos + 5];
-                f8b[1] = buf[pos + 6];
-                f8b[0] = buf[pos + 7];
-                return f64[0];
-            }
-
-            /* istanbul ignore next */
-            exports.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
-            /* istanbul ignore next */
-            exports.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
-
-        // double: ieee754
-        })(); else (function() {
-
-            function writeDouble_ieee754(writeUint, off0, off1, val, buf, pos) {
-                var sign = val < 0 ? 1 : 0;
-                if (sign)
-                    val = -val;
-                if (val === 0) {
-                    writeUint(0, buf, pos + off0);
-                    writeUint(1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos + off1);
-                } else if (isNaN(val)) {
-                    writeUint(0, buf, pos + off0);
-                    writeUint(2146959360, buf, pos + off1);
-                } else if (val > 1.7976931348623157e+308) { // +-Infinity
-                    writeUint(0, buf, pos + off0);
-                    writeUint((sign << 31 | 2146435072) >>> 0, buf, pos + off1);
-                } else {
-                    var mantissa;
-                    if (val < 2.2250738585072014e-308) { // denormal
-                        mantissa = val / 5e-324;
-                        writeUint(mantissa >>> 0, buf, pos + off0);
-                        writeUint((sign << 31 | mantissa / 4294967296) >>> 0, buf, pos + off1);
-                    } else {
-                        var exponent = Math.floor(Math.log(val) / Math.LN2);
-                        if (exponent === 1024)
-                            exponent = 1023;
-                        mantissa = val * Math.pow(2, -exponent);
-                        writeUint(mantissa * 4503599627370496 >>> 0, buf, pos + off0);
-                        writeUint((sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0, buf, pos + off1);
-                    }
-                }
-            }
-
-            exports.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
-            exports.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
-
-            function readDouble_ieee754(readUint, off0, off1, buf, pos) {
-                var lo = readUint(buf, pos + off0),
-                    hi = readUint(buf, pos + off1);
-                var sign = (hi >> 31) * 2 + 1,
-                    exponent = hi >>> 20 & 2047,
-                    mantissa = 4294967296 * (hi & 1048575) + lo;
-                return exponent === 2047
-                    ? mantissa
-                    ? NaN
-                    : sign * Infinity
-                    : exponent === 0 // denormal
-                    ? sign * 5e-324 * mantissa
-                    : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
-            }
-
-            exports.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
-            exports.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
-
-        })();
-
-        return exports;
-    }
-
-    // uint helpers
-
-    function writeUintLE(val, buf, pos) {
-        buf[pos    ] =  val        & 255;
-        buf[pos + 1] =  val >>> 8  & 255;
-        buf[pos + 2] =  val >>> 16 & 255;
-        buf[pos + 3] =  val >>> 24;
-    }
-
-    function writeUintBE(val, buf, pos) {
-        buf[pos    ] =  val >>> 24;
-        buf[pos + 1] =  val >>> 16 & 255;
-        buf[pos + 2] =  val >>> 8  & 255;
-        buf[pos + 3] =  val        & 255;
-    }
-
-    function readUintLE(buf, pos) {
-        return (buf[pos    ]
-              | buf[pos + 1] << 8
-              | buf[pos + 2] << 16
-              | buf[pos + 3] << 24) >>> 0;
-    }
-
-    function readUintBE(buf, pos) {
-        return (buf[pos    ] << 24
-              | buf[pos + 1] << 16
-              | buf[pos + 2] << 8
-              | buf[pos + 3]) >>> 0;
-    }
-
-    var inquire_1 = inquire;
-
-    /**
-     * Requires a module only if available.
-     * @memberof util
-     * @param {string} moduleName Module to require
-     * @returns {?Object} Required module if available and not empty, otherwise `null`
-     */
-    function inquire(moduleName) {
-        try {
-            var mod = eval("quire".replace(/^/,"re"))(moduleName); // eslint-disable-line no-eval
-            if (mod && (mod.length || Object.keys(mod).length))
-                return mod;
-        } catch (e) {} // eslint-disable-line no-empty
-        return null;
-    }
-
-    var utf8_1 = createCommonjsModule(function (module, exports) {
-
-    /**
-     * A minimal UTF8 implementation for number arrays.
-     * @memberof util
-     * @namespace
-     */
-    var utf8 = exports;
-
-    /**
-     * Calculates the UTF8 byte length of a string.
-     * @param {string} string String
-     * @returns {number} Byte length
-     */
-    utf8.length = function utf8_length(string) {
-        var len = 0,
-            c = 0;
-        for (var i = 0; i < string.length; ++i) {
-            c = string.charCodeAt(i);
-            if (c < 128)
-                len += 1;
-            else if (c < 2048)
-                len += 2;
-            else if ((c & 0xFC00) === 0xD800 && (string.charCodeAt(i + 1) & 0xFC00) === 0xDC00) {
-                ++i;
-                len += 4;
-            } else
-                len += 3;
-        }
-        return len;
-    };
-
-    /**
-     * Reads UTF8 bytes as a string.
-     * @param {Uint8Array} buffer Source buffer
-     * @param {number} start Source start
-     * @param {number} end Source end
-     * @returns {string} String read
-     */
-    utf8.read = function utf8_read(buffer, start, end) {
-        var len = end - start;
-        if (len < 1)
-            return "";
-        var parts = null,
-            chunk = [],
-            i = 0, // char offset
-            t;     // temporary
-        while (start < end) {
-            t = buffer[start++];
-            if (t < 128)
-                chunk[i++] = t;
-            else if (t > 191 && t < 224)
-                chunk[i++] = (t & 31) << 6 | buffer[start++] & 63;
-            else if (t > 239 && t < 365) {
-                t = ((t & 7) << 18 | (buffer[start++] & 63) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63) - 0x10000;
-                chunk[i++] = 0xD800 + (t >> 10);
-                chunk[i++] = 0xDC00 + (t & 1023);
-            } else
-                chunk[i++] = (t & 15) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63;
-            if (i > 8191) {
-                (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
-                i = 0;
-            }
-        }
-        if (parts) {
-            if (i)
-                parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
-            return parts.join("");
-        }
-        return String.fromCharCode.apply(String, chunk.slice(0, i));
-    };
-
-    /**
-     * Writes a string as UTF8 bytes.
-     * @param {string} string Source string
-     * @param {Uint8Array} buffer Destination buffer
-     * @param {number} offset Destination offset
-     * @returns {number} Bytes written
-     */
-    utf8.write = function utf8_write(string, buffer, offset) {
-        var start = offset,
-            c1, // character 1
-            c2; // character 2
-        for (var i = 0; i < string.length; ++i) {
-            c1 = string.charCodeAt(i);
-            if (c1 < 128) {
-                buffer[offset++] = c1;
-            } else if (c1 < 2048) {
-                buffer[offset++] = c1 >> 6       | 192;
-                buffer[offset++] = c1       & 63 | 128;
-            } else if ((c1 & 0xFC00) === 0xD800 && ((c2 = string.charCodeAt(i + 1)) & 0xFC00) === 0xDC00) {
-                c1 = 0x10000 + ((c1 & 0x03FF) << 10) + (c2 & 0x03FF);
-                ++i;
-                buffer[offset++] = c1 >> 18      | 240;
-                buffer[offset++] = c1 >> 12 & 63 | 128;
-                buffer[offset++] = c1 >> 6  & 63 | 128;
-                buffer[offset++] = c1       & 63 | 128;
-            } else {
-                buffer[offset++] = c1 >> 12      | 224;
-                buffer[offset++] = c1 >> 6  & 63 | 128;
-                buffer[offset++] = c1       & 63 | 128;
-            }
-        }
-        return offset - start;
-    };
-    });
-
-    var pool_1 = pool;
-
-    /**
-     * An allocator as used by {@link util.pool}.
-     * @typedef PoolAllocator
-     * @type {function}
-     * @param {number} size Buffer size
-     * @returns {Uint8Array} Buffer
-     */
-
-    /**
-     * A slicer as used by {@link util.pool}.
-     * @typedef PoolSlicer
-     * @type {function}
-     * @param {number} start Start offset
-     * @param {number} end End offset
-     * @returns {Uint8Array} Buffer slice
-     * @this {Uint8Array}
-     */
-
-    /**
-     * A general purpose buffer pool.
-     * @memberof util
-     * @function
-     * @param {PoolAllocator} alloc Allocator
-     * @param {PoolSlicer} slice Slicer
-     * @param {number} [size=8192] Slab size
-     * @returns {PoolAllocator} Pooled allocator
-     */
-    function pool(alloc, slice, size) {
-        var SIZE   = size || 8192;
-        var MAX    = SIZE >>> 1;
-        var slab   = null;
-        var offset = SIZE;
-        return function pool_alloc(size) {
-            if (size < 1 || size > MAX)
-                return alloc(size);
-            if (offset + size > SIZE) {
-                slab = alloc(SIZE);
-                offset = 0;
-            }
-            var buf = slice.call(slab, offset, offset += size);
-            if (offset & 7) // align to 32 bit
-                offset = (offset | 7) + 1;
-            return buf;
-        };
-    }
-
-    var longbits = LongBits;
-
-
-
-    /**
-     * Constructs new long bits.
-     * @classdesc Helper class for working with the low and high bits of a 64 bit value.
-     * @memberof util
-     * @constructor
-     * @param {number} lo Low 32 bits, unsigned
-     * @param {number} hi High 32 bits, unsigned
-     */
-    function LongBits(lo, hi) {
-
-        // note that the casts below are theoretically unnecessary as of today, but older statically
-        // generated converter code might still call the ctor with signed 32bits. kept for compat.
-
-        /**
-         * Low bits.
-         * @type {number}
-         */
-        this.lo = lo >>> 0;
-
-        /**
-         * High bits.
-         * @type {number}
-         */
-        this.hi = hi >>> 0;
-    }
-
-    /**
-     * Zero bits.
-     * @memberof util.LongBits
-     * @type {util.LongBits}
-     */
-    var zero = LongBits.zero = new LongBits(0, 0);
-
-    zero.toNumber = function() { return 0; };
-    zero.zzEncode = zero.zzDecode = function() { return this; };
-    zero.length = function() { return 1; };
-
-    /**
-     * Zero hash.
-     * @memberof util.LongBits
-     * @type {string}
-     */
-    var zeroHash = LongBits.zeroHash = "\0\0\0\0\0\0\0\0";
-
-    /**
-     * Constructs new long bits from the specified number.
-     * @param {number} value Value
-     * @returns {util.LongBits} Instance
-     */
-    LongBits.fromNumber = function fromNumber(value) {
-        if (value === 0)
-            return zero;
-        var sign = value < 0;
-        if (sign)
-            value = -value;
-        var lo = value >>> 0,
-            hi = (value - lo) / 4294967296 >>> 0;
-        if (sign) {
-            hi = ~hi >>> 0;
-            lo = ~lo >>> 0;
-            if (++lo > 4294967295) {
-                lo = 0;
-                if (++hi > 4294967295)
-                    hi = 0;
-            }
-        }
-        return new LongBits(lo, hi);
-    };
-
-    /**
-     * Constructs new long bits from a number, long or string.
-     * @param {Long|number|string} value Value
-     * @returns {util.LongBits} Instance
-     */
-    LongBits.from = function from(value) {
-        if (typeof value === "number")
-            return LongBits.fromNumber(value);
-        if (minimal.isString(value)) {
-            /* istanbul ignore else */
-            if (minimal.Long)
-                value = minimal.Long.fromString(value);
-            else
-                return LongBits.fromNumber(parseInt(value, 10));
-        }
-        return value.low || value.high ? new LongBits(value.low >>> 0, value.high >>> 0) : zero;
-    };
-
-    /**
-     * Converts this long bits to a possibly unsafe JavaScript number.
-     * @param {boolean} [unsigned=false] Whether unsigned or not
-     * @returns {number} Possibly unsafe number
-     */
-    LongBits.prototype.toNumber = function toNumber(unsigned) {
-        if (!unsigned && this.hi >>> 31) {
-            var lo = ~this.lo + 1 >>> 0,
-                hi = ~this.hi     >>> 0;
-            if (!lo)
-                hi = hi + 1 >>> 0;
-            return -(lo + hi * 4294967296);
-        }
-        return this.lo + this.hi * 4294967296;
-    };
-
-    /**
-     * Converts this long bits to a long.
-     * @param {boolean} [unsigned=false] Whether unsigned or not
-     * @returns {Long} Long
-     */
-    LongBits.prototype.toLong = function toLong(unsigned) {
-        return minimal.Long
-            ? new minimal.Long(this.lo | 0, this.hi | 0, Boolean(unsigned))
-            /* istanbul ignore next */
-            : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
-    };
-
-    var charCodeAt = String.prototype.charCodeAt;
-
-    /**
-     * Constructs new long bits from the specified 8 characters long hash.
-     * @param {string} hash Hash
-     * @returns {util.LongBits} Bits
-     */
-    LongBits.fromHash = function fromHash(hash) {
-        if (hash === zeroHash)
-            return zero;
-        return new LongBits(
-            ( charCodeAt.call(hash, 0)
-            | charCodeAt.call(hash, 1) << 8
-            | charCodeAt.call(hash, 2) << 16
-            | charCodeAt.call(hash, 3) << 24) >>> 0
-        ,
-            ( charCodeAt.call(hash, 4)
-            | charCodeAt.call(hash, 5) << 8
-            | charCodeAt.call(hash, 6) << 16
-            | charCodeAt.call(hash, 7) << 24) >>> 0
-        );
-    };
-
-    /**
-     * Converts this long bits to a 8 characters long hash.
-     * @returns {string} Hash
-     */
-    LongBits.prototype.toHash = function toHash() {
-        return String.fromCharCode(
-            this.lo        & 255,
-            this.lo >>> 8  & 255,
-            this.lo >>> 16 & 255,
-            this.lo >>> 24      ,
-            this.hi        & 255,
-            this.hi >>> 8  & 255,
-            this.hi >>> 16 & 255,
-            this.hi >>> 24
-        );
-    };
-
-    /**
-     * Zig-zag encodes this long bits.
-     * @returns {util.LongBits} `this`
-     */
-    LongBits.prototype.zzEncode = function zzEncode() {
-        var mask =   this.hi >> 31;
-        this.hi  = ((this.hi << 1 | this.lo >>> 31) ^ mask) >>> 0;
-        this.lo  = ( this.lo << 1                   ^ mask) >>> 0;
-        return this;
-    };
-
-    /**
-     * Zig-zag decodes this long bits.
-     * @returns {util.LongBits} `this`
-     */
-    LongBits.prototype.zzDecode = function zzDecode() {
-        var mask = -(this.lo & 1);
-        this.lo  = ((this.lo >>> 1 | this.hi << 31) ^ mask) >>> 0;
-        this.hi  = ( this.hi >>> 1                  ^ mask) >>> 0;
-        return this;
-    };
-
-    /**
-     * Calculates the length of this longbits when encoded as a varint.
-     * @returns {number} Length
-     */
-    LongBits.prototype.length = function length() {
-        var part0 =  this.lo,
-            part1 = (this.lo >>> 28 | this.hi << 4) >>> 0,
-            part2 =  this.hi >>> 24;
-        return part2 === 0
-             ? part1 === 0
-               ? part0 < 16384
-                 ? part0 < 128 ? 1 : 2
-                 : part0 < 2097152 ? 3 : 4
-               : part1 < 16384
-                 ? part1 < 128 ? 5 : 6
-                 : part1 < 2097152 ? 7 : 8
-             : part2 < 128 ? 9 : 10;
-    };
-
-    var minimal = createCommonjsModule(function (module, exports) {
-    var util$$1 = exports;
-
-    // used to return a Promise where callback is omitted
-    util$$1.asPromise = aspromise;
-
-    // converts to / from base64 encoded strings
-    util$$1.base64 = base64_1;
-
-    // base class of rpc.Service
-    util$$1.EventEmitter = eventemitter;
-
-    // float handling accross browsers
-    util$$1.float = float_1;
-
-    // requires modules optionally and hides the call from bundlers
-    util$$1.inquire = inquire_1;
-
-    // converts to / from utf8 encoded strings
-    util$$1.utf8 = utf8_1;
-
-    // provides a node-like buffer pool in the browser
-    util$$1.pool = pool_1;
-
-    // utility to work with the low and high bits of a 64 bit value
-    util$$1.LongBits = longbits;
-
-    // global object reference
-    util$$1.global = typeof window !== "undefined" && window
-               || typeof commonjsGlobal !== "undefined" && commonjsGlobal
-               || typeof self   !== "undefined" && self
-               || commonjsGlobal; // eslint-disable-line no-invalid-this
-
-    /**
-     * An immuable empty array.
-     * @memberof util
-     * @type {Array.<*>}
-     * @const
-     */
-    util$$1.emptyArray = Object.freeze ? Object.freeze([]) : /* istanbul ignore next */ []; // used on prototypes
-
-    /**
-     * An immutable empty object.
-     * @type {Object}
-     * @const
-     */
-    util$$1.emptyObject = Object.freeze ? Object.freeze({}) : /* istanbul ignore next */ {}; // used on prototypes
-
-    /**
-     * Whether running within node or not.
-     * @memberof util
-     * @type {boolean}
-     * @const
-     */
-    util$$1.isNode = Boolean(util$$1.global.process && util$$1.global.process.versions && util$$1.global.process.versions.node);
-
-    /**
-     * Tests if the specified value is an integer.
-     * @function
-     * @param {*} value Value to test
-     * @returns {boolean} `true` if the value is an integer
-     */
-    util$$1.isInteger = Number.isInteger || /* istanbul ignore next */ function isInteger(value) {
-        return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
-    };
-
-    /**
-     * Tests if the specified value is a string.
-     * @param {*} value Value to test
-     * @returns {boolean} `true` if the value is a string
-     */
-    util$$1.isString = function isString(value) {
-        return typeof value === "string" || value instanceof String;
-    };
-
-    /**
-     * Tests if the specified value is a non-null object.
-     * @param {*} value Value to test
-     * @returns {boolean} `true` if the value is a non-null object
-     */
-    util$$1.isObject = function isObject(value) {
-        return value && typeof value === "object";
-    };
-
-    /**
-     * Checks if a property on a message is considered to be present.
-     * This is an alias of {@link util.isSet}.
-     * @function
-     * @param {Object} obj Plain object or message instance
-     * @param {string} prop Property name
-     * @returns {boolean} `true` if considered to be present, otherwise `false`
-     */
-    util$$1.isset =
-
-    /**
-     * Checks if a property on a message is considered to be present.
-     * @param {Object} obj Plain object or message instance
-     * @param {string} prop Property name
-     * @returns {boolean} `true` if considered to be present, otherwise `false`
-     */
-    util$$1.isSet = function isSet(obj, prop) {
-        var value = obj[prop];
-        if (value != null && obj.hasOwnProperty(prop)) // eslint-disable-line eqeqeq, no-prototype-builtins
-            return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
-        return false;
-    };
-
-    /**
-     * Any compatible Buffer instance.
-     * This is a minimal stand-alone definition of a Buffer instance. The actual type is that exported by node's typings.
-     * @interface Buffer
-     * @extends Uint8Array
-     */
-
-    /**
-     * Node's Buffer class if available.
-     * @type {Constructor<Buffer>}
-     */
-    util$$1.Buffer = (function() {
-        try {
-            var Buffer = util$$1.inquire("buffer").Buffer;
-            // refuse to use non-node buffers if not explicitly assigned (perf reasons):
-            return Buffer.prototype.utf8Write ? Buffer : /* istanbul ignore next */ null;
-        } catch (e) {
-            /* istanbul ignore next */
-            return null;
-        }
-    })();
-
-    // Internal alias of or polyfull for Buffer.from.
-    util$$1._Buffer_from = null;
-
-    // Internal alias of or polyfill for Buffer.allocUnsafe.
-    util$$1._Buffer_allocUnsafe = null;
-
-    /**
-     * Creates a new buffer of whatever type supported by the environment.
-     * @param {number|number[]} [sizeOrArray=0] Buffer size or number array
-     * @returns {Uint8Array|Buffer} Buffer
-     */
-    util$$1.newBuffer = function newBuffer(sizeOrArray) {
-        /* istanbul ignore next */
-        return typeof sizeOrArray === "number"
-            ? util$$1.Buffer
-                ? util$$1._Buffer_allocUnsafe(sizeOrArray)
-                : new util$$1.Array(sizeOrArray)
-            : util$$1.Buffer
-                ? util$$1._Buffer_from(sizeOrArray)
-                : typeof Uint8Array === "undefined"
-                    ? sizeOrArray
-                    : new Uint8Array(sizeOrArray);
-    };
-
-    /**
-     * Array implementation used in the browser. `Uint8Array` if supported, otherwise `Array`.
-     * @type {Constructor<Uint8Array>}
-     */
-    util$$1.Array = typeof Uint8Array !== "undefined" ? Uint8Array /* istanbul ignore next */ : Array;
-
-    /**
-     * Any compatible Long instance.
-     * This is a minimal stand-alone definition of a Long instance. The actual type is that exported by long.js.
-     * @interface Long
-     * @property {number} low Low bits
-     * @property {number} high High bits
-     * @property {boolean} unsigned Whether unsigned or not
-     */
-
-    /**
-     * Long.js's Long class if available.
-     * @type {Constructor<Long>}
-     */
-    util$$1.Long = /* istanbul ignore next */ util$$1.global.dcodeIO && /* istanbul ignore next */ util$$1.global.dcodeIO.Long
-             || /* istanbul ignore next */ util$$1.global.Long
-             //|| util$1.inquire("long");
-
-    /**
-     * Regular expression used to verify 2 bit (`bool`) map keys.
-     * @type {RegExp}
-     * @const
-     */
-    util$$1.key2Re = /^true|false|0|1$/;
-
-    /**
-     * Regular expression used to verify 32 bit (`int32` etc.) map keys.
-     * @type {RegExp}
-     * @const
-     */
-    util$$1.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
-
-    /**
-     * Regular expression used to verify 64 bit (`int64` etc.) map keys.
-     * @type {RegExp}
-     * @const
-     */
-    util$$1.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
-
-    /**
-     * Converts a number or long to an 8 characters long hash string.
-     * @param {Long|number} value Value to convert
-     * @returns {string} Hash
-     */
-    util$$1.longToHash = function longToHash(value) {
-        return value
-            ? util$$1.LongBits.from(value).toHash()
-            : util$$1.LongBits.zeroHash;
-    };
-
-    /**
-     * Converts an 8 characters long hash string to a long or number.
-     * @param {string} hash Hash
-     * @param {boolean} [unsigned=false] Whether unsigned or not
-     * @returns {Long|number} Original value
-     */
-    util$$1.longFromHash = function longFromHash(hash, unsigned) {
-        var bits = util$$1.LongBits.fromHash(hash);
-        if (util$$1.Long)
-            return util$$1.Long.fromBits(bits.lo, bits.hi, unsigned);
-        return bits.toNumber(Boolean(unsigned));
-    };
-
-    /**
-     * Merges the properties of the source object into the destination object.
-     * @memberof util
-     * @param {Object.<string,*>} dst Destination object
-     * @param {Object.<string,*>} src Source object
-     * @param {boolean} [ifNotSet=false] Merges only if the key is not already set
-     * @returns {Object.<string,*>} Destination object
-     */
-    function merge(dst, src, ifNotSet) { // used by converters
-        for (var keys = Object.keys(src), i = 0; i < keys.length; ++i)
-            if (dst[keys[i]] === undefined || !ifNotSet)
-                dst[keys[i]] = src[keys[i]];
-        return dst;
-    }
-
-    util$$1.merge = merge;
-
-    /**
-     * Converts the first character of a string to lower case.
-     * @param {string} str String to convert
-     * @returns {string} Converted string
-     */
-    util$$1.lcFirst = function lcFirst(str) {
-        return str.charAt(0).toLowerCase() + str.substring(1);
-    };
-
-    /**
-     * Creates a custom error constructor.
-     * @memberof util
-     * @param {string} name Error name
-     * @returns {Constructor<Error>} Custom error constructor
-     */
-    function newError(name) {
-
-        function CustomError(message, properties) {
-
-            if (!(this instanceof CustomError))
-                return new CustomError(message, properties);
-
-            // Error.call(this, message);
-            // ^ just returns a new error instance because the ctor can be called as a function
-
-            Object.defineProperty(this, "message", { get: function() { return message; } });
-
-            /* istanbul ignore next */
-            if (Error.captureStackTrace) // node
-                Error.captureStackTrace(this, CustomError);
-            else
-                Object.defineProperty(this, "stack", { value: (new Error()).stack || "" });
-
-            if (properties)
-                merge(this, properties);
-        }
-
-        (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
-
-        Object.defineProperty(CustomError.prototype, "name", { get: function() { return name; } });
-
-        CustomError.prototype.toString = function toString() {
-            return this.name + ": " + this.message;
-        };
-
-        return CustomError;
-    }
-
-    util$$1.newError = newError;
-
-    /**
-     * Constructs a new protocol error.
-     * @classdesc Error subclass indicating a protocol specifc error.
-     * @memberof util
-     * @extends Error
-     * @template T extends Message<T>
-     * @constructor
-     * @param {string} message Error message
-     * @param {Object.<string,*>} [properties] Additional properties
-     * @example
-     * try {
-     *     MyMessage.decode(someBuffer); // throws if required fields are missing
-     * } catch (e) {
-     *     if (e instanceof ProtocolError && e.instance)
-     *         console.log("decoded so far: " + JSON.stringify(e.instance));
-     * }
-     */
-    util$$1.ProtocolError = newError("ProtocolError");
-
-    /**
-     * So far decoded message instance.
-     * @name util.ProtocolError#instance
-     * @type {Message<T>}
-     */
-
-    /**
-     * A OneOf getter as returned by {@link util.oneOfGetter}.
-     * @typedef OneOfGetter
-     * @type {function}
-     * @returns {string|undefined} Set field name, if any
-     */
-
-    /**
-     * Builds a getter for a oneof's present field name.
-     * @param {string[]} fieldNames Field names
-     * @returns {OneOfGetter} Unbound getter
-     */
-    util$$1.oneOfGetter = function getOneOf(fieldNames) {
-        var fieldMap = {};
-        for (var i = 0; i < fieldNames.length; ++i)
-            fieldMap[fieldNames[i]] = 1;
-
-        /**
-         * @returns {string|undefined} Set field name, if any
-         * @this Object
-         * @ignore
-         */
-        return function() { // eslint-disable-line consistent-return
-            for (var keys = Object.keys(this), i = keys.length - 1; i > -1; --i)
-                if (fieldMap[keys[i]] === 1 && this[keys[i]] !== undefined && this[keys[i]] !== null)
-                    return keys[i];
-        };
-    };
-
-    /**
-     * A OneOf setter as returned by {@link util.oneOfSetter}.
-     * @typedef OneOfSetter
-     * @type {function}
-     * @param {string|undefined} value Field name
-     * @returns {undefined}
-     */
-
-    /**
-     * Builds a setter for a oneof's present field name.
-     * @param {string[]} fieldNames Field names
-     * @returns {OneOfSetter} Unbound setter
-     */
-    util$$1.oneOfSetter = function setOneOf(fieldNames) {
-
-        /**
-         * @param {string} name Field name
-         * @returns {undefined}
-         * @this Object
-         * @ignore
-         */
-        return function(name) {
-            for (var i = 0; i < fieldNames.length; ++i)
-                if (fieldNames[i] !== name)
-                    delete this[fieldNames[i]];
-        };
-    };
-
-    /**
-     * Default conversion options used for {@link Message#toJSON} implementations.
-     *
-     * These options are close to proto3's JSON mapping with the exception that internal types like Any are handled just like messages. More precisely:
-     *
-     * - Longs become strings
-     * - Enums become string keys
-     * - Bytes become base64 encoded strings
-     * - (Sub-)Messages become plain objects
-     * - Maps become plain objects with all string keys
-     * - Repeated fields become arrays
-     * - NaN and Infinity for float and double fields become strings
-     *
-     * @type {IConversionOptions}
-     * @see https://developers.google.com/protocol-buffers/docs/proto3?hl=en#json
-     */
-    util$$1.toJSONOptions = {
-        longs: String,
-        enums: String,
-        bytes: String,
-        json: true
-    };
-
-    // Sets up buffer utility according to the environment (called in index-minimal)
-    util$$1._configure = function() {
-        var Buffer = util$$1.Buffer;
-        /* istanbul ignore if */
-        if (!Buffer) {
-            util$$1._Buffer_from = util$$1._Buffer_allocUnsafe = null;
-            return;
-        }
-        // because node 4.x buffers are incompatible & immutable
-        // see: https://github.com/dcodeIO/protobuf.js/pull/665
-        util$$1._Buffer_from = Buffer.from !== Uint8Array.from && Buffer.from ||
-            /* istanbul ignore next */
-            function Buffer_from(value, encoding) {
-                return new Buffer(value, encoding);
-            };
-        util$$1._Buffer_allocUnsafe = Buffer.allocUnsafe ||
-            /* istanbul ignore next */
-            function Buffer_allocUnsafe(size) {
-                return new Buffer(size);
-            };
-    };
-    });
-
-    var writer = Writer;
-
-
-
-    var BufferWriter; // cyclic
-
-    var LongBits$1  = minimal.LongBits,
-        base64    = minimal.base64,
-        utf8      = minimal.utf8;
-
-    /**
-     * Constructs a new writer operation instance.
-     * @classdesc Scheduled writer operation.
-     * @constructor
-     * @param {function(*, Uint8Array, number)} fn Function to call
-     * @param {number} len Value byte length
-     * @param {*} val Value to write
-     * @ignore
-     */
-    function Op(fn, len, val) {
-
-        /**
-         * Function to call.
-         * @type {function(Uint8Array, number, *)}
-         */
-        this.fn = fn;
-
-        /**
-         * Value byte length.
-         * @type {number}
-         */
-        this.len = len;
-
-        /**
-         * Next operation.
-         * @type {Writer.Op|undefined}
-         */
-        this.next = undefined;
-
-        /**
-         * Value to write.
-         * @type {*}
-         */
-        this.val = val; // type varies
-    }
-
-    /* istanbul ignore next */
-    function noop() {} // eslint-disable-line no-empty-function
-
-    /**
-     * Constructs a new writer state instance.
-     * @classdesc Copied writer state.
-     * @memberof Writer
-     * @constructor
-     * @param {Writer} writer Writer to copy state from
-     * @ignore
-     */
-    function State(writer) {
-
-        /**
-         * Current head.
-         * @type {Writer.Op}
-         */
-        this.head = writer.head;
-
-        /**
-         * Current tail.
-         * @type {Writer.Op}
-         */
-        this.tail = writer.tail;
-
-        /**
-         * Current buffer length.
-         * @type {number}
-         */
-        this.len = writer.len;
-
-        /**
-         * Next state.
-         * @type {State|null}
-         */
-        this.next = writer.states;
-    }
-
-    /**
-     * Constructs a new writer instance.
-     * @classdesc Wire format writer using `Uint8Array` if available, otherwise `Array`.
-     * @constructor
-     */
-    function Writer() {
-
-        /**
-         * Current length.
-         * @type {number}
-         */
-        this.len = 0;
-
-        /**
-         * Operations head.
-         * @type {Object}
-         */
-        this.head = new Op(noop, 0, 0);
-
-        /**
-         * Operations tail
-         * @type {Object}
-         */
-        this.tail = this.head;
-
-        /**
-         * Linked forked states.
-         * @type {Object|null}
-         */
-        this.states = null;
-
-        // When a value is written, the writer calculates its byte length and puts it into a linked
-        // list of operations to perform when finish() is called. This both allows us to allocate
-        // buffers of the exact required size and reduces the amount of work we have to do compared
-        // to first calculating over objects and then encoding over objects. In our case, the encoding
-        // part is just a linked list walk calling operations with already prepared values.
-    }
-
-    /**
-     * Creates a new writer.
-     * @function
-     * @returns {BufferWriter|Writer} A {@link BufferWriter} when Buffers are supported, otherwise a {@link Writer}
-     */
-    Writer.create = minimal.Buffer
-        ? function create_buffer_setup() {
-            return (Writer.create = function create_buffer() {
-                return new BufferWriter();
-            })();
-        }
-        /* istanbul ignore next */
-        : function create_array() {
-            return new Writer();
-        };
-
-    /**
-     * Allocates a buffer of the specified size.
-     * @param {number} size Buffer size
-     * @returns {Uint8Array} Buffer
-     */
-    Writer.alloc = function alloc(size) {
-        return new minimal.Array(size);
-    };
-
-    // Use Uint8Array buffer pool in the browser, just like node does with buffers
-    /* istanbul ignore else */
-    if (minimal.Array !== Array)
-        Writer.alloc = minimal.pool(Writer.alloc, minimal.Array.prototype.subarray);
-
-    /**
-     * Pushes a new operation to the queue.
-     * @param {function(Uint8Array, number, *)} fn Function to call
-     * @param {number} len Value byte length
-     * @param {number} val Value to write
-     * @returns {Writer} `this`
-     * @private
-     */
-    Writer.prototype._push = function push(fn, len, val) {
-        this.tail = this.tail.next = new Op(fn, len, val);
-        this.len += len;
-        return this;
-    };
-
-    function writeByte(val, buf, pos) {
-        buf[pos] = val & 255;
-    }
-
-    function writeVarint32(val, buf, pos) {
-        while (val > 127) {
-            buf[pos++] = val & 127 | 128;
-            val >>>= 7;
-        }
-        buf[pos] = val;
-    }
-
-    /**
-     * Constructs a new varint writer operation instance.
-     * @classdesc Scheduled varint writer operation.
-     * @extends Op
-     * @constructor
-     * @param {number} len Value byte length
-     * @param {number} val Value to write
-     * @ignore
-     */
-    function VarintOp(len, val) {
-        this.len = len;
-        this.next = undefined;
-        this.val = val;
-    }
-
-    VarintOp.prototype = Object.create(Op.prototype);
-    VarintOp.prototype.fn = writeVarint32;
-
-    /**
-     * Writes an unsigned 32 bit value as a varint.
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.uint32 = function write_uint32(value) {
-        // here, the call to this.push has been inlined and a varint specific Op subclass is used.
-        // uint32 is by far the most frequently used operation and benefits significantly from this.
-        this.len += (this.tail = this.tail.next = new VarintOp(
-            (value = value >>> 0)
-                    < 128       ? 1
-            : value < 16384     ? 2
-            : value < 2097152   ? 3
-            : value < 268435456 ? 4
-            :                     5,
-        value)).len;
-        return this;
-    };
-
-    /**
-     * Writes a signed 32 bit value as a varint.
-     * @function
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.int32 = function write_int32(value) {
-        return value < 0
-            ? this._push(writeVarint64, 10, LongBits$1.fromNumber(value)) // 10 bytes per spec
-            : this.uint32(value);
-    };
-
-    /**
-     * Writes a 32 bit value as a varint, zig-zag encoded.
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.sint32 = function write_sint32(value) {
-        return this.uint32((value << 1 ^ value >> 31) >>> 0);
-    };
-
-    function writeVarint64(val, buf, pos) {
-        while (val.hi) {
-            buf[pos++] = val.lo & 127 | 128;
-            val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
-            val.hi >>>= 7;
-        }
-        while (val.lo > 127) {
-            buf[pos++] = val.lo & 127 | 128;
-            val.lo = val.lo >>> 7;
-        }
-        buf[pos++] = val.lo;
-    }
-
-    /**
-     * Writes an unsigned 64 bit value as a varint.
-     * @param {Long|number|string} value Value to write
-     * @returns {Writer} `this`
-     * @throws {TypeError} If `value` is a string and no long library is present.
-     */
-    Writer.prototype.uint64 = function write_uint64(value) {
-        var bits = LongBits$1.from(value);
-        return this._push(writeVarint64, bits.length(), bits);
-    };
-
-    /**
-     * Writes a signed 64 bit value as a varint.
-     * @function
-     * @param {Long|number|string} value Value to write
-     * @returns {Writer} `this`
-     * @throws {TypeError} If `value` is a string and no long library is present.
-     */
-    Writer.prototype.int64 = Writer.prototype.uint64;
-
-    /**
-     * Writes a signed 64 bit value as a varint, zig-zag encoded.
-     * @param {Long|number|string} value Value to write
-     * @returns {Writer} `this`
-     * @throws {TypeError} If `value` is a string and no long library is present.
-     */
-    Writer.prototype.sint64 = function write_sint64(value) {
-        var bits = LongBits$1.from(value).zzEncode();
-        return this._push(writeVarint64, bits.length(), bits);
-    };
-
-    /**
-     * Writes a boolish value as a varint.
-     * @param {boolean} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.bool = function write_bool(value) {
-        return this._push(writeByte, 1, value ? 1 : 0);
-    };
-
-    function writeFixed32(val, buf, pos) {
-        buf[pos    ] =  val         & 255;
-        buf[pos + 1] =  val >>> 8   & 255;
-        buf[pos + 2] =  val >>> 16  & 255;
-        buf[pos + 3] =  val >>> 24;
-    }
-
-    /**
-     * Writes an unsigned 32 bit value as fixed 32 bits.
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.fixed32 = function write_fixed32(value) {
-        return this._push(writeFixed32, 4, value >>> 0);
-    };
-
-    /**
-     * Writes a signed 32 bit value as fixed 32 bits.
-     * @function
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.sfixed32 = Writer.prototype.fixed32;
-
-    /**
-     * Writes an unsigned 64 bit value as fixed 64 bits.
-     * @param {Long|number|string} value Value to write
-     * @returns {Writer} `this`
-     * @throws {TypeError} If `value` is a string and no long library is present.
-     */
-    Writer.prototype.fixed64 = function write_fixed64(value) {
-        var bits = LongBits$1.from(value);
-        return this._push(writeFixed32, 4, bits.lo)._push(writeFixed32, 4, bits.hi);
-    };
-
-    /**
-     * Writes a signed 64 bit value as fixed 64 bits.
-     * @function
-     * @param {Long|number|string} value Value to write
-     * @returns {Writer} `this`
-     * @throws {TypeError} If `value` is a string and no long library is present.
-     */
-    Writer.prototype.sfixed64 = Writer.prototype.fixed64;
-
-    /**
-     * Writes a float (32 bit).
-     * @function
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.float = function write_float(value) {
-        return this._push(minimal.float.writeFloatLE, 4, value);
-    };
-
-    /**
-     * Writes a double (64 bit float).
-     * @function
-     * @param {number} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.double = function write_double(value) {
-        return this._push(minimal.float.writeDoubleLE, 8, value);
-    };
-
-    var writeBytes = minimal.Array.prototype.set
-        ? function writeBytes_set(val, buf, pos) {
-            buf.set(val, pos); // also works for plain array values
-        }
-        /* istanbul ignore next */
-        : function writeBytes_for(val, buf, pos) {
-            for (var i = 0; i < val.length; ++i)
-                buf[pos + i] = val[i];
-        };
-
-    /**
-     * Writes a sequence of bytes.
-     * @param {Uint8Array|string} value Buffer or base64 encoded string to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.bytes = function write_bytes(value) {
-        var len = value.length >>> 0;
-        if (!len)
-            return this._push(writeByte, 1, 0);
-        if (minimal.isString(value)) {
-            var buf = Writer.alloc(len = base64.length(value));
-            base64.decode(value, buf, 0);
-            value = buf;
-        }
-        return this.uint32(len)._push(writeBytes, len, value);
-    };
-
-    /**
-     * Writes a string.
-     * @param {string} value Value to write
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.string = function write_string(value) {
-        var len = utf8.length(value);
-        return len
-            ? this.uint32(len)._push(utf8.write, len, value)
-            : this._push(writeByte, 1, 0);
-    };
-
-    /**
-     * Forks this writer's state by pushing it to a stack.
-     * Calling {@link Writer#reset|reset} or {@link Writer#ldelim|ldelim} resets the writer to the previous state.
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.fork = function fork() {
-        this.states = new State(this);
-        this.head = this.tail = new Op(noop, 0, 0);
-        this.len = 0;
-        return this;
-    };
-
-    /**
-     * Resets this instance to the last state.
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.reset = function reset() {
-        if (this.states) {
-            this.head   = this.states.head;
-            this.tail   = this.states.tail;
-            this.len    = this.states.len;
-            this.states = this.states.next;
-        } else {
-            this.head = this.tail = new Op(noop, 0, 0);
-            this.len  = 0;
-        }
-        return this;
-    };
-
-    /**
-     * Resets to the last state and appends the fork state's current write length as a varint followed by its operations.
-     * @returns {Writer} `this`
-     */
-    Writer.prototype.ldelim = function ldelim() {
-        var head = this.head,
-            tail = this.tail,
-            len  = this.len;
-        this.reset().uint32(len);
-        if (len) {
-            this.tail.next = head.next; // skip noop
-            this.tail = tail;
-            this.len += len;
-        }
-        return this;
-    };
-
-    /**
-     * Finishes the write operation.
-     * @returns {Uint8Array} Finished buffer
-     */
-    Writer.prototype.finish = function finish() {
-        var head = this.head.next, // skip noop
-            buf  = this.constructor.alloc(this.len),
-            pos  = 0;
-        while (head) {
-            head.fn(head.val, buf, pos);
-            pos += head.len;
-            head = head.next;
-        }
-        // this.head = this.tail = null;
-        return buf;
-    };
-
-    Writer._configure = function(BufferWriter_) {
-        BufferWriter = BufferWriter_;
-    };
-
-    var writer_buffer = BufferWriter$1;
-
-    // extends Writer
-
-    (BufferWriter$1.prototype = Object.create(writer.prototype)).constructor = BufferWriter$1;
-
-
-
-    var Buffer$1 = minimal.Buffer;
-
-    /**
-     * Constructs a new buffer writer instance.
-     * @classdesc Wire format writer using node buffers.
-     * @extends Writer
-     * @constructor
-     */
-    function BufferWriter$1() {
-        writer.call(this);
-    }
-
-    /**
-     * Allocates a buffer of the specified size.
-     * @param {number} size Buffer size
-     * @returns {Buffer} Buffer
-     */
-    BufferWriter$1.alloc = function alloc_buffer(size) {
-        return (BufferWriter$1.alloc = minimal._Buffer_allocUnsafe)(size);
-    };
-
-    var writeBytesBuffer = Buffer$1 && Buffer$1.prototype instanceof Uint8Array && Buffer$1.prototype.set.name === "set"
-        ? function writeBytesBuffer_set(val, buf, pos) {
-            buf.set(val, pos); // faster than copy (requires node >= 4 where Buffers extend Uint8Array and set is properly inherited)
-                               // also works for plain array values
-        }
-        /* istanbul ignore next */
-        : function writeBytesBuffer_copy(val, buf, pos) {
-            if (val.copy) // Buffer values
-                val.copy(buf, pos, 0, val.length);
-            else for (var i = 0; i < val.length;) // plain array values
-                buf[pos++] = val[i++];
-        };
-
-    /**
-     * @override
-     */
-    BufferWriter$1.prototype.bytes = function write_bytes_buffer(value) {
-        if (minimal.isString(value))
-            value = minimal._Buffer_from(value, "base64");
-        var len = value.length >>> 0;
-        this.uint32(len);
-        if (len)
-            this._push(writeBytesBuffer, len, value);
-        return this;
-    };
-
-    function writeStringBuffer(val, buf, pos) {
-        if (val.length < 40) // plain js is faster for short strings (probably due to redundant assertions)
-            minimal.utf8.write(val, buf, pos);
-        else
-            buf.utf8Write(val, pos);
-    }
-
-    /**
-     * @override
-     */
-    BufferWriter$1.prototype.string = function write_string_buffer(value) {
-        var len = Buffer$1.byteLength(value);
-        this.uint32(len);
-        if (len)
-            this._push(writeStringBuffer, len, value);
-        return this;
-    };
-
-    var reader = Reader;
-
-
-
-    var BufferReader; // cyclic
-
-    var LongBits$2  = minimal.LongBits,
-        utf8$1      = minimal.utf8;
-
-    /* istanbul ignore next */
-    function indexOutOfRange(reader, writeLength) {
-        return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
-    }
-
-    /**
-     * Constructs a new reader instance using the specified buffer.
-     * @classdesc Wire format reader using `Uint8Array` if available, otherwise `Array`.
-     * @constructor
-     * @param {Uint8Array} buffer Buffer to read from
-     */
-    function Reader(buffer) {
-
-        /**
-         * Read buffer.
-         * @type {Uint8Array}
-         */
-        this.buf = buffer;
-
-        /**
-         * Read buffer position.
-         * @type {number}
-         */
-        this.pos = 0;
-
-        /**
-         * Read buffer length.
-         * @type {number}
-         */
-        this.len = buffer.length;
-    }
-
-    var create_array = typeof Uint8Array !== "undefined"
-        ? function create_typed_array(buffer) {
-            if (buffer instanceof Uint8Array || Array.isArray(buffer))
-                return new Reader(buffer);
-            throw Error("illegal buffer");
-        }
-        /* istanbul ignore next */
-        : function create_array(buffer) {
-            if (Array.isArray(buffer))
-                return new Reader(buffer);
-            throw Error("illegal buffer");
-        };
-
-    /**
-     * Creates a new reader using the specified buffer.
-     * @function
-     * @param {Uint8Array|Buffer} buffer Buffer to read from
-     * @returns {Reader|BufferReader} A {@link BufferReader} if `buffer` is a Buffer, otherwise a {@link Reader}
-     * @throws {Error} If `buffer` is not a valid buffer
-     */
-    Reader.create = minimal.Buffer
-        ? function create_buffer_setup(buffer) {
-            return (Reader.create = function create_buffer(buffer) {
-                return minimal.Buffer.isBuffer(buffer)
-                    ? new BufferReader(buffer)
-                    /* istanbul ignore next */
-                    : create_array(buffer);
-            })(buffer);
-        }
-        /* istanbul ignore next */
-        : create_array;
-
-    Reader.prototype._slice = minimal.Array.prototype.subarray || /* istanbul ignore next */ minimal.Array.prototype.slice;
-
-    /**
-     * Reads a varint as an unsigned 32 bit value.
-     * @function
-     * @returns {number} Value read
-     */
-    Reader.prototype.uint32 = (function read_uint32_setup() {
-        var value = 4294967295; // optimizer type-hint, tends to deopt otherwise (?!)
-        return function read_uint32() {
-            value = (         this.buf[this.pos] & 127       ) >>> 0; if (this.buf[this.pos++] < 128) return value;
-            value = (value | (this.buf[this.pos] & 127) <<  7) >>> 0; if (this.buf[this.pos++] < 128) return value;
-            value = (value | (this.buf[this.pos] & 127) << 14) >>> 0; if (this.buf[this.pos++] < 128) return value;
-            value = (value | (this.buf[this.pos] & 127) << 21) >>> 0; if (this.buf[this.pos++] < 128) return value;
-            value = (value | (this.buf[this.pos] &  15) << 28) >>> 0; if (this.buf[this.pos++] < 128) return value;
-
-            /* istanbul ignore if */
-            if ((this.pos += 5) > this.len) {
-                this.pos = this.len;
-                throw indexOutOfRange(this, 10);
-            }
-            return value;
-        };
-    })();
-
-    /**
-     * Reads a varint as a signed 32 bit value.
-     * @returns {number} Value read
-     */
-    Reader.prototype.int32 = function read_int32() {
-        return this.uint32() | 0;
-    };
-
-    /**
-     * Reads a zig-zag encoded varint as a signed 32 bit value.
-     * @returns {number} Value read
-     */
-    Reader.prototype.sint32 = function read_sint32() {
-        var value = this.uint32();
-        return value >>> 1 ^ -(value & 1) | 0;
-    };
-
-    /* eslint-disable no-invalid-this */
-
-    function readLongVarint() {
-        // tends to deopt with local vars for octet etc.
-        var bits = new LongBits$2(0, 0);
-        var i = 0;
-        if (this.len - this.pos > 4) { // fast route (lo)
-            for (; i < 4; ++i) {
-                // 1st..4th
-                bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
-                if (this.buf[this.pos++] < 128)
-                    return bits;
-            }
-            // 5th
-            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << 28) >>> 0;
-            bits.hi = (bits.hi | (this.buf[this.pos] & 127) >>  4) >>> 0;
-            if (this.buf[this.pos++] < 128)
-                return bits;
-            i = 0;
-        } else {
-            for (; i < 3; ++i) {
-                /* istanbul ignore if */
-                if (this.pos >= this.len)
-                    throw indexOutOfRange(this);
-                // 1st..3th
-                bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
-                if (this.buf[this.pos++] < 128)
-                    return bits;
-            }
-            // 4th
-            bits.lo = (bits.lo | (this.buf[this.pos++] & 127) << i * 7) >>> 0;
-            return bits;
-        }
-        if (this.len - this.pos > 4) { // fast route (hi)
-            for (; i < 5; ++i) {
-                // 6th..10th
-                bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
-                if (this.buf[this.pos++] < 128)
-                    return bits;
-            }
-        } else {
-            for (; i < 5; ++i) {
-                /* istanbul ignore if */
-                if (this.pos >= this.len)
-                    throw indexOutOfRange(this);
-                // 6th..10th
-                bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
-                if (this.buf[this.pos++] < 128)
-                    return bits;
-            }
-        }
-        /* istanbul ignore next */
-        throw Error("invalid varint encoding");
-    }
-
-    /* eslint-enable no-invalid-this */
-
-    /**
-     * Reads a varint as a signed 64 bit value.
-     * @name Reader#int64
-     * @function
-     * @returns {Long} Value read
-     */
-
-    /**
-     * Reads a varint as an unsigned 64 bit value.
-     * @name Reader#uint64
-     * @function
-     * @returns {Long} Value read
-     */
-
-    /**
-     * Reads a zig-zag encoded varint as a signed 64 bit value.
-     * @name Reader#sint64
-     * @function
-     * @returns {Long} Value read
-     */
-
-    /**
-     * Reads a varint as a boolean.
-     * @returns {boolean} Value read
-     */
-    Reader.prototype.bool = function read_bool() {
-        return this.uint32() !== 0;
-    };
-
-    function readFixed32_end(buf, end) { // note that this uses `end`, not `pos`
-        return (buf[end - 4]
-              | buf[end - 3] << 8
-              | buf[end - 2] << 16
-              | buf[end - 1] << 24) >>> 0;
-    }
-
-    /**
-     * Reads fixed 32 bits as an unsigned 32 bit integer.
-     * @returns {number} Value read
-     */
-    Reader.prototype.fixed32 = function read_fixed32() {
-
-        /* istanbul ignore if */
-        if (this.pos + 4 > this.len)
-            throw indexOutOfRange(this, 4);
-
-        return readFixed32_end(this.buf, this.pos += 4);
-    };
-
-    /**
-     * Reads fixed 32 bits as a signed 32 bit integer.
-     * @returns {number} Value read
-     */
-    Reader.prototype.sfixed32 = function read_sfixed32() {
-
-        /* istanbul ignore if */
-        if (this.pos + 4 > this.len)
-            throw indexOutOfRange(this, 4);
-
-        return readFixed32_end(this.buf, this.pos += 4) | 0;
-    };
-
-    /* eslint-disable no-invalid-this */
-
-    function readFixed64(/* this: Reader */) {
-
-        /* istanbul ignore if */
-        if (this.pos + 8 > this.len)
-            throw indexOutOfRange(this, 8);
-
-        return new LongBits$2(readFixed32_end(this.buf, this.pos += 4), readFixed32_end(this.buf, this.pos += 4));
-    }
-
-    /* eslint-enable no-invalid-this */
-
-    /**
-     * Reads fixed 64 bits.
-     * @name Reader#fixed64
-     * @function
-     * @returns {Long} Value read
-     */
-
-    /**
-     * Reads zig-zag encoded fixed 64 bits.
-     * @name Reader#sfixed64
-     * @function
-     * @returns {Long} Value read
-     */
-
-    /**
-     * Reads a float (32 bit) as a number.
-     * @function
-     * @returns {number} Value read
-     */
-    Reader.prototype.float = function read_float() {
-
-        /* istanbul ignore if */
-        if (this.pos + 4 > this.len)
-            throw indexOutOfRange(this, 4);
-
-        var value = minimal.float.readFloatLE(this.buf, this.pos);
-        this.pos += 4;
-        return value;
-    };
-
-    /**
-     * Reads a double (64 bit float) as a number.
-     * @function
-     * @returns {number} Value read
-     */
-    Reader.prototype.double = function read_double() {
-
-        /* istanbul ignore if */
-        if (this.pos + 8 > this.len)
-            throw indexOutOfRange(this, 4);
-
-        var value = minimal.float.readDoubleLE(this.buf, this.pos);
-        this.pos += 8;
-        return value;
-    };
-
-    /**
-     * Reads a sequence of bytes preceeded by its length as a varint.
-     * @returns {Uint8Array} Value read
-     */
-    Reader.prototype.bytes = function read_bytes() {
-        var length = this.uint32(),
-            start  = this.pos,
-            end    = this.pos + length;
-
-        /* istanbul ignore if */
-        if (end > this.len)
-            throw indexOutOfRange(this, length);
-
-        this.pos += length;
-        if (Array.isArray(this.buf)) // plain array
-            return this.buf.slice(start, end);
-        return start === end // fix for IE 10/Win8 and others' subarray returning array of size 1
-            ? new this.buf.constructor(0)
-            : this._slice.call(this.buf, start, end);
-    };
-
-    /**
-     * Reads a string preceeded by its byte length as a varint.
-     * @returns {string} Value read
-     */
-    Reader.prototype.string = function read_string() {
-        var bytes = this.bytes();
-        return utf8$1.read(bytes, 0, bytes.length);
-    };
-
-    /**
-     * Skips the specified number of bytes if specified, otherwise skips a varint.
-     * @param {number} [length] Length if known, otherwise a varint is assumed
-     * @returns {Reader} `this`
-     */
-    Reader.prototype.skip = function skip(length) {
-        if (typeof length === "number") {
-            /* istanbul ignore if */
-            if (this.pos + length > this.len)
-                throw indexOutOfRange(this, length);
-            this.pos += length;
-        } else {
-            do {
-                /* istanbul ignore if */
-                if (this.pos >= this.len)
-                    throw indexOutOfRange(this);
-            } while (this.buf[this.pos++] & 128);
-        }
-        return this;
-    };
-
-    /**
-     * Skips the next element of the specified wire type.
-     * @param {number} wireType Wire type received
-     * @returns {Reader} `this`
-     */
-    Reader.prototype.skipType = function(wireType) {
-        switch (wireType) {
-            case 0:
-                this.skip();
-                break;
-            case 1:
-                this.skip(8);
-                break;
-            case 2:
-                this.skip(this.uint32());
-                break;
-            case 3:
-                while ((wireType = this.uint32() & 7) !== 4) {
-                    this.skipType(wireType);
-                }
-                break;
-            case 5:
-                this.skip(4);
-                break;
-
-            /* istanbul ignore next */
-            default:
-                throw Error("invalid wire type " + wireType + " at offset " + this.pos);
-        }
-        return this;
-    };
-
-    Reader._configure = function(BufferReader_) {
-        BufferReader = BufferReader_;
-
-        var fn = minimal.Long ? "toLong" : /* istanbul ignore next */ "toNumber";
-        minimal.merge(Reader.prototype, {
-
-            int64: function read_int64() {
-                return readLongVarint.call(this)[fn](false);
-            },
-
-            uint64: function read_uint64() {
-                return readLongVarint.call(this)[fn](true);
-            },
-
-            sint64: function read_sint64() {
-                return readLongVarint.call(this).zzDecode()[fn](false);
-            },
-
-            fixed64: function read_fixed64() {
-                return readFixed64.call(this)[fn](true);
-            },
-
-            sfixed64: function read_sfixed64() {
-                return readFixed64.call(this)[fn](false);
-            }
-
-        });
-    };
-
-    var reader_buffer = BufferReader$1;
-
-    // extends Reader
-
-    (BufferReader$1.prototype = Object.create(reader.prototype)).constructor = BufferReader$1;
-
-
-
-    /**
-     * Constructs a new buffer reader instance.
-     * @classdesc Wire format reader using node buffers.
-     * @extends Reader
-     * @constructor
-     * @param {Buffer} buffer Buffer to read from
-     */
-    function BufferReader$1(buffer) {
-        reader.call(this, buffer);
-
-        /**
-         * Read buffer.
-         * @name BufferReader#buf
-         * @type {Buffer}
-         */
-    }
-
-    /* istanbul ignore else */
-    if (minimal.Buffer)
-        BufferReader$1.prototype._slice = minimal.Buffer.prototype.slice;
-
-    /**
-     * @override
-     */
-    BufferReader$1.prototype.string = function read_string_buffer() {
-        var len = this.uint32(); // modifies pos
-        return this.buf.utf8Slice(this.pos, this.pos = Math.min(this.pos + len, this.len));
-    };
-
-    var service = Service;
-
-
-
-    // Extends EventEmitter
-    (Service.prototype = Object.create(minimal.EventEmitter.prototype)).constructor = Service;
-
-    /**
-     * A service method callback as used by {@link rpc.ServiceMethod|ServiceMethod}.
-     *
-     * Differs from {@link RPCImplCallback} in that it is an actual callback of a service method which may not return `response = null`.
-     * @typedef rpc.ServiceMethodCallback
-     * @template TRes extends Message<TRes>
-     * @type {function}
-     * @param {Error|null} error Error, if any
-     * @param {TRes} [response] Response message
-     * @returns {undefined}
-     */
-
-    /**
-     * A service method part of a {@link rpc.Service} as created by {@link Service.create}.
-     * @typedef rpc.ServiceMethod
-     * @template TReq extends Message<TReq>
-     * @template TRes extends Message<TRes>
-     * @type {function}
-     * @param {TReq|Properties<TReq>} request Request message or plain object
-     * @param {rpc.ServiceMethodCallback<TRes>} [callback] Node-style callback called with the error, if any, and the response message
-     * @returns {Promise<Message<TRes>>} Promise if `callback` has been omitted, otherwise `undefined`
-     */
-
-    /**
-     * Constructs a new RPC service instance.
-     * @classdesc An RPC service as returned by {@link Service#create}.
-     * @exports rpc.Service
-     * @extends util.EventEmitter
-     * @constructor
-     * @param {RPCImpl} rpcImpl RPC implementation
-     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
-     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
-     */
-    function Service(rpcImpl, requestDelimited, responseDelimited) {
-
-        if (typeof rpcImpl !== "function")
-            throw TypeError("rpcImpl must be a function");
-
-        minimal.EventEmitter.call(this);
-
-        /**
-         * RPC implementation. Becomes `null` once the service is ended.
-         * @type {RPCImpl|null}
-         */
-        this.rpcImpl = rpcImpl;
-
-        /**
-         * Whether requests are length-delimited.
-         * @type {boolean}
-         */
-        this.requestDelimited = Boolean(requestDelimited);
-
-        /**
-         * Whether responses are length-delimited.
-         * @type {boolean}
-         */
-        this.responseDelimited = Boolean(responseDelimited);
-    }
-
-    /**
-     * Calls a service method through {@link rpc.Service#rpcImpl|rpcImpl}.
-     * @param {Method|rpc.ServiceMethod<TReq,TRes>} method Reflected or static method
-     * @param {Constructor<TReq>} requestCtor Request constructor
-     * @param {Constructor<TRes>} responseCtor Response constructor
-     * @param {TReq|Properties<TReq>} request Request message or plain object
-     * @param {rpc.ServiceMethodCallback<TRes>} callback Service callback
-     * @returns {undefined}
-     * @template TReq extends Message<TReq>
-     * @template TRes extends Message<TRes>
-     */
-    Service.prototype.rpcCall = function rpcCall(method, requestCtor, responseCtor, request, callback) {
-
-        if (!request)
-            throw TypeError("request must be specified");
-
-        var self = this;
-        if (!callback)
-            return minimal.asPromise(rpcCall, self, method, requestCtor, responseCtor, request);
-
-        if (!self.rpcImpl) {
-            setTimeout(function() { callback(Error("already ended")); }, 0);
-            return undefined;
-        }
-
-        try {
-            return self.rpcImpl(
-                method,
-                requestCtor[self.requestDelimited ? "encodeDelimited" : "encode"](request).finish(),
-                function rpcCallback(err, response) {
-
-                    if (err) {
-                        self.emit("error", err, method);
-                        return callback(err);
-                    }
-
-                    if (response === null) {
-                        self.end(/* endedByRPC */ true);
-                        return undefined;
-                    }
-
-                    if (!(response instanceof responseCtor)) {
-                        try {
-                            response = responseCtor[self.responseDelimited ? "decodeDelimited" : "decode"](response);
-                        } catch (err) {
-                            self.emit("error", err, method);
-                            return callback(err);
-                        }
-                    }
-
-                    self.emit("data", response, method);
-                    return callback(null, response);
-                }
-            );
-        } catch (err) {
-            self.emit("error", err, method);
-            setTimeout(function() { callback(err); }, 0);
-            return undefined;
-        }
-    };
-
-    /**
-     * Ends this service and emits the `end` event.
-     * @param {boolean} [endedByRPC=false] Whether the service has been ended by the RPC implementation.
-     * @returns {rpc.Service} `this`
-     */
-    Service.prototype.end = function end(endedByRPC) {
-        if (this.rpcImpl) {
-            if (!endedByRPC) // signal end to rpcImpl
-                this.rpcImpl(null, null, null);
-            this.rpcImpl = null;
-            this.emit("end").off();
-        }
-        return this;
-    };
-
-    var rpc_1 = createCommonjsModule(function (module, exports) {
-
-    /**
-     * Streaming RPC helpers.
-     * @namespace
-     */
-    var rpc = exports;
-
-    /**
-     * RPC implementation passed to {@link Service#create} performing a service request on network level, i.e. by utilizing http requests or websockets.
-     * @typedef RPCImpl
-     * @type {function}
-     * @param {Method|rpc.ServiceMethod<Message<{}>,Message<{}>>} method Reflected or static method being called
-     * @param {Uint8Array} requestData Request data
-     * @param {RPCImplCallback} callback Callback function
-     * @returns {undefined}
-     * @example
-     * function rpcImpl(method, requestData, callback) {
-     *     if (protobuf.util.lcFirst(method.name) !== "myMethod") // compatible with static code
-     *         throw Error("no such method");
-     *     asynchronouslyObtainAResponse(requestData, function(err, responseData) {
-     *         callback(err, responseData);
-     *     });
-     * }
-     */
-
-    /**
-     * Node-style callback as used by {@link RPCImpl}.
-     * @typedef RPCImplCallback
-     * @type {function}
-     * @param {Error|null} error Error, if any, otherwise `null`
-     * @param {Uint8Array|null} [response] Response data or `null` to signal end of stream, if there hasn't been an error
-     * @returns {undefined}
-     */
-
-    rpc.Service = service;
-    });
-
-    var roots = {};
-
-    var indexMinimal = createCommonjsModule(function (module, exports) {
-    var protobuf = exports;
-
-    /**
-     * Build type, one of `"full"`, `"light"` or `"minimal"`.
-     * @name build
-     * @type {string}
-     * @const
-     */
-    protobuf.build = "minimal";
-
-    // Serialization
-    protobuf.Writer       = writer;
-    protobuf.BufferWriter = writer_buffer;
-    protobuf.Reader       = reader;
-    protobuf.BufferReader = reader_buffer;
-
-    // Utility
-    protobuf.util         = minimal;
-    protobuf.rpc          = rpc_1;
-    protobuf.roots        = roots;
-    protobuf.configure    = configure;
-
-    /* istanbul ignore next */
-    /**
-     * Reconfigures the library according to the environment.
-     * @returns {undefined}
-     */
-    function configure() {
-        protobuf.Reader._configure(protobuf.BufferReader);
-        protobuf.util._configure();
-    }
-
-    // Set up buffer utility according to the environment
-    protobuf.Writer._configure(protobuf.BufferWriter);
-    configure();
-    });
-
-    var minimal$1 = indexMinimal;
-
-    // Common aliases
-    var $Reader = minimal$1.Reader, $Writer = minimal$1.Writer, $util = minimal$1.util;
-
-    // Exported root namespace
-    var $root = minimal$1.roots["default"] || (minimal$1.roots["default"] = {});
-
-    $root.ZilliqaMessage = (function() {
-
-        /**
-         * Namespace ZilliqaMessage.
-         * @exports ZilliqaMessage
-         * @namespace
-         */
-        var ZilliqaMessage = {};
-
-        ZilliqaMessage.ByteArray = (function() {
-
-            /**
-             * Properties of a ByteArray.
-             * @memberof ZilliqaMessage
-             * @interface IByteArray
-             * @property {Uint8Array} data ByteArray data
-             */
-
-            /**
-             * Constructs a new ByteArray.
-             * @memberof ZilliqaMessage
-             * @classdesc Represents a ByteArray.
-             * @implements IByteArray
-             * @constructor
-             * @param {ZilliqaMessage.IByteArray=} [properties] Properties to set
-             */
-            function ByteArray(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * ByteArray data.
-             * @member {Uint8Array} data
-             * @memberof ZilliqaMessage.ByteArray
-             * @instance
-             */
-            ByteArray.prototype.data = $util.newBuffer([]);
-
-            /**
-             * Creates a new ByteArray instance using the specified properties.
-             * @function create
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {ZilliqaMessage.IByteArray=} [properties] Properties to set
-             * @returns {ZilliqaMessage.ByteArray} ByteArray instance
-             */
-            ByteArray.create = function create(properties) {
-                return new ByteArray(properties);
-            };
-
-            /**
-             * Encodes the specified ByteArray message. Does not implicitly {@link ZilliqaMessage.ByteArray.verify|verify} messages.
-             * @function encode
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {ZilliqaMessage.IByteArray} message ByteArray message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ByteArray.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.data);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified ByteArray message, length delimited. Does not implicitly {@link ZilliqaMessage.ByteArray.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {ZilliqaMessage.IByteArray} message ByteArray message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ByteArray.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a ByteArray message from the specified reader or buffer.
-             * @function decode
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {ZilliqaMessage.ByteArray} ByteArray
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ByteArray.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ByteArray();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.data = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                if (!message.hasOwnProperty("data"))
-                    throw $util.ProtocolError("missing required 'data'", { instance: message });
-                return message;
-            };
-
-            /**
-             * Decodes a ByteArray message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {ZilliqaMessage.ByteArray} ByteArray
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ByteArray.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a ByteArray message.
-             * @function verify
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            ByteArray.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-                return null;
-            };
-
-            /**
-             * Creates a ByteArray message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {ZilliqaMessage.ByteArray} ByteArray
-             */
-            ByteArray.fromObject = function fromObject(object) {
-                if (object instanceof $root.ZilliqaMessage.ByteArray)
-                    return object;
-                var message = new $root.ZilliqaMessage.ByteArray();
-                if (object.data != null)
-                    if (typeof object.data === "string")
-                        $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                    else if (object.data.length)
-                        message.data = object.data;
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a ByteArray message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof ZilliqaMessage.ByteArray
-             * @static
-             * @param {ZilliqaMessage.ByteArray} message ByteArray
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            ByteArray.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    if (options.bytes === String)
-                        object.data = "";
-                    else {
-                        object.data = [];
-                        if (options.bytes !== Array)
-                            object.data = $util.newBuffer(object.data);
-                    }
-                if (message.data != null && message.hasOwnProperty("data"))
-                    object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-                return object;
-            };
-
-            /**
-             * Converts this ByteArray to JSON.
-             * @function toJSON
-             * @memberof ZilliqaMessage.ByteArray
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            ByteArray.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, minimal$1.util.toJSONOptions);
-            };
-
-            return ByteArray;
-        })();
-
-        ZilliqaMessage.ProtoTransactionCoreInfo = (function() {
-
-            /**
-             * Properties of a ProtoTransactionCoreInfo.
-             * @memberof ZilliqaMessage
-             * @interface IProtoTransactionCoreInfo
-             * @property {ZilliqaMessage.IByteArray} version ProtoTransactionCoreInfo version
-             * @property {ZilliqaMessage.IByteArray} nonce ProtoTransactionCoreInfo nonce
-             * @property {Uint8Array} toaddr ProtoTransactionCoreInfo toaddr
-             * @property {ZilliqaMessage.IByteArray} senderpubkey ProtoTransactionCoreInfo senderpubkey
-             * @property {ZilliqaMessage.IByteArray} amount ProtoTransactionCoreInfo amount
-             * @property {ZilliqaMessage.IByteArray} gasprice ProtoTransactionCoreInfo gasprice
-             * @property {ZilliqaMessage.IByteArray} gaslimit ProtoTransactionCoreInfo gaslimit
-             * @property {Uint8Array} code ProtoTransactionCoreInfo code
-             * @property {Uint8Array} data ProtoTransactionCoreInfo data
-             */
-
-            /**
-             * Constructs a new ProtoTransactionCoreInfo.
-             * @memberof ZilliqaMessage
-             * @classdesc Represents a ProtoTransactionCoreInfo.
-             * @implements IProtoTransactionCoreInfo
-             * @constructor
-             * @param {ZilliqaMessage.IProtoTransactionCoreInfo=} [properties] Properties to set
-             */
-            function ProtoTransactionCoreInfo(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * ProtoTransactionCoreInfo version.
-             * @member {ZilliqaMessage.IByteArray} version
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.version = null;
-
-            /**
-             * ProtoTransactionCoreInfo nonce.
-             * @member {ZilliqaMessage.IByteArray} nonce
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.nonce = null;
-
-            /**
-             * ProtoTransactionCoreInfo toaddr.
-             * @member {Uint8Array} toaddr
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.toaddr = $util.newBuffer([]);
-
-            /**
-             * ProtoTransactionCoreInfo senderpubkey.
-             * @member {ZilliqaMessage.IByteArray} senderpubkey
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.senderpubkey = null;
-
-            /**
-             * ProtoTransactionCoreInfo amount.
-             * @member {ZilliqaMessage.IByteArray} amount
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.amount = null;
-
-            /**
-             * ProtoTransactionCoreInfo gasprice.
-             * @member {ZilliqaMessage.IByteArray} gasprice
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.gasprice = null;
-
-            /**
-             * ProtoTransactionCoreInfo gaslimit.
-             * @member {ZilliqaMessage.IByteArray} gaslimit
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.gaslimit = null;
-
-            /**
-             * ProtoTransactionCoreInfo code.
-             * @member {Uint8Array} code
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.code = $util.newBuffer([]);
-
-            /**
-             * ProtoTransactionCoreInfo data.
-             * @member {Uint8Array} data
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             */
-            ProtoTransactionCoreInfo.prototype.data = $util.newBuffer([]);
-
-            /**
-             * Creates a new ProtoTransactionCoreInfo instance using the specified properties.
-             * @function create
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionCoreInfo=} [properties] Properties to set
-             * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo instance
-             */
-            ProtoTransactionCoreInfo.create = function create(properties) {
-                return new ProtoTransactionCoreInfo(properties);
-            };
-
-            /**
-             * Encodes the specified ProtoTransactionCoreInfo message. Does not implicitly {@link ZilliqaMessage.ProtoTransactionCoreInfo.verify|verify} messages.
-             * @function encode
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionCoreInfo} message ProtoTransactionCoreInfo message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransactionCoreInfo.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                $root.ZilliqaMessage.ByteArray.encode(message.version, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                $root.ZilliqaMessage.ByteArray.encode(message.nonce, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.toaddr);
-                $root.ZilliqaMessage.ByteArray.encode(message.senderpubkey, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                $root.ZilliqaMessage.ByteArray.encode(message.amount, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-                $root.ZilliqaMessage.ByteArray.encode(message.gasprice, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-                $root.ZilliqaMessage.ByteArray.encode(message.gaslimit, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.code);
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.data);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified ProtoTransactionCoreInfo message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransactionCoreInfo.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionCoreInfo} message ProtoTransactionCoreInfo message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransactionCoreInfo.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a ProtoTransactionCoreInfo message from the specified reader or buffer.
-             * @function decode
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransactionCoreInfo.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransactionCoreInfo();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.version = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    case 2:
-                        message.nonce = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    case 3:
-                        message.toaddr = reader.bytes();
-                        break;
-                    case 4:
-                        message.senderpubkey = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    case 5:
-                        message.amount = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    case 6:
-                        message.gasprice = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    case 7:
-                        message.gaslimit = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    case 8:
-                        message.code = reader.bytes();
-                        break;
-                    case 9:
-                        message.data = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                if (!message.hasOwnProperty("version"))
-                    throw $util.ProtocolError("missing required 'version'", { instance: message });
-                if (!message.hasOwnProperty("nonce"))
-                    throw $util.ProtocolError("missing required 'nonce'", { instance: message });
-                if (!message.hasOwnProperty("toaddr"))
-                    throw $util.ProtocolError("missing required 'toaddr'", { instance: message });
-                if (!message.hasOwnProperty("senderpubkey"))
-                    throw $util.ProtocolError("missing required 'senderpubkey'", { instance: message });
-                if (!message.hasOwnProperty("amount"))
-                    throw $util.ProtocolError("missing required 'amount'", { instance: message });
-                if (!message.hasOwnProperty("gasprice"))
-                    throw $util.ProtocolError("missing required 'gasprice'", { instance: message });
-                if (!message.hasOwnProperty("gaslimit"))
-                    throw $util.ProtocolError("missing required 'gaslimit'", { instance: message });
-                if (!message.hasOwnProperty("code"))
-                    throw $util.ProtocolError("missing required 'code'", { instance: message });
-                if (!message.hasOwnProperty("data"))
-                    throw $util.ProtocolError("missing required 'data'", { instance: message });
-                return message;
-            };
-
-            /**
-             * Decodes a ProtoTransactionCoreInfo message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransactionCoreInfo.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a ProtoTransactionCoreInfo message.
-             * @function verify
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            ProtoTransactionCoreInfo.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.version);
-                    if (error)
-                        return "version." + error;
-                }
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.nonce);
-                    if (error)
-                        return "nonce." + error;
-                }
-                if (!(message.toaddr && typeof message.toaddr.length === "number" || $util.isString(message.toaddr)))
-                    return "toaddr: buffer expected";
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.senderpubkey);
-                    if (error)
-                        return "senderpubkey." + error;
-                }
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.amount);
-                    if (error)
-                        return "amount." + error;
-                }
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.gasprice);
-                    if (error)
-                        return "gasprice." + error;
-                }
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.gaslimit);
-                    if (error)
-                        return "gaslimit." + error;
-                }
-                if (!(message.code && typeof message.code.length === "number" || $util.isString(message.code)))
-                    return "code: buffer expected";
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-                return null;
-            };
-
-            /**
-             * Creates a ProtoTransactionCoreInfo message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo
-             */
-            ProtoTransactionCoreInfo.fromObject = function fromObject(object) {
-                if (object instanceof $root.ZilliqaMessage.ProtoTransactionCoreInfo)
-                    return object;
-                var message = new $root.ZilliqaMessage.ProtoTransactionCoreInfo();
-                if (object.version != null) {
-                    if (typeof object.version !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.version: object expected");
-                    message.version = $root.ZilliqaMessage.ByteArray.fromObject(object.version);
-                }
-                if (object.nonce != null) {
-                    if (typeof object.nonce !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.nonce: object expected");
-                    message.nonce = $root.ZilliqaMessage.ByteArray.fromObject(object.nonce);
-                }
-                if (object.toaddr != null)
-                    if (typeof object.toaddr === "string")
-                        $util.base64.decode(object.toaddr, message.toaddr = $util.newBuffer($util.base64.length(object.toaddr)), 0);
-                    else if (object.toaddr.length)
-                        message.toaddr = object.toaddr;
-                if (object.senderpubkey != null) {
-                    if (typeof object.senderpubkey !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.senderpubkey: object expected");
-                    message.senderpubkey = $root.ZilliqaMessage.ByteArray.fromObject(object.senderpubkey);
-                }
-                if (object.amount != null) {
-                    if (typeof object.amount !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.amount: object expected");
-                    message.amount = $root.ZilliqaMessage.ByteArray.fromObject(object.amount);
-                }
-                if (object.gasprice != null) {
-                    if (typeof object.gasprice !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.gasprice: object expected");
-                    message.gasprice = $root.ZilliqaMessage.ByteArray.fromObject(object.gasprice);
-                }
-                if (object.gaslimit != null) {
-                    if (typeof object.gaslimit !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.gaslimit: object expected");
-                    message.gaslimit = $root.ZilliqaMessage.ByteArray.fromObject(object.gaslimit);
-                }
-                if (object.code != null)
-                    if (typeof object.code === "string")
-                        $util.base64.decode(object.code, message.code = $util.newBuffer($util.base64.length(object.code)), 0);
-                    else if (object.code.length)
-                        message.code = object.code;
-                if (object.data != null)
-                    if (typeof object.data === "string")
-                        $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                    else if (object.data.length)
-                        message.data = object.data;
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a ProtoTransactionCoreInfo message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @static
-             * @param {ZilliqaMessage.ProtoTransactionCoreInfo} message ProtoTransactionCoreInfo
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            ProtoTransactionCoreInfo.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults) {
-                    object.version = null;
-                    object.nonce = null;
-                    if (options.bytes === String)
-                        object.toaddr = "";
-                    else {
-                        object.toaddr = [];
-                        if (options.bytes !== Array)
-                            object.toaddr = $util.newBuffer(object.toaddr);
-                    }
-                    object.senderpubkey = null;
-                    object.amount = null;
-                    object.gasprice = null;
-                    object.gaslimit = null;
-                    if (options.bytes === String)
-                        object.code = "";
-                    else {
-                        object.code = [];
-                        if (options.bytes !== Array)
-                            object.code = $util.newBuffer(object.code);
-                    }
-                    if (options.bytes === String)
-                        object.data = "";
-                    else {
-                        object.data = [];
-                        if (options.bytes !== Array)
-                            object.data = $util.newBuffer(object.data);
-                    }
-                }
-                if (message.version != null && message.hasOwnProperty("version"))
-                    object.version = $root.ZilliqaMessage.ByteArray.toObject(message.version, options);
-                if (message.nonce != null && message.hasOwnProperty("nonce"))
-                    object.nonce = $root.ZilliqaMessage.ByteArray.toObject(message.nonce, options);
-                if (message.toaddr != null && message.hasOwnProperty("toaddr"))
-                    object.toaddr = options.bytes === String ? $util.base64.encode(message.toaddr, 0, message.toaddr.length) : options.bytes === Array ? Array.prototype.slice.call(message.toaddr) : message.toaddr;
-                if (message.senderpubkey != null && message.hasOwnProperty("senderpubkey"))
-                    object.senderpubkey = $root.ZilliqaMessage.ByteArray.toObject(message.senderpubkey, options);
-                if (message.amount != null && message.hasOwnProperty("amount"))
-                    object.amount = $root.ZilliqaMessage.ByteArray.toObject(message.amount, options);
-                if (message.gasprice != null && message.hasOwnProperty("gasprice"))
-                    object.gasprice = $root.ZilliqaMessage.ByteArray.toObject(message.gasprice, options);
-                if (message.gaslimit != null && message.hasOwnProperty("gaslimit"))
-                    object.gaslimit = $root.ZilliqaMessage.ByteArray.toObject(message.gaslimit, options);
-                if (message.code != null && message.hasOwnProperty("code"))
-                    object.code = options.bytes === String ? $util.base64.encode(message.code, 0, message.code.length) : options.bytes === Array ? Array.prototype.slice.call(message.code) : message.code;
-                if (message.data != null && message.hasOwnProperty("data"))
-                    object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-                return object;
-            };
-
-            /**
-             * Converts this ProtoTransactionCoreInfo to JSON.
-             * @function toJSON
-             * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            ProtoTransactionCoreInfo.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, minimal$1.util.toJSONOptions);
-            };
-
-            return ProtoTransactionCoreInfo;
-        })();
-
-        ZilliqaMessage.ProtoTransaction = (function() {
-
-            /**
-             * Properties of a ProtoTransaction.
-             * @memberof ZilliqaMessage
-             * @interface IProtoTransaction
-             * @property {Uint8Array} tranid ProtoTransaction tranid
-             * @property {ZilliqaMessage.IProtoTransactionCoreInfo} info ProtoTransaction info
-             * @property {ZilliqaMessage.IByteArray} signature ProtoTransaction signature
-             */
-
-            /**
-             * Constructs a new ProtoTransaction.
-             * @memberof ZilliqaMessage
-             * @classdesc Represents a ProtoTransaction.
-             * @implements IProtoTransaction
-             * @constructor
-             * @param {ZilliqaMessage.IProtoTransaction=} [properties] Properties to set
-             */
-            function ProtoTransaction(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * ProtoTransaction tranid.
-             * @member {Uint8Array} tranid
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @instance
-             */
-            ProtoTransaction.prototype.tranid = $util.newBuffer([]);
-
-            /**
-             * ProtoTransaction info.
-             * @member {ZilliqaMessage.IProtoTransactionCoreInfo} info
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @instance
-             */
-            ProtoTransaction.prototype.info = null;
-
-            /**
-             * ProtoTransaction signature.
-             * @member {ZilliqaMessage.IByteArray} signature
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @instance
-             */
-            ProtoTransaction.prototype.signature = null;
-
-            /**
-             * Creates a new ProtoTransaction instance using the specified properties.
-             * @function create
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {ZilliqaMessage.IProtoTransaction=} [properties] Properties to set
-             * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction instance
-             */
-            ProtoTransaction.create = function create(properties) {
-                return new ProtoTransaction(properties);
-            };
-
-            /**
-             * Encodes the specified ProtoTransaction message. Does not implicitly {@link ZilliqaMessage.ProtoTransaction.verify|verify} messages.
-             * @function encode
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {ZilliqaMessage.IProtoTransaction} message ProtoTransaction message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransaction.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.tranid);
-                $root.ZilliqaMessage.ProtoTransactionCoreInfo.encode(message.info, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                $root.ZilliqaMessage.ByteArray.encode(message.signature, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-                return writer;
-            };
-
-            /**
-             * Encodes the specified ProtoTransaction message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransaction.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {ZilliqaMessage.IProtoTransaction} message ProtoTransaction message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a ProtoTransaction message from the specified reader or buffer.
-             * @function decode
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransaction.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransaction();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.tranid = reader.bytes();
-                        break;
-                    case 2:
-                        message.info = $root.ZilliqaMessage.ProtoTransactionCoreInfo.decode(reader, reader.uint32());
-                        break;
-                    case 3:
-                        message.signature = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                if (!message.hasOwnProperty("tranid"))
-                    throw $util.ProtocolError("missing required 'tranid'", { instance: message });
-                if (!message.hasOwnProperty("info"))
-                    throw $util.ProtocolError("missing required 'info'", { instance: message });
-                if (!message.hasOwnProperty("signature"))
-                    throw $util.ProtocolError("missing required 'signature'", { instance: message });
-                return message;
-            };
-
-            /**
-             * Decodes a ProtoTransaction message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransaction.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a ProtoTransaction message.
-             * @function verify
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            ProtoTransaction.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (!(message.tranid && typeof message.tranid.length === "number" || $util.isString(message.tranid)))
-                    return "tranid: buffer expected";
-                {
-                    var error = $root.ZilliqaMessage.ProtoTransactionCoreInfo.verify(message.info);
-                    if (error)
-                        return "info." + error;
-                }
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.signature);
-                    if (error)
-                        return "signature." + error;
-                }
-                return null;
-            };
-
-            /**
-             * Creates a ProtoTransaction message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction
-             */
-            ProtoTransaction.fromObject = function fromObject(object) {
-                if (object instanceof $root.ZilliqaMessage.ProtoTransaction)
-                    return object;
-                var message = new $root.ZilliqaMessage.ProtoTransaction();
-                if (object.tranid != null)
-                    if (typeof object.tranid === "string")
-                        $util.base64.decode(object.tranid, message.tranid = $util.newBuffer($util.base64.length(object.tranid)), 0);
-                    else if (object.tranid.length)
-                        message.tranid = object.tranid;
-                if (object.info != null) {
-                    if (typeof object.info !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransaction.info: object expected");
-                    message.info = $root.ZilliqaMessage.ProtoTransactionCoreInfo.fromObject(object.info);
-                }
-                if (object.signature != null) {
-                    if (typeof object.signature !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransaction.signature: object expected");
-                    message.signature = $root.ZilliqaMessage.ByteArray.fromObject(object.signature);
-                }
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a ProtoTransaction message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @static
-             * @param {ZilliqaMessage.ProtoTransaction} message ProtoTransaction
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            ProtoTransaction.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults) {
-                    if (options.bytes === String)
-                        object.tranid = "";
-                    else {
-                        object.tranid = [];
-                        if (options.bytes !== Array)
-                            object.tranid = $util.newBuffer(object.tranid);
-                    }
-                    object.info = null;
-                    object.signature = null;
-                }
-                if (message.tranid != null && message.hasOwnProperty("tranid"))
-                    object.tranid = options.bytes === String ? $util.base64.encode(message.tranid, 0, message.tranid.length) : options.bytes === Array ? Array.prototype.slice.call(message.tranid) : message.tranid;
-                if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.ZilliqaMessage.ProtoTransactionCoreInfo.toObject(message.info, options);
-                if (message.signature != null && message.hasOwnProperty("signature"))
-                    object.signature = $root.ZilliqaMessage.ByteArray.toObject(message.signature, options);
-                return object;
-            };
-
-            /**
-             * Converts this ProtoTransaction to JSON.
-             * @function toJSON
-             * @memberof ZilliqaMessage.ProtoTransaction
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            ProtoTransaction.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, minimal$1.util.toJSONOptions);
-            };
-
-            return ProtoTransaction;
-        })();
-
-        ZilliqaMessage.ProtoTransactionReceipt = (function() {
-
-            /**
-             * Properties of a ProtoTransactionReceipt.
-             * @memberof ZilliqaMessage
-             * @interface IProtoTransactionReceipt
-             * @property {Uint8Array} receipt ProtoTransactionReceipt receipt
-             * @property {ZilliqaMessage.IByteArray} cumgas ProtoTransactionReceipt cumgas
-             */
-
-            /**
-             * Constructs a new ProtoTransactionReceipt.
-             * @memberof ZilliqaMessage
-             * @classdesc Represents a ProtoTransactionReceipt.
-             * @implements IProtoTransactionReceipt
-             * @constructor
-             * @param {ZilliqaMessage.IProtoTransactionReceipt=} [properties] Properties to set
-             */
-            function ProtoTransactionReceipt(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * ProtoTransactionReceipt receipt.
-             * @member {Uint8Array} receipt
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @instance
-             */
-            ProtoTransactionReceipt.prototype.receipt = $util.newBuffer([]);
-
-            /**
-             * ProtoTransactionReceipt cumgas.
-             * @member {ZilliqaMessage.IByteArray} cumgas
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @instance
-             */
-            ProtoTransactionReceipt.prototype.cumgas = null;
-
-            /**
-             * Creates a new ProtoTransactionReceipt instance using the specified properties.
-             * @function create
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionReceipt=} [properties] Properties to set
-             * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt instance
-             */
-            ProtoTransactionReceipt.create = function create(properties) {
-                return new ProtoTransactionReceipt(properties);
-            };
-
-            /**
-             * Encodes the specified ProtoTransactionReceipt message. Does not implicitly {@link ZilliqaMessage.ProtoTransactionReceipt.verify|verify} messages.
-             * @function encode
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionReceipt} message ProtoTransactionReceipt message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransactionReceipt.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.receipt);
-                $root.ZilliqaMessage.ByteArray.encode(message.cumgas, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                return writer;
-            };
-
-            /**
-             * Encodes the specified ProtoTransactionReceipt message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransactionReceipt.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionReceipt} message ProtoTransactionReceipt message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransactionReceipt.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a ProtoTransactionReceipt message from the specified reader or buffer.
-             * @function decode
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransactionReceipt.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransactionReceipt();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.receipt = reader.bytes();
-                        break;
-                    case 2:
-                        message.cumgas = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                if (!message.hasOwnProperty("receipt"))
-                    throw $util.ProtocolError("missing required 'receipt'", { instance: message });
-                if (!message.hasOwnProperty("cumgas"))
-                    throw $util.ProtocolError("missing required 'cumgas'", { instance: message });
-                return message;
-            };
-
-            /**
-             * Decodes a ProtoTransactionReceipt message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransactionReceipt.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a ProtoTransactionReceipt message.
-             * @function verify
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            ProtoTransactionReceipt.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (!(message.receipt && typeof message.receipt.length === "number" || $util.isString(message.receipt)))
-                    return "receipt: buffer expected";
-                {
-                    var error = $root.ZilliqaMessage.ByteArray.verify(message.cumgas);
-                    if (error)
-                        return "cumgas." + error;
-                }
-                return null;
-            };
-
-            /**
-             * Creates a ProtoTransactionReceipt message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt
-             */
-            ProtoTransactionReceipt.fromObject = function fromObject(object) {
-                if (object instanceof $root.ZilliqaMessage.ProtoTransactionReceipt)
-                    return object;
-                var message = new $root.ZilliqaMessage.ProtoTransactionReceipt();
-                if (object.receipt != null)
-                    if (typeof object.receipt === "string")
-                        $util.base64.decode(object.receipt, message.receipt = $util.newBuffer($util.base64.length(object.receipt)), 0);
-                    else if (object.receipt.length)
-                        message.receipt = object.receipt;
-                if (object.cumgas != null) {
-                    if (typeof object.cumgas !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionReceipt.cumgas: object expected");
-                    message.cumgas = $root.ZilliqaMessage.ByteArray.fromObject(object.cumgas);
-                }
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a ProtoTransactionReceipt message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @static
-             * @param {ZilliqaMessage.ProtoTransactionReceipt} message ProtoTransactionReceipt
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            ProtoTransactionReceipt.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults) {
-                    if (options.bytes === String)
-                        object.receipt = "";
-                    else {
-                        object.receipt = [];
-                        if (options.bytes !== Array)
-                            object.receipt = $util.newBuffer(object.receipt);
-                    }
-                    object.cumgas = null;
-                }
-                if (message.receipt != null && message.hasOwnProperty("receipt"))
-                    object.receipt = options.bytes === String ? $util.base64.encode(message.receipt, 0, message.receipt.length) : options.bytes === Array ? Array.prototype.slice.call(message.receipt) : message.receipt;
-                if (message.cumgas != null && message.hasOwnProperty("cumgas"))
-                    object.cumgas = $root.ZilliqaMessage.ByteArray.toObject(message.cumgas, options);
-                return object;
-            };
-
-            /**
-             * Converts this ProtoTransactionReceipt to JSON.
-             * @function toJSON
-             * @memberof ZilliqaMessage.ProtoTransactionReceipt
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            ProtoTransactionReceipt.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, minimal$1.util.toJSONOptions);
-            };
-
-            return ProtoTransactionReceipt;
-        })();
-
-        ZilliqaMessage.ProtoTransactionWithReceipt = (function() {
-
-            /**
-             * Properties of a ProtoTransactionWithReceipt.
-             * @memberof ZilliqaMessage
-             * @interface IProtoTransactionWithReceipt
-             * @property {ZilliqaMessage.IProtoTransaction} transaction ProtoTransactionWithReceipt transaction
-             * @property {ZilliqaMessage.IProtoTransactionReceipt} receipt ProtoTransactionWithReceipt receipt
-             */
-
-            /**
-             * Constructs a new ProtoTransactionWithReceipt.
-             * @memberof ZilliqaMessage
-             * @classdesc Represents a ProtoTransactionWithReceipt.
-             * @implements IProtoTransactionWithReceipt
-             * @constructor
-             * @param {ZilliqaMessage.IProtoTransactionWithReceipt=} [properties] Properties to set
-             */
-            function ProtoTransactionWithReceipt(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * ProtoTransactionWithReceipt transaction.
-             * @member {ZilliqaMessage.IProtoTransaction} transaction
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @instance
-             */
-            ProtoTransactionWithReceipt.prototype.transaction = null;
-
-            /**
-             * ProtoTransactionWithReceipt receipt.
-             * @member {ZilliqaMessage.IProtoTransactionReceipt} receipt
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @instance
-             */
-            ProtoTransactionWithReceipt.prototype.receipt = null;
-
-            /**
-             * Creates a new ProtoTransactionWithReceipt instance using the specified properties.
-             * @function create
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionWithReceipt=} [properties] Properties to set
-             * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt instance
-             */
-            ProtoTransactionWithReceipt.create = function create(properties) {
-                return new ProtoTransactionWithReceipt(properties);
-            };
-
-            /**
-             * Encodes the specified ProtoTransactionWithReceipt message. Does not implicitly {@link ZilliqaMessage.ProtoTransactionWithReceipt.verify|verify} messages.
-             * @function encode
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionWithReceipt} message ProtoTransactionWithReceipt message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransactionWithReceipt.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                $root.ZilliqaMessage.ProtoTransaction.encode(message.transaction, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                $root.ZilliqaMessage.ProtoTransactionReceipt.encode(message.receipt, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                return writer;
-            };
-
-            /**
-             * Encodes the specified ProtoTransactionWithReceipt message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransactionWithReceipt.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {ZilliqaMessage.IProtoTransactionWithReceipt} message ProtoTransactionWithReceipt message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            ProtoTransactionWithReceipt.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a ProtoTransactionWithReceipt message from the specified reader or buffer.
-             * @function decode
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransactionWithReceipt.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransactionWithReceipt();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.transaction = $root.ZilliqaMessage.ProtoTransaction.decode(reader, reader.uint32());
-                        break;
-                    case 2:
-                        message.receipt = $root.ZilliqaMessage.ProtoTransactionReceipt.decode(reader, reader.uint32());
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                if (!message.hasOwnProperty("transaction"))
-                    throw $util.ProtocolError("missing required 'transaction'", { instance: message });
-                if (!message.hasOwnProperty("receipt"))
-                    throw $util.ProtocolError("missing required 'receipt'", { instance: message });
-                return message;
-            };
-
-            /**
-             * Decodes a ProtoTransactionWithReceipt message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            ProtoTransactionWithReceipt.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a ProtoTransactionWithReceipt message.
-             * @function verify
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            ProtoTransactionWithReceipt.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                {
-                    var error = $root.ZilliqaMessage.ProtoTransaction.verify(message.transaction);
-                    if (error)
-                        return "transaction." + error;
-                }
-                {
-                    var error = $root.ZilliqaMessage.ProtoTransactionReceipt.verify(message.receipt);
-                    if (error)
-                        return "receipt." + error;
-                }
-                return null;
-            };
-
-            /**
-             * Creates a ProtoTransactionWithReceipt message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt
-             */
-            ProtoTransactionWithReceipt.fromObject = function fromObject(object) {
-                if (object instanceof $root.ZilliqaMessage.ProtoTransactionWithReceipt)
-                    return object;
-                var message = new $root.ZilliqaMessage.ProtoTransactionWithReceipt();
-                if (object.transaction != null) {
-                    if (typeof object.transaction !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionWithReceipt.transaction: object expected");
-                    message.transaction = $root.ZilliqaMessage.ProtoTransaction.fromObject(object.transaction);
-                }
-                if (object.receipt != null) {
-                    if (typeof object.receipt !== "object")
-                        throw TypeError(".ZilliqaMessage.ProtoTransactionWithReceipt.receipt: object expected");
-                    message.receipt = $root.ZilliqaMessage.ProtoTransactionReceipt.fromObject(object.receipt);
-                }
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a ProtoTransactionWithReceipt message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @static
-             * @param {ZilliqaMessage.ProtoTransactionWithReceipt} message ProtoTransactionWithReceipt
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            ProtoTransactionWithReceipt.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults) {
-                    object.transaction = null;
-                    object.receipt = null;
-                }
-                if (message.transaction != null && message.hasOwnProperty("transaction"))
-                    object.transaction = $root.ZilliqaMessage.ProtoTransaction.toObject(message.transaction, options);
-                if (message.receipt != null && message.hasOwnProperty("receipt"))
-                    object.receipt = $root.ZilliqaMessage.ProtoTransactionReceipt.toObject(message.receipt, options);
-                return object;
-            };
-
-            /**
-             * Converts this ProtoTransactionWithReceipt to JSON.
-             * @function toJSON
-             * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            ProtoTransactionWithReceipt.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, minimal$1.util.toJSONOptions);
-            };
-
-            return ProtoTransactionWithReceipt;
-        })();
-
-        return ZilliqaMessage;
-    })();
-
-    var proto = $root;
-    var proto_1 = proto.ZilliqaMessage;
-
     /**
      * encodeTransaction
      *
@@ -15367,30 +11379,30 @@ function decrypt (data, password) {
         return Buffer.from(encoded, 'hex');
     };
     var encodeTransactionProto = function (tx) {
-        var msg = proto_1.ProtoTransactionCoreInfo.create({
-            version: proto_1.ByteArray.create({
+        var msg = proto.ZilliqaMessage.ProtoTransactionCoreInfo.create({
+            version: proto.ZilliqaMessage.ByteArray.create({
                 data: util.bytes.intToByteArray(tx.version, 32),
             }),
-            nonce: proto_1.ByteArray.create({
+            nonce: proto.ZilliqaMessage.ByteArray.create({
                 data: util.bytes.intToByteArray(tx.nonce || 0, 32),
             }),
             toaddr: util.bytes.hexToByteArray(tx.toAddr),
-            senderpubkey: proto_1.ByteArray.create({
+            senderpubkey: proto.ZilliqaMessage.ByteArray.create({
                 data: util.bytes.hexToByteArray(tx.pubKey || '00'),
             }),
-            amount: proto_1.ByteArray.create({
+            amount: proto.ZilliqaMessage.ByteArray.create({
                 data: Uint8Array.from(tx.amount.toArrayLike(Buffer, undefined, 32)),
             }),
-            gasprice: proto_1.ByteArray.create({
+            gasprice: proto.ZilliqaMessage.ByteArray.create({
                 data: Uint8Array.from(tx.gasPrice.toArrayLike(Buffer, undefined, 32)),
             }),
-            gaslimit: proto_1.ByteArray.create({
+            gaslimit: proto.ZilliqaMessage.ByteArray.create({
                 data: Uint8Array.from(tx.gasLimit.toArrayLike(Buffer, undefined, 32)),
             }),
             code: Uint8Array.from(__spread((tx.code || '')).map(function (c) { return c.charCodeAt(0); })),
             data: Uint8Array.from(__spread((tx.data || '')).map(function (c) { return c.charCodeAt(0); })),
         });
-        return Buffer.from(proto_1.ProtoTransactionCoreInfo.encode(msg).finish());
+        return Buffer.from(proto.ZilliqaMessage.ProtoTransactionCoreInfo.encode(msg).finish());
     };
     var isTxReceipt = function (x) {
         return util.validation.isPlainObject(x) && util.validation.matchesObject(x, {});
@@ -15514,6 +11526,20 @@ function decrypt (data, password) {
         };
         return Account;
     }());
+
+    var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    function unwrapExports (x) {
+    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
+    }
+
+    function createCommonjsModule(fn, module) {
+    	return module = { exports: {} }, fn(module, module.exports), module.exports;
+    }
+
+    function getCjsExportFromNamespace (n) {
+    	return n && n.default || n;
+    }
 
     var byteLength_1 = byteLength;
     var toByteArray_1 = toByteArray;
@@ -15766,1793 +11792,6 @@ function decrypt (data, password) {
     var isarray = Array.isArray || function (arr) {
       return toString.call(arr) == '[object Array]';
     };
-
-    var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer = createCommonjsModule(function (module, exports) {
-
-
-
-
-
-    exports.Buffer = Buffer;
-    exports.SlowBuffer = SlowBuffer;
-    exports.INSPECT_MAX_BYTES = 50;
-
-    /**
-     * If `Buffer.TYPED_ARRAY_SUPPORT`:
-     *   === true    Use Uint8Array implementation (fastest)
-     *   === false   Use Object implementation (most compatible, even IE6)
-     *
-     * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
-     * Opera 11.6+, iOS 4.2+.
-     *
-     * Due to various browser bugs, sometimes the Object implementation will be used even
-     * when the browser supports typed arrays.
-     *
-     * Note:
-     *
-     *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
-     *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
-     *
-     *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
-     *
-     *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
-     *     incorrect length in some situations.
-
-     * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
-     * get the Object implementation, which is slower but behaves correctly.
-     */
-    Buffer.TYPED_ARRAY_SUPPORT = commonjsGlobal.TYPED_ARRAY_SUPPORT !== undefined
-      ? commonjsGlobal.TYPED_ARRAY_SUPPORT
-      : typedArraySupport();
-
-    /*
-     * Export kMaxLength after typed array support is determined.
-     */
-    exports.kMaxLength = kMaxLength();
-
-    function typedArraySupport () {
-      try {
-        var arr = new Uint8Array(1);
-        arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }};
-        return arr.foo() === 42 && // typed array instances can be augmented
-            typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-            arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
-      } catch (e) {
-        return false
-      }
-    }
-
-    function kMaxLength () {
-      return Buffer.TYPED_ARRAY_SUPPORT
-        ? 0x7fffffff
-        : 0x3fffffff
-    }
-
-    function createBuffer (that, length) {
-      if (kMaxLength() < length) {
-        throw new RangeError('Invalid typed array length')
-      }
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        // Return an augmented `Uint8Array` instance, for best performance
-        that = new Uint8Array(length);
-        that.__proto__ = Buffer.prototype;
-      } else {
-        // Fallback: Return an object instance of the Buffer class
-        if (that === null) {
-          that = new Buffer(length);
-        }
-        that.length = length;
-      }
-
-      return that
-    }
-
-    /**
-     * The Buffer constructor returns instances of `Uint8Array` that have their
-     * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
-     * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
-     * and the `Uint8Array` methods. Square bracket notation works as expected -- it
-     * returns a single octet.
-     *
-     * The `Uint8Array` prototype remains unmodified.
-     */
-
-    function Buffer (arg, encodingOrOffset, length) {
-      if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
-        return new Buffer(arg, encodingOrOffset, length)
-      }
-
-      // Common case.
-      if (typeof arg === 'number') {
-        if (typeof encodingOrOffset === 'string') {
-          throw new Error(
-            'If encoding is specified then the first argument must be a string'
-          )
-        }
-        return allocUnsafe(this, arg)
-      }
-      return from(this, arg, encodingOrOffset, length)
-    }
-
-    Buffer.poolSize = 8192; // not used by this implementation
-
-    // TODO: Legacy, not needed anymore. Remove in next major version.
-    Buffer._augment = function (arr) {
-      arr.__proto__ = Buffer.prototype;
-      return arr
-    };
-
-    function from (that, value, encodingOrOffset, length) {
-      if (typeof value === 'number') {
-        throw new TypeError('"value" argument must not be a number')
-      }
-
-      if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-        return fromArrayBuffer(that, value, encodingOrOffset, length)
-      }
-
-      if (typeof value === 'string') {
-        return fromString(that, value, encodingOrOffset)
-      }
-
-      return fromObject(that, value)
-    }
-
-    /**
-     * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
-     * if value is a number.
-     * Buffer.from(str[, encoding])
-     * Buffer.from(array)
-     * Buffer.from(buffer)
-     * Buffer.from(arrayBuffer[, byteOffset[, length]])
-     **/
-    Buffer.from = function (value, encodingOrOffset, length) {
-      return from(null, value, encodingOrOffset, length)
-    };
-
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      Buffer.prototype.__proto__ = Uint8Array.prototype;
-      Buffer.__proto__ = Uint8Array;
-      if (typeof Symbol !== 'undefined' && Symbol.species &&
-          Buffer[Symbol.species] === Buffer) {
-        // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-        Object.defineProperty(Buffer, Symbol.species, {
-          value: null,
-          configurable: true
-        });
-      }
-    }
-
-    function assertSize (size) {
-      if (typeof size !== 'number') {
-        throw new TypeError('"size" argument must be a number')
-      } else if (size < 0) {
-        throw new RangeError('"size" argument must not be negative')
-      }
-    }
-
-    function alloc (that, size, fill, encoding) {
-      assertSize(size);
-      if (size <= 0) {
-        return createBuffer(that, size)
-      }
-      if (fill !== undefined) {
-        // Only pay attention to encoding if it's a string. This
-        // prevents accidentally sending in a number that would
-        // be interpretted as a start offset.
-        return typeof encoding === 'string'
-          ? createBuffer(that, size).fill(fill, encoding)
-          : createBuffer(that, size).fill(fill)
-      }
-      return createBuffer(that, size)
-    }
-
-    /**
-     * Creates a new filled Buffer instance.
-     * alloc(size[, fill[, encoding]])
-     **/
-    Buffer.alloc = function (size, fill, encoding) {
-      return alloc(null, size, fill, encoding)
-    };
-
-    function allocUnsafe (that, size) {
-      assertSize(size);
-      that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
-      if (!Buffer.TYPED_ARRAY_SUPPORT) {
-        for (var i = 0; i < size; ++i) {
-          that[i] = 0;
-        }
-      }
-      return that
-    }
-
-    /**
-     * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
-     * */
-    Buffer.allocUnsafe = function (size) {
-      return allocUnsafe(null, size)
-    };
-    /**
-     * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
-     */
-    Buffer.allocUnsafeSlow = function (size) {
-      return allocUnsafe(null, size)
-    };
-
-    function fromString (that, string, encoding) {
-      if (typeof encoding !== 'string' || encoding === '') {
-        encoding = 'utf8';
-      }
-
-      if (!Buffer.isEncoding(encoding)) {
-        throw new TypeError('"encoding" must be a valid string encoding')
-      }
-
-      var length = byteLength(string, encoding) | 0;
-      that = createBuffer(that, length);
-
-      var actual = that.write(string, encoding);
-
-      if (actual !== length) {
-        // Writing a hex string, for example, that contains invalid characters will
-        // cause everything after the first invalid character to be ignored. (e.g.
-        // 'abxxcd' will be treated as 'ab')
-        that = that.slice(0, actual);
-      }
-
-      return that
-    }
-
-    function fromArrayLike (that, array) {
-      var length = array.length < 0 ? 0 : checked(array.length) | 0;
-      that = createBuffer(that, length);
-      for (var i = 0; i < length; i += 1) {
-        that[i] = array[i] & 255;
-      }
-      return that
-    }
-
-    function fromArrayBuffer (that, array, byteOffset, length) {
-      array.byteLength; // this throws if `array` is not a valid ArrayBuffer
-
-      if (byteOffset < 0 || array.byteLength < byteOffset) {
-        throw new RangeError('\'offset\' is out of bounds')
-      }
-
-      if (array.byteLength < byteOffset + (length || 0)) {
-        throw new RangeError('\'length\' is out of bounds')
-      }
-
-      if (byteOffset === undefined && length === undefined) {
-        array = new Uint8Array(array);
-      } else if (length === undefined) {
-        array = new Uint8Array(array, byteOffset);
-      } else {
-        array = new Uint8Array(array, byteOffset, length);
-      }
-
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        // Return an augmented `Uint8Array` instance, for best performance
-        that = array;
-        that.__proto__ = Buffer.prototype;
-      } else {
-        // Fallback: Return an object instance of the Buffer class
-        that = fromArrayLike(that, array);
-      }
-      return that
-    }
-
-    function fromObject (that, obj) {
-      if (Buffer.isBuffer(obj)) {
-        var len = checked(obj.length) | 0;
-        that = createBuffer(that, len);
-
-        if (that.length === 0) {
-          return that
-        }
-
-        obj.copy(that, 0, 0, len);
-        return that
-      }
-
-      if (obj) {
-        if ((typeof ArrayBuffer !== 'undefined' &&
-            obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-          if (typeof obj.length !== 'number' || isnan(obj.length)) {
-            return createBuffer(that, 0)
-          }
-          return fromArrayLike(that, obj)
-        }
-
-        if (obj.type === 'Buffer' && isarray(obj.data)) {
-          return fromArrayLike(that, obj.data)
-        }
-      }
-
-      throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
-    }
-
-    function checked (length) {
-      // Note: cannot use `length < kMaxLength()` here because that fails when
-      // length is NaN (which is otherwise coerced to zero.)
-      if (length >= kMaxLength()) {
-        throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                             'size: 0x' + kMaxLength().toString(16) + ' bytes')
-      }
-      return length | 0
-    }
-
-    function SlowBuffer (length) {
-      if (+length != length) { // eslint-disable-line eqeqeq
-        length = 0;
-      }
-      return Buffer.alloc(+length)
-    }
-
-    Buffer.isBuffer = function isBuffer (b) {
-      return !!(b != null && b._isBuffer)
-    };
-
-    Buffer.compare = function compare (a, b) {
-      if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-        throw new TypeError('Arguments must be Buffers')
-      }
-
-      if (a === b) return 0
-
-      var x = a.length;
-      var y = b.length;
-
-      for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-        if (a[i] !== b[i]) {
-          x = a[i];
-          y = b[i];
-          break
-        }
-      }
-
-      if (x < y) return -1
-      if (y < x) return 1
-      return 0
-    };
-
-    Buffer.isEncoding = function isEncoding (encoding) {
-      switch (String(encoding).toLowerCase()) {
-        case 'hex':
-        case 'utf8':
-        case 'utf-8':
-        case 'ascii':
-        case 'latin1':
-        case 'binary':
-        case 'base64':
-        case 'ucs2':
-        case 'ucs-2':
-        case 'utf16le':
-        case 'utf-16le':
-          return true
-        default:
-          return false
-      }
-    };
-
-    Buffer.concat = function concat (list, length) {
-      if (!isarray(list)) {
-        throw new TypeError('"list" argument must be an Array of Buffers')
-      }
-
-      if (list.length === 0) {
-        return Buffer.alloc(0)
-      }
-
-      var i;
-      if (length === undefined) {
-        length = 0;
-        for (i = 0; i < list.length; ++i) {
-          length += list[i].length;
-        }
-      }
-
-      var buffer = Buffer.allocUnsafe(length);
-      var pos = 0;
-      for (i = 0; i < list.length; ++i) {
-        var buf = list[i];
-        if (!Buffer.isBuffer(buf)) {
-          throw new TypeError('"list" argument must be an Array of Buffers')
-        }
-        buf.copy(buffer, pos);
-        pos += buf.length;
-      }
-      return buffer
-    };
-
-    function byteLength (string, encoding) {
-      if (Buffer.isBuffer(string)) {
-        return string.length
-      }
-      if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
-          (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
-        return string.byteLength
-      }
-      if (typeof string !== 'string') {
-        string = '' + string;
-      }
-
-      var len = string.length;
-      if (len === 0) return 0
-
-      // Use a for loop to avoid recursion
-      var loweredCase = false;
-      for (;;) {
-        switch (encoding) {
-          case 'ascii':
-          case 'latin1':
-          case 'binary':
-            return len
-          case 'utf8':
-          case 'utf-8':
-          case undefined:
-            return utf8ToBytes(string).length
-          case 'ucs2':
-          case 'ucs-2':
-          case 'utf16le':
-          case 'utf-16le':
-            return len * 2
-          case 'hex':
-            return len >>> 1
-          case 'base64':
-            return base64ToBytes(string).length
-          default:
-            if (loweredCase) return utf8ToBytes(string).length // assume utf8
-            encoding = ('' + encoding).toLowerCase();
-            loweredCase = true;
-        }
-      }
-    }
-    Buffer.byteLength = byteLength;
-
-    function slowToString (encoding, start, end) {
-      var loweredCase = false;
-
-      // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-      // property of a typed array.
-
-      // This behaves neither like String nor Uint8Array in that we set start/end
-      // to their upper/lower bounds if the value passed is out of range.
-      // undefined is handled specially as per ECMA-262 6th Edition,
-      // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-      if (start === undefined || start < 0) {
-        start = 0;
-      }
-      // Return early if start > this.length. Done here to prevent potential uint32
-      // coercion fail below.
-      if (start > this.length) {
-        return ''
-      }
-
-      if (end === undefined || end > this.length) {
-        end = this.length;
-      }
-
-      if (end <= 0) {
-        return ''
-      }
-
-      // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-      end >>>= 0;
-      start >>>= 0;
-
-      if (end <= start) {
-        return ''
-      }
-
-      if (!encoding) encoding = 'utf8';
-
-      while (true) {
-        switch (encoding) {
-          case 'hex':
-            return hexSlice(this, start, end)
-
-          case 'utf8':
-          case 'utf-8':
-            return utf8Slice(this, start, end)
-
-          case 'ascii':
-            return asciiSlice(this, start, end)
-
-          case 'latin1':
-          case 'binary':
-            return latin1Slice(this, start, end)
-
-          case 'base64':
-            return base64Slice(this, start, end)
-
-          case 'ucs2':
-          case 'ucs-2':
-          case 'utf16le':
-          case 'utf-16le':
-            return utf16leSlice(this, start, end)
-
-          default:
-            if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-            encoding = (encoding + '').toLowerCase();
-            loweredCase = true;
-        }
-      }
-    }
-
-    // The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
-    // Buffer instances.
-    Buffer.prototype._isBuffer = true;
-
-    function swap (b, n, m) {
-      var i = b[n];
-      b[n] = b[m];
-      b[m] = i;
-    }
-
-    Buffer.prototype.swap16 = function swap16 () {
-      var len = this.length;
-      if (len % 2 !== 0) {
-        throw new RangeError('Buffer size must be a multiple of 16-bits')
-      }
-      for (var i = 0; i < len; i += 2) {
-        swap(this, i, i + 1);
-      }
-      return this
-    };
-
-    Buffer.prototype.swap32 = function swap32 () {
-      var len = this.length;
-      if (len % 4 !== 0) {
-        throw new RangeError('Buffer size must be a multiple of 32-bits')
-      }
-      for (var i = 0; i < len; i += 4) {
-        swap(this, i, i + 3);
-        swap(this, i + 1, i + 2);
-      }
-      return this
-    };
-
-    Buffer.prototype.swap64 = function swap64 () {
-      var len = this.length;
-      if (len % 8 !== 0) {
-        throw new RangeError('Buffer size must be a multiple of 64-bits')
-      }
-      for (var i = 0; i < len; i += 8) {
-        swap(this, i, i + 7);
-        swap(this, i + 1, i + 6);
-        swap(this, i + 2, i + 5);
-        swap(this, i + 3, i + 4);
-      }
-      return this
-    };
-
-    Buffer.prototype.toString = function toString () {
-      var length = this.length | 0;
-      if (length === 0) return ''
-      if (arguments.length === 0) return utf8Slice(this, 0, length)
-      return slowToString.apply(this, arguments)
-    };
-
-    Buffer.prototype.equals = function equals (b) {
-      if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-      if (this === b) return true
-      return Buffer.compare(this, b) === 0
-    };
-
-    Buffer.prototype.inspect = function inspect () {
-      var str = '';
-      var max = exports.INSPECT_MAX_BYTES;
-      if (this.length > 0) {
-        str = this.toString('hex', 0, max).match(/.{2}/g).join(' ');
-        if (this.length > max) str += ' ... ';
-      }
-      return '<Buffer ' + str + '>'
-    };
-
-    Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-      if (!Buffer.isBuffer(target)) {
-        throw new TypeError('Argument must be a Buffer')
-      }
-
-      if (start === undefined) {
-        start = 0;
-      }
-      if (end === undefined) {
-        end = target ? target.length : 0;
-      }
-      if (thisStart === undefined) {
-        thisStart = 0;
-      }
-      if (thisEnd === undefined) {
-        thisEnd = this.length;
-      }
-
-      if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-        throw new RangeError('out of range index')
-      }
-
-      if (thisStart >= thisEnd && start >= end) {
-        return 0
-      }
-      if (thisStart >= thisEnd) {
-        return -1
-      }
-      if (start >= end) {
-        return 1
-      }
-
-      start >>>= 0;
-      end >>>= 0;
-      thisStart >>>= 0;
-      thisEnd >>>= 0;
-
-      if (this === target) return 0
-
-      var x = thisEnd - thisStart;
-      var y = end - start;
-      var len = Math.min(x, y);
-
-      var thisCopy = this.slice(thisStart, thisEnd);
-      var targetCopy = target.slice(start, end);
-
-      for (var i = 0; i < len; ++i) {
-        if (thisCopy[i] !== targetCopy[i]) {
-          x = thisCopy[i];
-          y = targetCopy[i];
-          break
-        }
-      }
-
-      if (x < y) return -1
-      if (y < x) return 1
-      return 0
-    };
-
-    // Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-    // OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-    //
-    // Arguments:
-    // - buffer - a Buffer to search
-    // - val - a string, Buffer, or number
-    // - byteOffset - an index into `buffer`; will be clamped to an int32
-    // - encoding - an optional encoding, relevant is val is a string
-    // - dir - true for indexOf, false for lastIndexOf
-    function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-      // Empty buffer means no match
-      if (buffer.length === 0) return -1
-
-      // Normalize byteOffset
-      if (typeof byteOffset === 'string') {
-        encoding = byteOffset;
-        byteOffset = 0;
-      } else if (byteOffset > 0x7fffffff) {
-        byteOffset = 0x7fffffff;
-      } else if (byteOffset < -0x80000000) {
-        byteOffset = -0x80000000;
-      }
-      byteOffset = +byteOffset;  // Coerce to Number.
-      if (isNaN(byteOffset)) {
-        // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-        byteOffset = dir ? 0 : (buffer.length - 1);
-      }
-
-      // Normalize byteOffset: negative offsets start from the end of the buffer
-      if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
-      if (byteOffset >= buffer.length) {
-        if (dir) return -1
-        else byteOffset = buffer.length - 1;
-      } else if (byteOffset < 0) {
-        if (dir) byteOffset = 0;
-        else return -1
-      }
-
-      // Normalize val
-      if (typeof val === 'string') {
-        val = Buffer.from(val, encoding);
-      }
-
-      // Finally, search either indexOf (if dir is true) or lastIndexOf
-      if (Buffer.isBuffer(val)) {
-        // Special case: looking for empty string/buffer always fails
-        if (val.length === 0) {
-          return -1
-        }
-        return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-      } else if (typeof val === 'number') {
-        val = val & 0xFF; // Search for a byte value [0-255]
-        if (Buffer.TYPED_ARRAY_SUPPORT &&
-            typeof Uint8Array.prototype.indexOf === 'function') {
-          if (dir) {
-            return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-          } else {
-            return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-          }
-        }
-        return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
-      }
-
-      throw new TypeError('val must be string, number or Buffer')
-    }
-
-    function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-      var indexSize = 1;
-      var arrLength = arr.length;
-      var valLength = val.length;
-
-      if (encoding !== undefined) {
-        encoding = String(encoding).toLowerCase();
-        if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-            encoding === 'utf16le' || encoding === 'utf-16le') {
-          if (arr.length < 2 || val.length < 2) {
-            return -1
-          }
-          indexSize = 2;
-          arrLength /= 2;
-          valLength /= 2;
-          byteOffset /= 2;
-        }
-      }
-
-      function read (buf, i) {
-        if (indexSize === 1) {
-          return buf[i]
-        } else {
-          return buf.readUInt16BE(i * indexSize)
-        }
-      }
-
-      var i;
-      if (dir) {
-        var foundIndex = -1;
-        for (i = byteOffset; i < arrLength; i++) {
-          if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-            if (foundIndex === -1) foundIndex = i;
-            if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-          } else {
-            if (foundIndex !== -1) i -= i - foundIndex;
-            foundIndex = -1;
-          }
-        }
-      } else {
-        if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
-        for (i = byteOffset; i >= 0; i--) {
-          var found = true;
-          for (var j = 0; j < valLength; j++) {
-            if (read(arr, i + j) !== read(val, j)) {
-              found = false;
-              break
-            }
-          }
-          if (found) return i
-        }
-      }
-
-      return -1
-    }
-
-    Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-      return this.indexOf(val, byteOffset, encoding) !== -1
-    };
-
-    Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-      return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-    };
-
-    Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-      return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-    };
-
-    function hexWrite (buf, string, offset, length) {
-      offset = Number(offset) || 0;
-      var remaining = buf.length - offset;
-      if (!length) {
-        length = remaining;
-      } else {
-        length = Number(length);
-        if (length > remaining) {
-          length = remaining;
-        }
-      }
-
-      // must be an even number of digits
-      var strLen = string.length;
-      if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
-
-      if (length > strLen / 2) {
-        length = strLen / 2;
-      }
-      for (var i = 0; i < length; ++i) {
-        var parsed = parseInt(string.substr(i * 2, 2), 16);
-        if (isNaN(parsed)) return i
-        buf[offset + i] = parsed;
-      }
-      return i
-    }
-
-    function utf8Write (buf, string, offset, length) {
-      return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-    }
-
-    function asciiWrite (buf, string, offset, length) {
-      return blitBuffer(asciiToBytes(string), buf, offset, length)
-    }
-
-    function latin1Write (buf, string, offset, length) {
-      return asciiWrite(buf, string, offset, length)
-    }
-
-    function base64Write (buf, string, offset, length) {
-      return blitBuffer(base64ToBytes(string), buf, offset, length)
-    }
-
-    function ucs2Write (buf, string, offset, length) {
-      return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-    }
-
-    Buffer.prototype.write = function write (string, offset, length, encoding) {
-      // Buffer#write(string)
-      if (offset === undefined) {
-        encoding = 'utf8';
-        length = this.length;
-        offset = 0;
-      // Buffer#write(string, encoding)
-      } else if (length === undefined && typeof offset === 'string') {
-        encoding = offset;
-        length = this.length;
-        offset = 0;
-      // Buffer#write(string, offset[, length][, encoding])
-      } else if (isFinite(offset)) {
-        offset = offset | 0;
-        if (isFinite(length)) {
-          length = length | 0;
-          if (encoding === undefined) encoding = 'utf8';
-        } else {
-          encoding = length;
-          length = undefined;
-        }
-      // legacy write(string, encoding, offset, length) - remove in v0.13
-      } else {
-        throw new Error(
-          'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-        )
-      }
-
-      var remaining = this.length - offset;
-      if (length === undefined || length > remaining) length = remaining;
-
-      if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-        throw new RangeError('Attempt to write outside buffer bounds')
-      }
-
-      if (!encoding) encoding = 'utf8';
-
-      var loweredCase = false;
-      for (;;) {
-        switch (encoding) {
-          case 'hex':
-            return hexWrite(this, string, offset, length)
-
-          case 'utf8':
-          case 'utf-8':
-            return utf8Write(this, string, offset, length)
-
-          case 'ascii':
-            return asciiWrite(this, string, offset, length)
-
-          case 'latin1':
-          case 'binary':
-            return latin1Write(this, string, offset, length)
-
-          case 'base64':
-            // Warning: maxLength not taken into account in base64Write
-            return base64Write(this, string, offset, length)
-
-          case 'ucs2':
-          case 'ucs-2':
-          case 'utf16le':
-          case 'utf-16le':
-            return ucs2Write(this, string, offset, length)
-
-          default:
-            if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-            encoding = ('' + encoding).toLowerCase();
-            loweredCase = true;
-        }
-      }
-    };
-
-    Buffer.prototype.toJSON = function toJSON () {
-      return {
-        type: 'Buffer',
-        data: Array.prototype.slice.call(this._arr || this, 0)
-      }
-    };
-
-    function base64Slice (buf, start, end) {
-      if (start === 0 && end === buf.length) {
-        return base64Js.fromByteArray(buf)
-      } else {
-        return base64Js.fromByteArray(buf.slice(start, end))
-      }
-    }
-
-    function utf8Slice (buf, start, end) {
-      end = Math.min(buf.length, end);
-      var res = [];
-
-      var i = start;
-      while (i < end) {
-        var firstByte = buf[i];
-        var codePoint = null;
-        var bytesPerSequence = (firstByte > 0xEF) ? 4
-          : (firstByte > 0xDF) ? 3
-          : (firstByte > 0xBF) ? 2
-          : 1;
-
-        if (i + bytesPerSequence <= end) {
-          var secondByte, thirdByte, fourthByte, tempCodePoint;
-
-          switch (bytesPerSequence) {
-            case 1:
-              if (firstByte < 0x80) {
-                codePoint = firstByte;
-              }
-              break
-            case 2:
-              secondByte = buf[i + 1];
-              if ((secondByte & 0xC0) === 0x80) {
-                tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F);
-                if (tempCodePoint > 0x7F) {
-                  codePoint = tempCodePoint;
-                }
-              }
-              break
-            case 3:
-              secondByte = buf[i + 1];
-              thirdByte = buf[i + 2];
-              if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-                tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F);
-                if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-                  codePoint = tempCodePoint;
-                }
-              }
-              break
-            case 4:
-              secondByte = buf[i + 1];
-              thirdByte = buf[i + 2];
-              fourthByte = buf[i + 3];
-              if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-                tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F);
-                if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-                  codePoint = tempCodePoint;
-                }
-              }
-          }
-        }
-
-        if (codePoint === null) {
-          // we did not generate a valid codePoint so insert a
-          // replacement char (U+FFFD) and advance only 1 byte
-          codePoint = 0xFFFD;
-          bytesPerSequence = 1;
-        } else if (codePoint > 0xFFFF) {
-          // encode to utf16 (surrogate pair dance)
-          codePoint -= 0x10000;
-          res.push(codePoint >>> 10 & 0x3FF | 0xD800);
-          codePoint = 0xDC00 | codePoint & 0x3FF;
-        }
-
-        res.push(codePoint);
-        i += bytesPerSequence;
-      }
-
-      return decodeCodePointsArray(res)
-    }
-
-    // Based on http://stackoverflow.com/a/22747272/680742, the browser with
-    // the lowest limit is Chrome, with 0x10000 args.
-    // We go 1 magnitude less, for safety
-    var MAX_ARGUMENTS_LENGTH = 0x1000;
-
-    function decodeCodePointsArray (codePoints) {
-      var len = codePoints.length;
-      if (len <= MAX_ARGUMENTS_LENGTH) {
-        return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
-      }
-
-      // Decode in chunks to avoid "call stack size exceeded".
-      var res = '';
-      var i = 0;
-      while (i < len) {
-        res += String.fromCharCode.apply(
-          String,
-          codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-        );
-      }
-      return res
-    }
-
-    function asciiSlice (buf, start, end) {
-      var ret = '';
-      end = Math.min(buf.length, end);
-
-      for (var i = start; i < end; ++i) {
-        ret += String.fromCharCode(buf[i] & 0x7F);
-      }
-      return ret
-    }
-
-    function latin1Slice (buf, start, end) {
-      var ret = '';
-      end = Math.min(buf.length, end);
-
-      for (var i = start; i < end; ++i) {
-        ret += String.fromCharCode(buf[i]);
-      }
-      return ret
-    }
-
-    function hexSlice (buf, start, end) {
-      var len = buf.length;
-
-      if (!start || start < 0) start = 0;
-      if (!end || end < 0 || end > len) end = len;
-
-      var out = '';
-      for (var i = start; i < end; ++i) {
-        out += toHex(buf[i]);
-      }
-      return out
-    }
-
-    function utf16leSlice (buf, start, end) {
-      var bytes = buf.slice(start, end);
-      var res = '';
-      for (var i = 0; i < bytes.length; i += 2) {
-        res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
-      }
-      return res
-    }
-
-    Buffer.prototype.slice = function slice (start, end) {
-      var len = this.length;
-      start = ~~start;
-      end = end === undefined ? len : ~~end;
-
-      if (start < 0) {
-        start += len;
-        if (start < 0) start = 0;
-      } else if (start > len) {
-        start = len;
-      }
-
-      if (end < 0) {
-        end += len;
-        if (end < 0) end = 0;
-      } else if (end > len) {
-        end = len;
-      }
-
-      if (end < start) end = start;
-
-      var newBuf;
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        newBuf = this.subarray(start, end);
-        newBuf.__proto__ = Buffer.prototype;
-      } else {
-        var sliceLen = end - start;
-        newBuf = new Buffer(sliceLen, undefined);
-        for (var i = 0; i < sliceLen; ++i) {
-          newBuf[i] = this[i + start];
-        }
-      }
-
-      return newBuf
-    };
-
-    /*
-     * Need to make sure that buffer isn't trying to write out of bounds.
-     */
-    function checkOffset (offset, ext, length) {
-      if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-      if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
-    }
-
-    Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-      offset = offset | 0;
-      byteLength = byteLength | 0;
-      if (!noAssert) checkOffset(offset, byteLength, this.length);
-
-      var val = this[offset];
-      var mul = 1;
-      var i = 0;
-      while (++i < byteLength && (mul *= 0x100)) {
-        val += this[offset + i] * mul;
-      }
-
-      return val
-    };
-
-    Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-      offset = offset | 0;
-      byteLength = byteLength | 0;
-      if (!noAssert) {
-        checkOffset(offset, byteLength, this.length);
-      }
-
-      var val = this[offset + --byteLength];
-      var mul = 1;
-      while (byteLength > 0 && (mul *= 0x100)) {
-        val += this[offset + --byteLength] * mul;
-      }
-
-      return val
-    };
-
-    Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 1, this.length);
-      return this[offset]
-    };
-
-    Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 2, this.length);
-      return this[offset] | (this[offset + 1] << 8)
-    };
-
-    Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 2, this.length);
-      return (this[offset] << 8) | this[offset + 1]
-    };
-
-    Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 4, this.length);
-
-      return ((this[offset]) |
-          (this[offset + 1] << 8) |
-          (this[offset + 2] << 16)) +
-          (this[offset + 3] * 0x1000000)
-    };
-
-    Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 4, this.length);
-
-      return (this[offset] * 0x1000000) +
-        ((this[offset + 1] << 16) |
-        (this[offset + 2] << 8) |
-        this[offset + 3])
-    };
-
-    Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-      offset = offset | 0;
-      byteLength = byteLength | 0;
-      if (!noAssert) checkOffset(offset, byteLength, this.length);
-
-      var val = this[offset];
-      var mul = 1;
-      var i = 0;
-      while (++i < byteLength && (mul *= 0x100)) {
-        val += this[offset + i] * mul;
-      }
-      mul *= 0x80;
-
-      if (val >= mul) val -= Math.pow(2, 8 * byteLength);
-
-      return val
-    };
-
-    Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-      offset = offset | 0;
-      byteLength = byteLength | 0;
-      if (!noAssert) checkOffset(offset, byteLength, this.length);
-
-      var i = byteLength;
-      var mul = 1;
-      var val = this[offset + --i];
-      while (i > 0 && (mul *= 0x100)) {
-        val += this[offset + --i] * mul;
-      }
-      mul *= 0x80;
-
-      if (val >= mul) val -= Math.pow(2, 8 * byteLength);
-
-      return val
-    };
-
-    Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 1, this.length);
-      if (!(this[offset] & 0x80)) return (this[offset])
-      return ((0xff - this[offset] + 1) * -1)
-    };
-
-    Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 2, this.length);
-      var val = this[offset] | (this[offset + 1] << 8);
-      return (val & 0x8000) ? val | 0xFFFF0000 : val
-    };
-
-    Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 2, this.length);
-      var val = this[offset + 1] | (this[offset] << 8);
-      return (val & 0x8000) ? val | 0xFFFF0000 : val
-    };
-
-    Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 4, this.length);
-
-      return (this[offset]) |
-        (this[offset + 1] << 8) |
-        (this[offset + 2] << 16) |
-        (this[offset + 3] << 24)
-    };
-
-    Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 4, this.length);
-
-      return (this[offset] << 24) |
-        (this[offset + 1] << 16) |
-        (this[offset + 2] << 8) |
-        (this[offset + 3])
-    };
-
-    Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 4, this.length);
-      return ieee754.read(this, offset, true, 23, 4)
-    };
-
-    Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 4, this.length);
-      return ieee754.read(this, offset, false, 23, 4)
-    };
-
-    Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 8, this.length);
-      return ieee754.read(this, offset, true, 52, 8)
-    };
-
-    Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-      if (!noAssert) checkOffset(offset, 8, this.length);
-      return ieee754.read(this, offset, false, 52, 8)
-    };
-
-    function checkInt (buf, value, offset, ext, max, min) {
-      if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-      if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-      if (offset + ext > buf.length) throw new RangeError('Index out of range')
-    }
-
-    Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      byteLength = byteLength | 0;
-      if (!noAssert) {
-        var maxBytes = Math.pow(2, 8 * byteLength) - 1;
-        checkInt(this, value, offset, byteLength, maxBytes, 0);
-      }
-
-      var mul = 1;
-      var i = 0;
-      this[offset] = value & 0xFF;
-      while (++i < byteLength && (mul *= 0x100)) {
-        this[offset + i] = (value / mul) & 0xFF;
-      }
-
-      return offset + byteLength
-    };
-
-    Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      byteLength = byteLength | 0;
-      if (!noAssert) {
-        var maxBytes = Math.pow(2, 8 * byteLength) - 1;
-        checkInt(this, value, offset, byteLength, maxBytes, 0);
-      }
-
-      var i = byteLength - 1;
-      var mul = 1;
-      this[offset + i] = value & 0xFF;
-      while (--i >= 0 && (mul *= 0x100)) {
-        this[offset + i] = (value / mul) & 0xFF;
-      }
-
-      return offset + byteLength
-    };
-
-    Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
-      if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
-      this[offset] = (value & 0xff);
-      return offset + 1
-    };
-
-    function objectWriteUInt16 (buf, value, offset, littleEndian) {
-      if (value < 0) value = 0xffff + value + 1;
-      for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
-        buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
-          (littleEndian ? i : 1 - i) * 8;
-      }
-    }
-
-    Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value & 0xff);
-        this[offset + 1] = (value >>> 8);
-      } else {
-        objectWriteUInt16(this, value, offset, true);
-      }
-      return offset + 2
-    };
-
-    Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value >>> 8);
-        this[offset + 1] = (value & 0xff);
-      } else {
-        objectWriteUInt16(this, value, offset, false);
-      }
-      return offset + 2
-    };
-
-    function objectWriteUInt32 (buf, value, offset, littleEndian) {
-      if (value < 0) value = 0xffffffff + value + 1;
-      for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
-        buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff;
-      }
-    }
-
-    Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset + 3] = (value >>> 24);
-        this[offset + 2] = (value >>> 16);
-        this[offset + 1] = (value >>> 8);
-        this[offset] = (value & 0xff);
-      } else {
-        objectWriteUInt32(this, value, offset, true);
-      }
-      return offset + 4
-    };
-
-    Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value >>> 24);
-        this[offset + 1] = (value >>> 16);
-        this[offset + 2] = (value >>> 8);
-        this[offset + 3] = (value & 0xff);
-      } else {
-        objectWriteUInt32(this, value, offset, false);
-      }
-      return offset + 4
-    };
-
-    Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) {
-        var limit = Math.pow(2, 8 * byteLength - 1);
-
-        checkInt(this, value, offset, byteLength, limit - 1, -limit);
-      }
-
-      var i = 0;
-      var mul = 1;
-      var sub = 0;
-      this[offset] = value & 0xFF;
-      while (++i < byteLength && (mul *= 0x100)) {
-        if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-          sub = 1;
-        }
-        this[offset + i] = ((value / mul) >> 0) - sub & 0xFF;
-      }
-
-      return offset + byteLength
-    };
-
-    Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) {
-        var limit = Math.pow(2, 8 * byteLength - 1);
-
-        checkInt(this, value, offset, byteLength, limit - 1, -limit);
-      }
-
-      var i = byteLength - 1;
-      var mul = 1;
-      var sub = 0;
-      this[offset + i] = value & 0xFF;
-      while (--i >= 0 && (mul *= 0x100)) {
-        if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-          sub = 1;
-        }
-        this[offset + i] = ((value / mul) >> 0) - sub & 0xFF;
-      }
-
-      return offset + byteLength
-    };
-
-    Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
-      if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
-      if (value < 0) value = 0xff + value + 1;
-      this[offset] = (value & 0xff);
-      return offset + 1
-    };
-
-    Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value & 0xff);
-        this[offset + 1] = (value >>> 8);
-      } else {
-        objectWriteUInt16(this, value, offset, true);
-      }
-      return offset + 2
-    };
-
-    Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value >>> 8);
-        this[offset + 1] = (value & 0xff);
-      } else {
-        objectWriteUInt16(this, value, offset, false);
-      }
-      return offset + 2
-    };
-
-    Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value & 0xff);
-        this[offset + 1] = (value >>> 8);
-        this[offset + 2] = (value >>> 16);
-        this[offset + 3] = (value >>> 24);
-      } else {
-        objectWriteUInt32(this, value, offset, true);
-      }
-      return offset + 4
-    };
-
-    Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-      value = +value;
-      offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
-      if (value < 0) value = 0xffffffff + value + 1;
-      if (Buffer.TYPED_ARRAY_SUPPORT) {
-        this[offset] = (value >>> 24);
-        this[offset + 1] = (value >>> 16);
-        this[offset + 2] = (value >>> 8);
-        this[offset + 3] = (value & 0xff);
-      } else {
-        objectWriteUInt32(this, value, offset, false);
-      }
-      return offset + 4
-    };
-
-    function checkIEEE754 (buf, value, offset, ext, max, min) {
-      if (offset + ext > buf.length) throw new RangeError('Index out of range')
-      if (offset < 0) throw new RangeError('Index out of range')
-    }
-
-    function writeFloat (buf, value, offset, littleEndian, noAssert) {
-      if (!noAssert) {
-        checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38);
-      }
-      ieee754.write(buf, value, offset, littleEndian, 23, 4);
-      return offset + 4
-    }
-
-    Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-      return writeFloat(this, value, offset, true, noAssert)
-    };
-
-    Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-      return writeFloat(this, value, offset, false, noAssert)
-    };
-
-    function writeDouble (buf, value, offset, littleEndian, noAssert) {
-      if (!noAssert) {
-        checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308);
-      }
-      ieee754.write(buf, value, offset, littleEndian, 52, 8);
-      return offset + 8
-    }
-
-    Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-      return writeDouble(this, value, offset, true, noAssert)
-    };
-
-    Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-      return writeDouble(this, value, offset, false, noAssert)
-    };
-
-    // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-    Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-      if (!start) start = 0;
-      if (!end && end !== 0) end = this.length;
-      if (targetStart >= target.length) targetStart = target.length;
-      if (!targetStart) targetStart = 0;
-      if (end > 0 && end < start) end = start;
-
-      // Copy 0 bytes; we're done
-      if (end === start) return 0
-      if (target.length === 0 || this.length === 0) return 0
-
-      // Fatal error conditions
-      if (targetStart < 0) {
-        throw new RangeError('targetStart out of bounds')
-      }
-      if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
-      if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
-      // Are we oob?
-      if (end > this.length) end = this.length;
-      if (target.length - targetStart < end - start) {
-        end = target.length - targetStart + start;
-      }
-
-      var len = end - start;
-      var i;
-
-      if (this === target && start < targetStart && targetStart < end) {
-        // descending copy from end
-        for (i = len - 1; i >= 0; --i) {
-          target[i + targetStart] = this[i + start];
-        }
-      } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
-        // ascending copy from start
-        for (i = 0; i < len; ++i) {
-          target[i + targetStart] = this[i + start];
-        }
-      } else {
-        Uint8Array.prototype.set.call(
-          target,
-          this.subarray(start, start + len),
-          targetStart
-        );
-      }
-
-      return len
-    };
-
-    // Usage:
-    //    buffer.fill(number[, offset[, end]])
-    //    buffer.fill(buffer[, offset[, end]])
-    //    buffer.fill(string[, offset[, end]][, encoding])
-    Buffer.prototype.fill = function fill (val, start, end, encoding) {
-      // Handle string cases:
-      if (typeof val === 'string') {
-        if (typeof start === 'string') {
-          encoding = start;
-          start = 0;
-          end = this.length;
-        } else if (typeof end === 'string') {
-          encoding = end;
-          end = this.length;
-        }
-        if (val.length === 1) {
-          var code = val.charCodeAt(0);
-          if (code < 256) {
-            val = code;
-          }
-        }
-        if (encoding !== undefined && typeof encoding !== 'string') {
-          throw new TypeError('encoding must be a string')
-        }
-        if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-          throw new TypeError('Unknown encoding: ' + encoding)
-        }
-      } else if (typeof val === 'number') {
-        val = val & 255;
-      }
-
-      // Invalid ranges are not set to a default, so can range check early.
-      if (start < 0 || this.length < start || this.length < end) {
-        throw new RangeError('Out of range index')
-      }
-
-      if (end <= start) {
-        return this
-      }
-
-      start = start >>> 0;
-      end = end === undefined ? this.length : end >>> 0;
-
-      if (!val) val = 0;
-
-      var i;
-      if (typeof val === 'number') {
-        for (i = start; i < end; ++i) {
-          this[i] = val;
-        }
-      } else {
-        var bytes = Buffer.isBuffer(val)
-          ? val
-          : utf8ToBytes(new Buffer(val, encoding).toString());
-        var len = bytes.length;
-        for (i = 0; i < end - start; ++i) {
-          this[i + start] = bytes[i % len];
-        }
-      }
-
-      return this
-    };
-
-    // HELPER FUNCTIONS
-    // ================
-
-    var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g;
-
-    function base64clean (str) {
-      // Node strips out invalid characters like \n and \t from the string, base64-js does not
-      str = stringtrim(str).replace(INVALID_BASE64_RE, '');
-      // Node converts strings with length < 2 to ''
-      if (str.length < 2) return ''
-      // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
-      while (str.length % 4 !== 0) {
-        str = str + '=';
-      }
-      return str
-    }
-
-    function stringtrim (str) {
-      if (str.trim) return str.trim()
-      return str.replace(/^\s+|\s+$/g, '')
-    }
-
-    function toHex (n) {
-      if (n < 16) return '0' + n.toString(16)
-      return n.toString(16)
-    }
-
-    function utf8ToBytes (string, units) {
-      units = units || Infinity;
-      var codePoint;
-      var length = string.length;
-      var leadSurrogate = null;
-      var bytes = [];
-
-      for (var i = 0; i < length; ++i) {
-        codePoint = string.charCodeAt(i);
-
-        // is surrogate component
-        if (codePoint > 0xD7FF && codePoint < 0xE000) {
-          // last char was a lead
-          if (!leadSurrogate) {
-            // no lead yet
-            if (codePoint > 0xDBFF) {
-              // unexpected trail
-              if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-              continue
-            } else if (i + 1 === length) {
-              // unpaired lead
-              if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-              continue
-            }
-
-            // valid lead
-            leadSurrogate = codePoint;
-
-            continue
-          }
-
-          // 2 leads in a row
-          if (codePoint < 0xDC00) {
-            if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-            leadSurrogate = codePoint;
-            continue
-          }
-
-          // valid surrogate pair
-          codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
-        } else if (leadSurrogate) {
-          // valid bmp char, but last char was a lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-        }
-
-        leadSurrogate = null;
-
-        // encode utf8
-        if (codePoint < 0x80) {
-          if ((units -= 1) < 0) break
-          bytes.push(codePoint);
-        } else if (codePoint < 0x800) {
-          if ((units -= 2) < 0) break
-          bytes.push(
-            codePoint >> 0x6 | 0xC0,
-            codePoint & 0x3F | 0x80
-          );
-        } else if (codePoint < 0x10000) {
-          if ((units -= 3) < 0) break
-          bytes.push(
-            codePoint >> 0xC | 0xE0,
-            codePoint >> 0x6 & 0x3F | 0x80,
-            codePoint & 0x3F | 0x80
-          );
-        } else if (codePoint < 0x110000) {
-          if ((units -= 4) < 0) break
-          bytes.push(
-            codePoint >> 0x12 | 0xF0,
-            codePoint >> 0xC & 0x3F | 0x80,
-            codePoint >> 0x6 & 0x3F | 0x80,
-            codePoint & 0x3F | 0x80
-          );
-        } else {
-          throw new Error('Invalid code point')
-        }
-      }
-
-      return bytes
-    }
-
-    function asciiToBytes (str) {
-      var byteArray = [];
-      for (var i = 0; i < str.length; ++i) {
-        // Node's code seems to be doing this and not & 0x7F..
-        byteArray.push(str.charCodeAt(i) & 0xFF);
-      }
-      return byteArray
-    }
-
-    function utf16leToBytes (str, units) {
-      var c, hi, lo;
-      var byteArray = [];
-      for (var i = 0; i < str.length; ++i) {
-        if ((units -= 2) < 0) break
-
-        c = str.charCodeAt(i);
-        hi = c >> 8;
-        lo = c % 256;
-        byteArray.push(lo);
-        byteArray.push(hi);
-      }
-
-      return byteArray
-    }
-
-    function base64ToBytes (str) {
-      return base64Js.toByteArray(base64clean(str))
-    }
-
-    function blitBuffer (src, dst, offset, length) {
-      for (var i = 0; i < length; ++i) {
-        if ((i + offset >= dst.length) || (i >= src.length)) break
-        dst[i + offset] = src[i];
-      }
-      return i
-    }
-
-    function isnan (val) {
-      return val !== val // eslint-disable-line no-self-compare
-    }
-    });
-    var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_1 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.Buffer;
-    var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_2 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.SlowBuffer;
-    var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_3 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.INSPECT_MAX_BYTES;
-    var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_4 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.kMaxLength;
 
     var buffer = createCommonjsModule(function (module, exports) {
 
@@ -19433,12 +13672,12 @@ function decrypt (data, password) {
     }
     });
 
-    var Buffer$2 = safeBuffer.Buffer;
+    var Buffer$1 = safeBuffer.Buffer;
     var Transform = stream.Transform;
 
 
     function throwIfNotStringOrBuffer (val, prefix) {
-      if (!Buffer$2.isBuffer(val) && typeof val !== 'string') {
+      if (!Buffer$1.isBuffer(val) && typeof val !== 'string') {
         throw new TypeError(prefix + ' must be a string or a buffer')
       }
     }
@@ -19446,7 +13685,7 @@ function decrypt (data, password) {
     function HashBase (blockSize) {
       Transform.call(this);
 
-      this._block = Buffer$2.allocUnsafe(blockSize);
+      this._block = Buffer$1.allocUnsafe(blockSize);
       this._blockSize = blockSize;
       this._blockOffset = 0;
       this._length = [0, 0, 0, 0];
@@ -19481,7 +13720,7 @@ function decrypt (data, password) {
     HashBase.prototype.update = function (data, encoding) {
       throwIfNotStringOrBuffer(data, 'Data');
       if (this._finalized) throw new Error('Digest already called')
-      if (!Buffer$2.isBuffer(data)) data = Buffer$2.from(data, encoding);
+      if (!Buffer$1.isBuffer(data)) data = Buffer$1.from(data, encoding);
 
       // consume data
       var block = this._block;
@@ -19528,7 +13767,7 @@ function decrypt (data, password) {
 
     var hashBase = HashBase;
 
-    var Buffer$3 = safeBuffer.Buffer;
+    var Buffer$2 = safeBuffer.Buffer;
 
     var ARRAY16 = new Array(16);
 
@@ -19642,7 +13881,7 @@ function decrypt (data, password) {
       this._update();
 
       // produce result
-      var buffer = Buffer$3.allocUnsafe(16);
+      var buffer = Buffer$2.allocUnsafe(16);
       buffer.writeInt32LE(this._a, 0);
       buffer.writeInt32LE(this._b, 4);
       buffer.writeInt32LE(this._c, 8);
@@ -19672,7 +13911,7 @@ function decrypt (data, password) {
 
     var md5_js = MD5;
 
-    var Buffer$4 = buffer.Buffer;
+    var Buffer$3 = buffer.Buffer;
 
 
 
@@ -19800,7 +14039,7 @@ function decrypt (data, password) {
       this._update();
 
       // produce result
-      var buffer$$1 = Buffer$4.alloc ? Buffer$4.alloc(20) : new Buffer$4(20);
+      var buffer$$1 = Buffer$3.alloc ? Buffer$3.alloc(20) : new Buffer$3(20);
       buffer$$1.writeInt32LE(this._a, 0);
       buffer$$1.writeInt32LE(this._b, 4);
       buffer$$1.writeInt32LE(this._c, 8);
@@ -19835,11 +14074,11 @@ function decrypt (data, password) {
 
     var ripemd160 = RIPEMD160;
 
-    var Buffer$5 = safeBuffer.Buffer;
+    var Buffer$4 = safeBuffer.Buffer;
 
     // prototype class for hash functions
     function Hash (blockSize, finalSize) {
-      this._block = Buffer$5.alloc(blockSize);
+      this._block = Buffer$4.alloc(blockSize);
       this._finalSize = finalSize;
       this._blockSize = blockSize;
       this._len = 0;
@@ -19848,7 +14087,7 @@ function decrypt (data, password) {
     Hash.prototype.update = function (data, enc) {
       if (typeof data === 'string') {
         enc = enc || 'utf8';
-        data = Buffer$5.from(data, enc);
+        data = Buffer$4.from(data, enc);
       }
 
       var block = this._block;
@@ -19927,7 +14166,7 @@ function decrypt (data, password) {
 
 
 
-    var Buffer$6 = safeBuffer.Buffer;
+    var Buffer$5 = safeBuffer.Buffer;
 
     var K = [
       0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
@@ -19999,7 +14238,7 @@ function decrypt (data, password) {
     };
 
     Sha.prototype._hash = function () {
-      var H = Buffer$6.allocUnsafe(20);
+      var H = Buffer$5.allocUnsafe(20);
 
       H.writeInt32BE(this._a | 0, 0);
       H.writeInt32BE(this._b | 0, 4);
@@ -20023,7 +14262,7 @@ function decrypt (data, password) {
 
 
 
-    var Buffer$7 = safeBuffer.Buffer;
+    var Buffer$6 = safeBuffer.Buffer;
 
     var K$1 = [
       0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
@@ -20099,7 +14338,7 @@ function decrypt (data, password) {
     };
 
     Sha1.prototype._hash = function () {
-      var H = Buffer$7.allocUnsafe(20);
+      var H = Buffer$6.allocUnsafe(20);
 
       H.writeInt32BE(this._a | 0, 0);
       H.writeInt32BE(this._b | 0, 4);
@@ -20122,7 +14361,7 @@ function decrypt (data, password) {
 
 
 
-    var Buffer$8 = safeBuffer.Buffer;
+    var Buffer$7 = safeBuffer.Buffer;
 
     var K$2 = [
       0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
@@ -20232,7 +14471,7 @@ function decrypt (data, password) {
     };
 
     Sha256.prototype._hash = function () {
-      var H = Buffer$8.allocUnsafe(32);
+      var H = Buffer$7.allocUnsafe(32);
 
       H.writeInt32BE(this._a, 0);
       H.writeInt32BE(this._b, 4);
@@ -20259,7 +14498,7 @@ function decrypt (data, password) {
 
 
 
-    var Buffer$9 = safeBuffer.Buffer;
+    var Buffer$8 = safeBuffer.Buffer;
 
     var W$3 = new Array(64);
 
@@ -20287,7 +14526,7 @@ function decrypt (data, password) {
     };
 
     Sha224.prototype._hash = function () {
-      var H = Buffer$9.allocUnsafe(28);
+      var H = Buffer$8.allocUnsafe(28);
 
       H.writeInt32BE(this._a, 0);
       H.writeInt32BE(this._b, 4);
@@ -20302,7 +14541,7 @@ function decrypt (data, password) {
 
     var sha224 = Sha224;
 
-    var Buffer$a = safeBuffer.Buffer;
+    var Buffer$9 = safeBuffer.Buffer;
 
     var K$3 = [
       0x428a2f98, 0xd728ae22, 0x71374491, 0x23ef65cd,
@@ -20540,7 +14779,7 @@ function decrypt (data, password) {
     };
 
     Sha512.prototype._hash = function () {
-      var H = Buffer$a.allocUnsafe(64);
+      var H = Buffer$9.allocUnsafe(64);
 
       function writeInt64BE (h, l, offset) {
         H.writeInt32BE(h, offset);
@@ -20561,7 +14800,7 @@ function decrypt (data, password) {
 
     var sha512 = Sha512;
 
-    var Buffer$b = safeBuffer.Buffer;
+    var Buffer$a = safeBuffer.Buffer;
 
     var W$5 = new Array(160);
 
@@ -20597,7 +14836,7 @@ function decrypt (data, password) {
     };
 
     Sha384.prototype._hash = function () {
-      var H = Buffer$b.allocUnsafe(48);
+      var H = Buffer$a.allocUnsafe(48);
 
       function writeInt64BE (h, l, offset) {
         H.writeInt32BE(h, offset);
@@ -20636,10 +14875,10 @@ function decrypt (data, password) {
 
     /*<replacement>*/
 
-    var Buffer$c = safeBuffer.Buffer;
+    var Buffer$b = safeBuffer.Buffer;
     /*</replacement>*/
 
-    var isEncoding = Buffer$c.isEncoding || function (encoding) {
+    var isEncoding = Buffer$b.isEncoding || function (encoding) {
       encoding = '' + encoding;
       switch (encoding && encoding.toLowerCase()) {
         case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
@@ -20649,22 +14888,7 @@ function decrypt (data, password) {
       }
     };
 
-    /*<replacement>*/
-
-    var Buffer$d = safeBuffer.Buffer;
-    /*</replacement>*/
-
-    var isEncoding$1 = Buffer$d.isEncoding || function (encoding) {
-      encoding = '' + encoding;
-      switch (encoding && encoding.toLowerCase()) {
-        case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
-          return true;
-        default:
-          return false;
-      }
-    };
-
-    function _normalizeEncoding$1(enc) {
+    function _normalizeEncoding(enc) {
       if (!enc) return 'utf8';
       var retried;
       while (true) {
@@ -20693,45 +14917,45 @@ function decrypt (data, password) {
     }
     // Do not cache `Buffer.isEncoding` when checking encoding names as some
     // modules monkey-patch it to support additional encodings
-    function normalizeEncoding$1(enc) {
-      var nenc = _normalizeEncoding$1(enc);
-      if (typeof nenc !== 'string' && (Buffer$d.isEncoding === isEncoding$1 || !isEncoding$1(enc))) throw new Error('Unknown encoding: ' + enc);
+    function normalizeEncoding(enc) {
+      var nenc = _normalizeEncoding(enc);
+      if (typeof nenc !== 'string' && (Buffer$b.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
       return nenc || enc;
     }
 
     // StringDecoder provides an interface for efficiently splitting a series of
     // buffers into a series of JS strings without breaking apart multi-byte
     // characters.
-    var StringDecoder_1$1 = StringDecoder$1;
-    function StringDecoder$1(encoding) {
-      this.encoding = normalizeEncoding$1(encoding);
+    var StringDecoder_1 = StringDecoder;
+    function StringDecoder(encoding) {
+      this.encoding = normalizeEncoding(encoding);
       var nb;
       switch (this.encoding) {
         case 'utf16le':
-          this.text = utf16Text$1;
-          this.end = utf16End$1;
+          this.text = utf16Text;
+          this.end = utf16End;
           nb = 4;
           break;
         case 'utf8':
-          this.fillLast = utf8FillLast$1;
+          this.fillLast = utf8FillLast;
           nb = 4;
           break;
         case 'base64':
-          this.text = base64Text$1;
-          this.end = base64End$1;
+          this.text = base64Text;
+          this.end = base64End;
           nb = 3;
           break;
         default:
-          this.write = simpleWrite$1;
-          this.end = simpleEnd$1;
+          this.write = simpleWrite;
+          this.end = simpleEnd;
           return;
       }
       this.lastNeed = 0;
       this.lastTotal = 0;
-      this.lastChar = Buffer$d.allocUnsafe(nb);
+      this.lastChar = Buffer$b.allocUnsafe(nb);
     }
 
-    StringDecoder$1.prototype.write = function (buf) {
+    StringDecoder.prototype.write = function (buf) {
       if (buf.length === 0) return '';
       var r;
       var i;
@@ -20747,13 +14971,13 @@ function decrypt (data, password) {
       return r || '';
     };
 
-    StringDecoder$1.prototype.end = utf8End$1;
+    StringDecoder.prototype.end = utf8End;
 
     // Returns only complete characters in a Buffer
-    StringDecoder$1.prototype.text = utf8Text$1;
+    StringDecoder.prototype.text = utf8Text;
 
     // Attempts to complete a partial non-UTF-8 character using bytes from a Buffer
-    StringDecoder$1.prototype.fillLast = function (buf) {
+    StringDecoder.prototype.fillLast = function (buf) {
       if (this.lastNeed <= buf.length) {
         buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
         return this.lastChar.toString(this.encoding, 0, this.lastTotal);
@@ -20764,7 +14988,7 @@ function decrypt (data, password) {
 
     // Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
     // continuation byte. If an invalid byte is detected, -2 is returned.
-    function utf8CheckByte$1(byte) {
+    function utf8CheckByte(byte) {
       if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
       return byte >> 6 === 0x02 ? -1 : -2;
     }
@@ -20772,22 +14996,22 @@ function decrypt (data, password) {
     // Checks at most 3 bytes at the end of a Buffer in order to detect an
     // incomplete multi-byte UTF-8 character. The total number of bytes (2, 3, or 4)
     // needed to complete the UTF-8 character (if applicable) are returned.
-    function utf8CheckIncomplete$1(self, buf, i) {
+    function utf8CheckIncomplete(self, buf, i) {
       var j = buf.length - 1;
       if (j < i) return 0;
-      var nb = utf8CheckByte$1(buf[j]);
+      var nb = utf8CheckByte(buf[j]);
       if (nb >= 0) {
         if (nb > 0) self.lastNeed = nb - 1;
         return nb;
       }
       if (--j < i || nb === -2) return 0;
-      nb = utf8CheckByte$1(buf[j]);
+      nb = utf8CheckByte(buf[j]);
       if (nb >= 0) {
         if (nb > 0) self.lastNeed = nb - 2;
         return nb;
       }
       if (--j < i || nb === -2) return 0;
-      nb = utf8CheckByte$1(buf[j]);
+      nb = utf8CheckByte(buf[j]);
       if (nb >= 0) {
         if (nb > 0) {
           if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
@@ -20805,7 +15029,7 @@ function decrypt (data, password) {
     // where all of the continuation bytes for a character exist in the same buffer.
     // It is also done this way as a slight performance increase instead of using a
     // loop.
-    function utf8CheckExtraBytes$1(self, buf, p) {
+    function utf8CheckExtraBytes(self, buf, p) {
       if ((buf[0] & 0xC0) !== 0x80) {
         self.lastNeed = 0;
         return '\ufffd';
@@ -20825,9 +15049,9 @@ function decrypt (data, password) {
     }
 
     // Attempts to complete a multi-byte UTF-8 character using bytes from a Buffer.
-    function utf8FillLast$1(buf) {
+    function utf8FillLast(buf) {
       var p = this.lastTotal - this.lastNeed;
-      var r = utf8CheckExtraBytes$1(this, buf, p);
+      var r = utf8CheckExtraBytes(this, buf, p);
       if (r !== undefined) return r;
       if (this.lastNeed <= buf.length) {
         buf.copy(this.lastChar, p, 0, this.lastNeed);
@@ -20840,8 +15064,8 @@ function decrypt (data, password) {
     // Returns all complete UTF-8 characters in a Buffer. If the Buffer ended on a
     // partial character, the character's bytes are buffered until the required
     // number of bytes are available.
-    function utf8Text$1(buf, i) {
-      var total = utf8CheckIncomplete$1(this, buf, i);
+    function utf8Text(buf, i) {
+      var total = utf8CheckIncomplete(this, buf, i);
       if (!this.lastNeed) return buf.toString('utf8', i);
       this.lastTotal = total;
       var end = buf.length - (total - this.lastNeed);
@@ -20851,7 +15075,7 @@ function decrypt (data, password) {
 
     // For UTF-8, a replacement character is added when ending on a partial
     // character.
-    function utf8End$1(buf) {
+    function utf8End(buf) {
       var r = buf && buf.length ? this.write(buf) : '';
       if (this.lastNeed) return r + '\ufffd';
       return r;
@@ -20861,7 +15085,7 @@ function decrypt (data, password) {
     // number of bytes available, we need to check if we end on a leading/high
     // surrogate. In that case, we need to wait for the next two bytes in order to
     // decode the last character properly.
-    function utf16Text$1(buf, i) {
+    function utf16Text(buf, i) {
       if ((buf.length - i) % 2 === 0) {
         var r = buf.toString('utf16le', i);
         if (r) {
@@ -20884,7 +15108,7 @@ function decrypt (data, password) {
 
     // For UTF-16LE we do not explicitly append special replacement characters if we
     // end on a partial character, we simply let v8 handle that.
-    function utf16End$1(buf) {
+    function utf16End(buf) {
       var r = buf && buf.length ? this.write(buf) : '';
       if (this.lastNeed) {
         var end = this.lastTotal - this.lastNeed;
@@ -20893,7 +15117,7 @@ function decrypt (data, password) {
       return r;
     }
 
-    function base64Text$1(buf, i) {
+    function base64Text(buf, i) {
       var n = (buf.length - i) % 3;
       if (n === 0) return buf.toString('base64', i);
       this.lastNeed = 3 - n;
@@ -20907,28 +15131,28 @@ function decrypt (data, password) {
       return buf.toString('base64', i, buf.length - n);
     }
 
-    function base64End$1(buf) {
+    function base64End(buf) {
       var r = buf && buf.length ? this.write(buf) : '';
       if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
       return r;
     }
 
     // Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
-    function simpleWrite$1(buf) {
+    function simpleWrite(buf) {
       return buf.toString(this.encoding);
     }
 
-    function simpleEnd$1(buf) {
+    function simpleEnd(buf) {
       return buf && buf.length ? this.write(buf) : '';
     }
 
-    var string_decoder$1 = {
-    	StringDecoder: StringDecoder_1$1
+    var string_decoder = {
+    	StringDecoder: StringDecoder_1
     };
 
-    var Buffer$e = safeBuffer.Buffer;
+    var Buffer$c = safeBuffer.Buffer;
     var Transform$1 = stream.Transform;
-    var StringDecoder$2 = string_decoder$1.StringDecoder;
+    var StringDecoder$1 = string_decoder.StringDecoder;
 
 
     function CipherBase (hashMode) {
@@ -20950,7 +15174,7 @@ function decrypt (data, password) {
 
     CipherBase.prototype.update = function (data, inputEnc, outputEnc) {
       if (typeof data === 'string') {
-        data = Buffer$e.from(data, inputEnc);
+        data = Buffer$c.from(data, inputEnc);
       }
 
       var outData = this._update(data);
@@ -21001,7 +15225,7 @@ function decrypt (data, password) {
       done(err);
     };
     CipherBase.prototype._finalOrDigest = function (outputEnc) {
-      var outData = this.__final() || Buffer$e.alloc(0);
+      var outData = this.__final() || Buffer$c.alloc(0);
       if (outputEnc) {
         outData = this._toString(outData, outputEnc, true);
       }
@@ -21010,7 +15234,7 @@ function decrypt (data, password) {
 
     CipherBase.prototype._toString = function (value, enc, fin) {
       if (!this._decoder) {
-        this._decoder = new StringDecoder$2(enc);
+        this._decoder = new StringDecoder$1(enc);
         this._encoding = enc;
       }
 
@@ -21197,15 +15421,15 @@ function decrypt (data, password) {
     var release = {};
     var config = {};
 
-    function noop$1() {}
+    function noop() {}
 
-    var on = noop$1;
-    var addListener = noop$1;
-    var once = noop$1;
-    var off = noop$1;
-    var removeListener = noop$1;
-    var removeAllListeners = noop$1;
-    var emit = noop$1;
+    var on = noop;
+    var addListener = noop;
+    var once = noop;
+    var off = noop;
+    var removeListener = noop;
+    var removeAllListeners = noop;
+    var emit = noop;
 
     function binding(name) {
         throw new Error('process.binding is not supported');
@@ -21503,12 +15727,12 @@ function decrypt (data, password) {
      * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
      * get the Object implementation, which is slower but behaves correctly.
      */
-    Buffer$f.TYPED_ARRAY_SUPPORT = global$1.TYPED_ARRAY_SUPPORT !== undefined
+    Buffer$d.TYPED_ARRAY_SUPPORT = global$1.TYPED_ARRAY_SUPPORT !== undefined
       ? global$1.TYPED_ARRAY_SUPPORT
       : true;
 
     function kMaxLength () {
-      return Buffer$f.TYPED_ARRAY_SUPPORT
+      return Buffer$d.TYPED_ARRAY_SUPPORT
         ? 0x7fffffff
         : 0x3fffffff
     }
@@ -21517,14 +15741,14 @@ function decrypt (data, password) {
       if (kMaxLength() < length) {
         throw new RangeError('Invalid typed array length')
       }
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         // Return an augmented `Uint8Array` instance, for best performance
         that = new Uint8Array(length);
-        that.__proto__ = Buffer$f.prototype;
+        that.__proto__ = Buffer$d.prototype;
       } else {
         // Fallback: Return an object instance of the Buffer class
         if (that === null) {
-          that = new Buffer$f(length);
+          that = new Buffer$d(length);
         }
         that.length = length;
       }
@@ -21542,9 +15766,9 @@ function decrypt (data, password) {
      * The `Uint8Array` prototype remains unmodified.
      */
 
-    function Buffer$f (arg, encodingOrOffset, length) {
-      if (!Buffer$f.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer$f)) {
-        return new Buffer$f(arg, encodingOrOffset, length)
+    function Buffer$d (arg, encodingOrOffset, length) {
+      if (!Buffer$d.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer$d)) {
+        return new Buffer$d(arg, encodingOrOffset, length)
       }
 
       // Common case.
@@ -21559,11 +15783,11 @@ function decrypt (data, password) {
       return from(this, arg, encodingOrOffset, length)
     }
 
-    Buffer$f.poolSize = 8192; // not used by this implementation
+    Buffer$d.poolSize = 8192; // not used by this implementation
 
     // TODO: Legacy, not needed anymore. Remove in next major version.
-    Buffer$f._augment = function (arr) {
-      arr.__proto__ = Buffer$f.prototype;
+    Buffer$d._augment = function (arr) {
+      arr.__proto__ = Buffer$d.prototype;
       return arr
     };
 
@@ -21591,13 +15815,13 @@ function decrypt (data, password) {
      * Buffer.from(buffer)
      * Buffer.from(arrayBuffer[, byteOffset[, length]])
      **/
-    Buffer$f.from = function (value, encodingOrOffset, length) {
+    Buffer$d.from = function (value, encodingOrOffset, length) {
       return from(null, value, encodingOrOffset, length)
     };
 
-    if (Buffer$f.TYPED_ARRAY_SUPPORT) {
-      Buffer$f.prototype.__proto__ = Uint8Array.prototype;
-      Buffer$f.__proto__ = Uint8Array;
+    if (Buffer$d.TYPED_ARRAY_SUPPORT) {
+      Buffer$d.prototype.__proto__ = Uint8Array.prototype;
+      Buffer$d.__proto__ = Uint8Array;
     }
 
     function assertSize (size) {
@@ -21628,14 +15852,14 @@ function decrypt (data, password) {
      * Creates a new filled Buffer instance.
      * alloc(size[, fill[, encoding]])
      **/
-    Buffer$f.alloc = function (size, fill, encoding) {
+    Buffer$d.alloc = function (size, fill, encoding) {
       return alloc(null, size, fill, encoding)
     };
 
     function allocUnsafe (that, size) {
       assertSize(size);
       that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
-      if (!Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (!Buffer$d.TYPED_ARRAY_SUPPORT) {
         for (var i = 0; i < size; ++i) {
           that[i] = 0;
         }
@@ -21646,13 +15870,13 @@ function decrypt (data, password) {
     /**
      * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
      * */
-    Buffer$f.allocUnsafe = function (size) {
+    Buffer$d.allocUnsafe = function (size) {
       return allocUnsafe(null, size)
     };
     /**
      * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
      */
-    Buffer$f.allocUnsafeSlow = function (size) {
+    Buffer$d.allocUnsafeSlow = function (size) {
       return allocUnsafe(null, size)
     };
 
@@ -21661,7 +15885,7 @@ function decrypt (data, password) {
         encoding = 'utf8';
       }
 
-      if (!Buffer$f.isEncoding(encoding)) {
+      if (!Buffer$d.isEncoding(encoding)) {
         throw new TypeError('"encoding" must be a valid string encoding')
       }
 
@@ -21708,10 +15932,10 @@ function decrypt (data, password) {
         array = new Uint8Array(array, byteOffset, length);
       }
 
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         // Return an augmented `Uint8Array` instance, for best performance
         that = array;
-        that.__proto__ = Buffer$f.prototype;
+        that.__proto__ = Buffer$d.prototype;
       } else {
         // Fallback: Return an object instance of the Buffer class
         that = fromArrayLike(that, array);
@@ -21758,12 +15982,12 @@ function decrypt (data, password) {
       }
       return length | 0
     }
-    Buffer$f.isBuffer = isBuffer;
+    Buffer$d.isBuffer = isBuffer;
     function internalIsBuffer (b) {
       return !!(b != null && b._isBuffer)
     }
 
-    Buffer$f.compare = function compare (a, b) {
+    Buffer$d.compare = function compare (a, b) {
       if (!internalIsBuffer(a) || !internalIsBuffer(b)) {
         throw new TypeError('Arguments must be Buffers')
       }
@@ -21786,7 +16010,7 @@ function decrypt (data, password) {
       return 0
     };
 
-    Buffer$f.isEncoding = function isEncoding (encoding) {
+    Buffer$d.isEncoding = function isEncoding (encoding) {
       switch (String(encoding).toLowerCase()) {
         case 'hex':
         case 'utf8':
@@ -21805,13 +16029,13 @@ function decrypt (data, password) {
       }
     };
 
-    Buffer$f.concat = function concat (list, length) {
+    Buffer$d.concat = function concat (list, length) {
       if (!isArray(list)) {
         throw new TypeError('"list" argument must be an Array of Buffers')
       }
 
       if (list.length === 0) {
-        return Buffer$f.alloc(0)
+        return Buffer$d.alloc(0)
       }
 
       var i;
@@ -21822,7 +16046,7 @@ function decrypt (data, password) {
         }
       }
 
-      var buffer = Buffer$f.allocUnsafe(length);
+      var buffer = Buffer$d.allocUnsafe(length);
       var pos = 0;
       for (i = 0; i < list.length; ++i) {
         var buf = list[i];
@@ -21878,7 +16102,7 @@ function decrypt (data, password) {
         }
       }
     }
-    Buffer$f.byteLength = byteLength$1;
+    Buffer$d.byteLength = byteLength$1;
 
     function slowToString (encoding, start, end) {
       var loweredCase = false;
@@ -21952,7 +16176,7 @@ function decrypt (data, password) {
 
     // The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
     // Buffer instances.
-    Buffer$f.prototype._isBuffer = true;
+    Buffer$d.prototype._isBuffer = true;
 
     function swap (b, n, m) {
       var i = b[n];
@@ -21960,7 +16184,7 @@ function decrypt (data, password) {
       b[m] = i;
     }
 
-    Buffer$f.prototype.swap16 = function swap16 () {
+    Buffer$d.prototype.swap16 = function swap16 () {
       var len = this.length;
       if (len % 2 !== 0) {
         throw new RangeError('Buffer size must be a multiple of 16-bits')
@@ -21971,7 +16195,7 @@ function decrypt (data, password) {
       return this
     };
 
-    Buffer$f.prototype.swap32 = function swap32 () {
+    Buffer$d.prototype.swap32 = function swap32 () {
       var len = this.length;
       if (len % 4 !== 0) {
         throw new RangeError('Buffer size must be a multiple of 32-bits')
@@ -21983,7 +16207,7 @@ function decrypt (data, password) {
       return this
     };
 
-    Buffer$f.prototype.swap64 = function swap64 () {
+    Buffer$d.prototype.swap64 = function swap64 () {
       var len = this.length;
       if (len % 8 !== 0) {
         throw new RangeError('Buffer size must be a multiple of 64-bits')
@@ -21997,20 +16221,20 @@ function decrypt (data, password) {
       return this
     };
 
-    Buffer$f.prototype.toString = function toString () {
+    Buffer$d.prototype.toString = function toString () {
       var length = this.length | 0;
       if (length === 0) return ''
       if (arguments.length === 0) return utf8Slice(this, 0, length)
       return slowToString.apply(this, arguments)
     };
 
-    Buffer$f.prototype.equals = function equals (b) {
+    Buffer$d.prototype.equals = function equals (b) {
       if (!internalIsBuffer(b)) throw new TypeError('Argument must be a Buffer')
       if (this === b) return true
-      return Buffer$f.compare(this, b) === 0
+      return Buffer$d.compare(this, b) === 0
     };
 
-    Buffer$f.prototype.inspect = function inspect () {
+    Buffer$d.prototype.inspect = function inspect () {
       var str = '';
       var max = INSPECT_MAX_BYTES;
       if (this.length > 0) {
@@ -22020,7 +16244,7 @@ function decrypt (data, password) {
       return '<Buffer ' + str + '>'
     };
 
-    Buffer$f.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+    Buffer$d.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
       if (!internalIsBuffer(target)) {
         throw new TypeError('Argument must be a Buffer')
       }
@@ -22119,7 +16343,7 @@ function decrypt (data, password) {
 
       // Normalize val
       if (typeof val === 'string') {
-        val = Buffer$f.from(val, encoding);
+        val = Buffer$d.from(val, encoding);
       }
 
       // Finally, search either indexOf (if dir is true) or lastIndexOf
@@ -22131,7 +16355,7 @@ function decrypt (data, password) {
         return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
       } else if (typeof val === 'number') {
         val = val & 0xFF; // Search for a byte value [0-255]
-        if (Buffer$f.TYPED_ARRAY_SUPPORT &&
+        if (Buffer$d.TYPED_ARRAY_SUPPORT &&
             typeof Uint8Array.prototype.indexOf === 'function') {
           if (dir) {
             return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
@@ -22201,15 +16425,15 @@ function decrypt (data, password) {
       return -1
     }
 
-    Buffer$f.prototype.includes = function includes (val, byteOffset, encoding) {
+    Buffer$d.prototype.includes = function includes (val, byteOffset, encoding) {
       return this.indexOf(val, byteOffset, encoding) !== -1
     };
 
-    Buffer$f.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+    Buffer$d.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
       return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
     };
 
-    Buffer$f.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+    Buffer$d.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
       return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
     };
 
@@ -22260,7 +16484,7 @@ function decrypt (data, password) {
       return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
     }
 
-    Buffer$f.prototype.write = function write (string, offset, length, encoding) {
+    Buffer$d.prototype.write = function write (string, offset, length, encoding) {
       // Buffer#write(string)
       if (offset === undefined) {
         encoding = 'utf8';
@@ -22332,7 +16556,7 @@ function decrypt (data, password) {
       }
     };
 
-    Buffer$f.prototype.toJSON = function toJSON () {
+    Buffer$d.prototype.toJSON = function toJSON () {
       return {
         type: 'Buffer',
         data: Array.prototype.slice.call(this._arr || this, 0)
@@ -22485,7 +16709,7 @@ function decrypt (data, password) {
       return res
     }
 
-    Buffer$f.prototype.slice = function slice (start, end) {
+    Buffer$d.prototype.slice = function slice (start, end) {
       var len = this.length;
       start = ~~start;
       end = end === undefined ? len : ~~end;
@@ -22507,12 +16731,12 @@ function decrypt (data, password) {
       if (end < start) end = start;
 
       var newBuf;
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         newBuf = this.subarray(start, end);
-        newBuf.__proto__ = Buffer$f.prototype;
+        newBuf.__proto__ = Buffer$d.prototype;
       } else {
         var sliceLen = end - start;
-        newBuf = new Buffer$f(sliceLen, undefined);
+        newBuf = new Buffer$d(sliceLen, undefined);
         for (var i = 0; i < sliceLen; ++i) {
           newBuf[i] = this[i + start];
         }
@@ -22529,7 +16753,7 @@ function decrypt (data, password) {
       if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
     }
 
-    Buffer$f.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+    Buffer$d.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
       offset = offset | 0;
       byteLength = byteLength | 0;
       if (!noAssert) checkOffset(offset, byteLength, this.length);
@@ -22544,7 +16768,7 @@ function decrypt (data, password) {
       return val
     };
 
-    Buffer$f.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+    Buffer$d.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
       offset = offset | 0;
       byteLength = byteLength | 0;
       if (!noAssert) {
@@ -22560,22 +16784,22 @@ function decrypt (data, password) {
       return val
     };
 
-    Buffer$f.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+    Buffer$d.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 1, this.length);
       return this[offset]
     };
 
-    Buffer$f.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+    Buffer$d.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length);
       return this[offset] | (this[offset + 1] << 8)
     };
 
-    Buffer$f.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+    Buffer$d.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length);
       return (this[offset] << 8) | this[offset + 1]
     };
 
-    Buffer$f.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+    Buffer$d.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length);
 
       return ((this[offset]) |
@@ -22584,7 +16808,7 @@ function decrypt (data, password) {
           (this[offset + 3] * 0x1000000)
     };
 
-    Buffer$f.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+    Buffer$d.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length);
 
       return (this[offset] * 0x1000000) +
@@ -22593,7 +16817,7 @@ function decrypt (data, password) {
         this[offset + 3])
     };
 
-    Buffer$f.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+    Buffer$d.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
       offset = offset | 0;
       byteLength = byteLength | 0;
       if (!noAssert) checkOffset(offset, byteLength, this.length);
@@ -22611,7 +16835,7 @@ function decrypt (data, password) {
       return val
     };
 
-    Buffer$f.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+    Buffer$d.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
       offset = offset | 0;
       byteLength = byteLength | 0;
       if (!noAssert) checkOffset(offset, byteLength, this.length);
@@ -22629,25 +16853,25 @@ function decrypt (data, password) {
       return val
     };
 
-    Buffer$f.prototype.readInt8 = function readInt8 (offset, noAssert) {
+    Buffer$d.prototype.readInt8 = function readInt8 (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 1, this.length);
       if (!(this[offset] & 0x80)) return (this[offset])
       return ((0xff - this[offset] + 1) * -1)
     };
 
-    Buffer$f.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+    Buffer$d.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length);
       var val = this[offset] | (this[offset + 1] << 8);
       return (val & 0x8000) ? val | 0xFFFF0000 : val
     };
 
-    Buffer$f.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+    Buffer$d.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length);
       var val = this[offset + 1] | (this[offset] << 8);
       return (val & 0x8000) ? val | 0xFFFF0000 : val
     };
 
-    Buffer$f.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+    Buffer$d.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length);
 
       return (this[offset]) |
@@ -22656,7 +16880,7 @@ function decrypt (data, password) {
         (this[offset + 3] << 24)
     };
 
-    Buffer$f.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+    Buffer$d.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length);
 
       return (this[offset] << 24) |
@@ -22665,22 +16889,22 @@ function decrypt (data, password) {
         (this[offset + 3])
     };
 
-    Buffer$f.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+    Buffer$d.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length);
       return read$1(this, offset, true, 23, 4)
     };
 
-    Buffer$f.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+    Buffer$d.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length);
       return read$1(this, offset, false, 23, 4)
     };
 
-    Buffer$f.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+    Buffer$d.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 8, this.length);
       return read$1(this, offset, true, 52, 8)
     };
 
-    Buffer$f.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+    Buffer$d.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 8, this.length);
       return read$1(this, offset, false, 52, 8)
     };
@@ -22691,7 +16915,7 @@ function decrypt (data, password) {
       if (offset + ext > buf.length) throw new RangeError('Index out of range')
     }
 
-    Buffer$f.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+    Buffer$d.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
       value = +value;
       offset = offset | 0;
       byteLength = byteLength | 0;
@@ -22710,7 +16934,7 @@ function decrypt (data, password) {
       return offset + byteLength
     };
 
-    Buffer$f.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+    Buffer$d.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
       value = +value;
       offset = offset | 0;
       byteLength = byteLength | 0;
@@ -22729,11 +16953,11 @@ function decrypt (data, password) {
       return offset + byteLength
     };
 
-    Buffer$f.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+    Buffer$d.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
-      if (!Buffer$f.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+      if (!Buffer$d.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
       this[offset] = (value & 0xff);
       return offset + 1
     };
@@ -22746,11 +16970,11 @@ function decrypt (data, password) {
       }
     }
 
-    Buffer$f.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+    Buffer$d.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value & 0xff);
         this[offset + 1] = (value >>> 8);
       } else {
@@ -22759,11 +16983,11 @@ function decrypt (data, password) {
       return offset + 2
     };
 
-    Buffer$f.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+    Buffer$d.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value >>> 8);
         this[offset + 1] = (value & 0xff);
       } else {
@@ -22779,11 +17003,11 @@ function decrypt (data, password) {
       }
     }
 
-    Buffer$f.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+    Buffer$d.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset + 3] = (value >>> 24);
         this[offset + 2] = (value >>> 16);
         this[offset + 1] = (value >>> 8);
@@ -22794,11 +17018,11 @@ function decrypt (data, password) {
       return offset + 4
     };
 
-    Buffer$f.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+    Buffer$d.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value >>> 24);
         this[offset + 1] = (value >>> 16);
         this[offset + 2] = (value >>> 8);
@@ -22809,7 +17033,7 @@ function decrypt (data, password) {
       return offset + 4
     };
 
-    Buffer$f.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+    Buffer$d.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) {
@@ -22832,7 +17056,7 @@ function decrypt (data, password) {
       return offset + byteLength
     };
 
-    Buffer$f.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+    Buffer$d.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) {
@@ -22855,21 +17079,21 @@ function decrypt (data, password) {
       return offset + byteLength
     };
 
-    Buffer$f.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+    Buffer$d.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
-      if (!Buffer$f.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+      if (!Buffer$d.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
       if (value < 0) value = 0xff + value + 1;
       this[offset] = (value & 0xff);
       return offset + 1
     };
 
-    Buffer$f.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+    Buffer$d.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value & 0xff);
         this[offset + 1] = (value >>> 8);
       } else {
@@ -22878,11 +17102,11 @@ function decrypt (data, password) {
       return offset + 2
     };
 
-    Buffer$f.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+    Buffer$d.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value >>> 8);
         this[offset + 1] = (value & 0xff);
       } else {
@@ -22891,11 +17115,11 @@ function decrypt (data, password) {
       return offset + 2
     };
 
-    Buffer$f.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+    Buffer$d.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value & 0xff);
         this[offset + 1] = (value >>> 8);
         this[offset + 2] = (value >>> 16);
@@ -22906,12 +17130,12 @@ function decrypt (data, password) {
       return offset + 4
     };
 
-    Buffer$f.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+    Buffer$d.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
       if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
       if (value < 0) value = 0xffffffff + value + 1;
-      if (Buffer$f.TYPED_ARRAY_SUPPORT) {
+      if (Buffer$d.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value >>> 24);
         this[offset + 1] = (value >>> 16);
         this[offset + 2] = (value >>> 8);
@@ -22935,11 +17159,11 @@ function decrypt (data, password) {
       return offset + 4
     }
 
-    Buffer$f.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+    Buffer$d.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
       return writeFloat(this, value, offset, true, noAssert)
     };
 
-    Buffer$f.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+    Buffer$d.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
       return writeFloat(this, value, offset, false, noAssert)
     };
 
@@ -22951,16 +17175,16 @@ function decrypt (data, password) {
       return offset + 8
     }
 
-    Buffer$f.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+    Buffer$d.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
       return writeDouble(this, value, offset, true, noAssert)
     };
 
-    Buffer$f.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+    Buffer$d.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
       return writeDouble(this, value, offset, false, noAssert)
     };
 
     // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-    Buffer$f.prototype.copy = function copy (target, targetStart, start, end) {
+    Buffer$d.prototype.copy = function copy (target, targetStart, start, end) {
       if (!start) start = 0;
       if (!end && end !== 0) end = this.length;
       if (targetStart >= target.length) targetStart = target.length;
@@ -22992,7 +17216,7 @@ function decrypt (data, password) {
         for (i = len - 1; i >= 0; --i) {
           target[i + targetStart] = this[i + start];
         }
-      } else if (len < 1000 || !Buffer$f.TYPED_ARRAY_SUPPORT) {
+      } else if (len < 1000 || !Buffer$d.TYPED_ARRAY_SUPPORT) {
         // ascending copy from start
         for (i = 0; i < len; ++i) {
           target[i + targetStart] = this[i + start];
@@ -23012,7 +17236,7 @@ function decrypt (data, password) {
     //    buffer.fill(number[, offset[, end]])
     //    buffer.fill(buffer[, offset[, end]])
     //    buffer.fill(string[, offset[, end]][, encoding])
-    Buffer$f.prototype.fill = function fill (val, start, end, encoding) {
+    Buffer$d.prototype.fill = function fill (val, start, end, encoding) {
       // Handle string cases:
       if (typeof val === 'string') {
         if (typeof start === 'string') {
@@ -23032,7 +17256,7 @@ function decrypt (data, password) {
         if (encoding !== undefined && typeof encoding !== 'string') {
           throw new TypeError('encoding must be a string')
         }
-        if (typeof encoding === 'string' && !Buffer$f.isEncoding(encoding)) {
+        if (typeof encoding === 'string' && !Buffer$d.isEncoding(encoding)) {
           throw new TypeError('Unknown encoding: ' + encoding)
         }
       } else if (typeof val === 'number') {
@@ -23061,7 +17285,7 @@ function decrypt (data, password) {
       } else {
         var bytes = internalIsBuffer(val)
           ? val
-          : utf8ToBytes(new Buffer$f(val, encoding).toString());
+          : utf8ToBytes(new Buffer$d(val, encoding).toString());
         var len = bytes.length;
         for (i = 0; i < end - start; ++i) {
           this[i + start] = bytes[i % len];
@@ -23277,8 +17501,8 @@ function decrypt (data, password) {
       return new md5_js().update(buffer).digest()
     };
 
-    var Buffer$g = safeBuffer.Buffer;
-    var ZEROS = Buffer$g.alloc(128);
+    var Buffer$e = safeBuffer.Buffer;
+    var ZEROS = Buffer$e.alloc(128);
     var sizes = {
       md5: 16,
       sha1: 20,
@@ -23297,17 +17521,17 @@ function decrypt (data, password) {
       if (key.length > blocksize) {
         key = hash(key);
       } else if (key.length < blocksize) {
-        key = Buffer$g.concat([key, ZEROS], blocksize);
+        key = Buffer$e.concat([key, ZEROS], blocksize);
       }
 
-      var ipad = Buffer$g.allocUnsafe(blocksize + sizes[alg]);
-      var opad = Buffer$g.allocUnsafe(blocksize + sizes[alg]);
+      var ipad = Buffer$e.allocUnsafe(blocksize + sizes[alg]);
+      var opad = Buffer$e.allocUnsafe(blocksize + sizes[alg]);
       for (var i = 0; i < blocksize; i++) {
         ipad[i] = key[i] ^ 0x36;
         opad[i] = key[i] ^ 0x5C;
       }
 
-      var ipad1 = Buffer$g.allocUnsafe(blocksize + saltLen + 4);
+      var ipad1 = Buffer$e.allocUnsafe(blocksize + saltLen + 4);
       ipad.copy(ipad1, 0, 0, blocksize);
       this.ipad1 = ipad1;
       this.ipad2 = ipad;
@@ -23341,15 +17565,15 @@ function decrypt (data, password) {
     function pbkdf2 (password, salt, iterations, keylen, digest) {
       precondition(password, salt, iterations, keylen);
 
-      if (!Buffer$g.isBuffer(password)) password = Buffer$g.from(password, defaultEncoding_1);
-      if (!Buffer$g.isBuffer(salt)) salt = Buffer$g.from(salt, defaultEncoding_1);
+      if (!Buffer$e.isBuffer(password)) password = Buffer$e.from(password, defaultEncoding_1);
+      if (!Buffer$e.isBuffer(salt)) salt = Buffer$e.from(salt, defaultEncoding_1);
 
       digest = digest || 'sha1';
 
       var hmac = new Hmac(digest, password, salt.length);
 
-      var DK = Buffer$g.allocUnsafe(keylen);
-      var block1 = Buffer$g.allocUnsafe(salt.length + 4);
+      var DK = Buffer$e.allocUnsafe(keylen);
+      var block1 = Buffer$e.allocUnsafe(salt.length + 4);
       salt.copy(block1, 0, 0, salt.length);
 
       var destPos = 0;
@@ -23376,7 +17600,7 @@ function decrypt (data, password) {
 
     var syncBrowser = pbkdf2;
 
-    var Buffer$h = safeBuffer.Buffer;
+    var Buffer$f = safeBuffer.Buffer;
 
     var ZERO_BUF;
     var subtle = commonjsGlobal.crypto && commonjsGlobal.crypto.subtle;
@@ -23402,7 +17626,7 @@ function decrypt (data, password) {
       if (checks[algo] !== undefined) {
         return checks[algo]
       }
-      ZERO_BUF = ZERO_BUF || Buffer$h.alloc(8);
+      ZERO_BUF = ZERO_BUF || Buffer$f.alloc(8);
       var prom = browserPbkdf2(ZERO_BUF, ZERO_BUF, 10, 128, algo)
         .then(function () {
           return true
@@ -23426,7 +17650,7 @@ function decrypt (data, password) {
           }
         }, key, length << 3)
       }).then(function (res) {
-        return Buffer$h.from(res)
+        return Buffer$f.from(res)
       })
     }
 
@@ -23464,8 +17688,8 @@ function decrypt (data, password) {
 
       precondition(password, salt, iterations, keylen);
       if (typeof callback !== 'function') throw new Error('No callback provided to pbkdf2')
-      if (!Buffer$h.isBuffer(password)) password = Buffer$h.from(password, defaultEncoding_1);
-      if (!Buffer$h.isBuffer(salt)) salt = Buffer$h.from(salt, defaultEncoding_1);
+      if (!Buffer$f.isBuffer(password)) password = Buffer$f.from(password, defaultEncoding_1);
+      if (!Buffer$f.isBuffer(salt)) salt = Buffer$f.from(salt, defaultEncoding_1);
 
       resolvePromise(checkNative(algo).then(function (resp) {
         if (resp) return browserPbkdf2(password, salt, iterations, keylen, algo)
@@ -40422,7 +34646,7 @@ function decrypt (data, password) {
 
     var SPANISH_WORDLIST = getCjsExportFromNamespace(spanish$1);
 
-    var Buffer$i = safeBuffer.Buffer;
+    var Buffer$g = safeBuffer.Buffer;
 
     var pbkdf2$2 = browser$3.pbkdf2Sync;
 
@@ -40472,8 +34696,8 @@ function decrypt (data, password) {
     }
 
     function mnemonicToSeed (mnemonic, password) {
-      var mnemonicBuffer = Buffer$i.from(unorm.nfkd(mnemonic), 'utf8');
-      var saltBuffer = Buffer$i.from(salt(unorm.nfkd(password)), 'utf8');
+      var mnemonicBuffer = Buffer$g.from(unorm.nfkd(mnemonic), 'utf8');
+      var saltBuffer = Buffer$g.from(salt(unorm.nfkd(password)), 'utf8');
 
       return pbkdf2$2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
     }
@@ -40507,7 +34731,7 @@ function decrypt (data, password) {
       if (entropyBytes.length > 32) throw new Error(INVALID_ENTROPY)
       if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
 
-      var entropy = Buffer$i.from(entropyBytes);
+      var entropy = Buffer$g.from(entropyBytes);
       var newChecksum = deriveChecksumBits(entropy);
       if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
@@ -40515,7 +34739,7 @@ function decrypt (data, password) {
     }
 
     function entropyToMnemonic (entropy, wordlist) {
-      if (!Buffer$i.isBuffer(entropy)) entropy = Buffer$i.from(entropy, 'hex');
+      if (!Buffer$g.isBuffer(entropy)) entropy = Buffer$g.from(entropy, 'hex');
       wordlist = wordlist || DEFAULT_WORDLIST;
 
       // 128 <= ENT <= 256
@@ -41790,33 +36014,33 @@ function decrypt (data, password) {
 
     function encode$1 (payload, version) {
       if (Array.isArray(payload) || payload instanceof Uint8Array) {
-        payload = new Buffer$f(payload);
+        payload = new Buffer$d(payload);
       }
 
       var buf;
       if (version != null) {
         if (typeof version === 'number') {
-          version = new Buffer$f([version]);
+          version = new Buffer$d([version]);
         }
-        buf = Buffer$f.concat([version, payload]);
+        buf = Buffer$d.concat([version, payload]);
       } else {
         buf = payload;
       }
 
       var checksum = sha256x2(buf).slice(0, 4);
-      var result = Buffer$f.concat([buf, checksum]);
+      var result = Buffer$d.concat([buf, checksum]);
       return bs58.encode(result)
     }
 
     function decode$1 (base58str, version) {
       var arr = bs58.decode(base58str);
-      var buf = new Buffer$f(arr);
+      var buf = new Buffer$d(arr);
       var versionLength;
 
       if (version == null) {
         versionLength = 0;
       } else {
-        if (typeof version === 'number') version = new Buffer$f([version]);
+        if (typeof version === 'number') version = new Buffer$d([version]);
 
         versionLength = version.length;
         var versionCompare = buf.slice(0, versionLength);
@@ -41940,7 +36164,7 @@ function decrypt (data, password) {
     // Format: 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S]
     // NOTE: SIGHASH byte ignored AND restricted, truncate before use
 
-    var Buffer$j = safeBuffer.Buffer;
+    var Buffer$h = safeBuffer.Buffer;
 
     function check (buffer) {
       if (buffer.length < 8) return false
@@ -42029,7 +36253,7 @@ function decrypt (data, password) {
       if (lenR > 1 && (r[0] === 0x00) && !(r[1] & 0x80)) throw new Error('R value excessively padded')
       if (lenS > 1 && (s[0] === 0x00) && !(s[1] & 0x80)) throw new Error('S value excessively padded')
 
-      var signature = Buffer$j.allocUnsafe(6 + lenR + lenS);
+      var signature = Buffer$h.allocUnsafe(6 + lenR + lenS);
 
       // 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S]
       signature[0] = 0x30;
@@ -42050,10 +36274,10 @@ function decrypt (data, password) {
       encode: encode$2
     };
 
-    var Buffer$k = safeBuffer.Buffer;
+    var Buffer$i = safeBuffer.Buffer;
 
 
-    var EC_PRIVKEY_EXPORT_DER_COMPRESSED = Buffer$k.from([
+    var EC_PRIVKEY_EXPORT_DER_COMPRESSED = Buffer$i.from([
       // begin
       0x30, 0x81, 0xd3, 0x02, 0x01, 0x01, 0x04, 0x20,
       // private key
@@ -42075,7 +36299,7 @@ function decrypt (data, password) {
       0x00
     ]);
 
-    var EC_PRIVKEY_EXPORT_DER_UNCOMPRESSED = Buffer$k.from([
+    var EC_PRIVKEY_EXPORT_DER_UNCOMPRESSED = Buffer$i.from([
       // begin
       0x30, 0x82, 0x01, 0x13, 0x02, 0x01, 0x01, 0x04, 0x20,
       // private key
@@ -42102,7 +36326,7 @@ function decrypt (data, password) {
     ]);
 
     var privateKeyExport = function (privateKey, publicKey, compressed) {
-      var result = Buffer$k.from(compressed ? EC_PRIVKEY_EXPORT_DER_COMPRESSED : EC_PRIVKEY_EXPORT_DER_UNCOMPRESSED);
+      var result = Buffer$i.from(compressed ? EC_PRIVKEY_EXPORT_DER_COMPRESSED : EC_PRIVKEY_EXPORT_DER_UNCOMPRESSED);
       privateKey.copy(result, compressed ? 8 : 9);
       publicKey.copy(result, compressed ? 181 : 214);
       return result
@@ -42150,18 +36374,18 @@ function decrypt (data, password) {
     };
 
     var signatureExport = function (sigObj) {
-      var r = Buffer$k.concat([Buffer$k.from([0]), sigObj.r]);
+      var r = Buffer$i.concat([Buffer$i.from([0]), sigObj.r]);
       for (var lenR = 33, posR = 0; lenR > 1 && r[posR] === 0x00 && !(r[posR + 1] & 0x80); --lenR, ++posR);
 
-      var s = Buffer$k.concat([Buffer$k.from([0]), sigObj.s]);
+      var s = Buffer$i.concat([Buffer$i.from([0]), sigObj.s]);
       for (var lenS = 33, posS = 0; lenS > 1 && s[posS] === 0x00 && !(s[posS + 1] & 0x80); --lenS, ++posS);
 
       return bip66.encode(r.slice(posR), s.slice(posS))
     };
 
     var signatureImport = function (sig) {
-      var r = Buffer$k.alloc(32, 0);
-      var s = Buffer$k.alloc(32, 0);
+      var r = Buffer$i.alloc(32, 0);
+      var s = Buffer$i.alloc(32, 0);
 
       try {
         var sigObj = bip66.decode(sig);
@@ -42180,8 +36404,8 @@ function decrypt (data, password) {
     };
 
     var signatureImportLax = function (sig) {
-      var r = Buffer$k.alloc(32, 0);
-      var s = Buffer$k.alloc(32, 0);
+      var r = Buffer$i.alloc(32, 0);
+      var s = Buffer$i.alloc(32, 0);
 
       var length = sig.length;
       var index = 0;
@@ -55333,504 +49557,12 @@ function decrypt (data, password) {
 
     var elliptic$3 = lib(elliptic$2);
 
-    var assert_1$1 = createCommonjsModule(function (module) {
+    var Buffer$j = safeBuffer.Buffer;
 
-    // compare and isBuffer taken from https://github.com/feross/buffer/blob/680e9e5e488f22aac27599a57dc844a6315928dd/index.js
-    // original notice:
 
-    /*!
-     * The buffer module from node.js, for the browser.
-     *
-     * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
-     * @license  MIT
-     */
-    function compare(a, b) {
-      if (a === b) {
-        return 0;
-      }
 
-      var x = a.length;
-      var y = b.length;
 
-      for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-        if (a[i] !== b[i]) {
-          x = a[i];
-          y = b[i];
-          break;
-        }
-      }
-
-      if (x < y) {
-        return -1;
-      }
-      if (y < x) {
-        return 1;
-      }
-      return 0;
-    }
-    function isBuffer(b) {
-      if (commonjsGlobal.Buffer && typeof commonjsGlobal.Buffer.isBuffer === 'function') {
-        return commonjsGlobal.Buffer.isBuffer(b);
-      }
-      return !!(b != null && b._isBuffer);
-    }
-
-    // based on node assert, original notice:
-
-    // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
-    //
-    // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
-    //
-    // Originally from narwhal.js (http://narwhaljs.org)
-    // Copyright (c) 2009 Thomas Robinson <280north.com>
-    //
-    // Permission is hereby granted, free of charge, to any person obtaining a copy
-    // of this software and associated documentation files (the 'Software'), to
-    // deal in the Software without restriction, including without limitation the
-    // rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-    // sell copies of the Software, and to permit persons to whom the Software is
-    // furnished to do so, subject to the following conditions:
-    //
-    // The above copyright notice and this permission notice shall be included in
-    // all copies or substantial portions of the Software.
-    //
-    // THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-    // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-    // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-    var hasOwn = Object.prototype.hasOwnProperty;
-    var pSlice = Array.prototype.slice;
-    var functionsHaveNames = (function () {
-      return function foo() {}.name === 'foo';
-    }());
-    function pToString (obj) {
-      return Object.prototype.toString.call(obj);
-    }
-    function isView(arrbuf) {
-      if (isBuffer(arrbuf)) {
-        return false;
-      }
-      if (typeof commonjsGlobal.ArrayBuffer !== 'function') {
-        return false;
-      }
-      if (typeof ArrayBuffer.isView === 'function') {
-        return ArrayBuffer.isView(arrbuf);
-      }
-      if (!arrbuf) {
-        return false;
-      }
-      if (arrbuf instanceof DataView) {
-        return true;
-      }
-      if (arrbuf.buffer && arrbuf.buffer instanceof ArrayBuffer) {
-        return true;
-      }
-      return false;
-    }
-    // 1. The assert module provides functions that throw
-    // AssertionError's when particular conditions are not met. The
-    // assert module must conform to the following interface.
-
-    var assert = module.exports = ok;
-
-    // 2. The AssertionError is defined in assert.
-    // new assert.AssertionError({ message: message,
-    //                             actual: actual,
-    //                             expected: expected })
-
-    var regex = /\s*function\s+([^\(\s]*)\s*/;
-    // based on https://github.com/ljharb/function.prototype.name/blob/adeeeec8bfcc6068b187d7d9fb3d5bb1d3a30899/implementation.js
-    function getName(func) {
-      if (!util$2.isFunction(func)) {
-        return;
-      }
-      if (functionsHaveNames) {
-        return func.name;
-      }
-      var str = func.toString();
-      var match = str.match(regex);
-      return match && match[1];
-    }
-    assert.AssertionError = function AssertionError(options) {
-      this.name = 'AssertionError';
-      this.actual = options.actual;
-      this.expected = options.expected;
-      this.operator = options.operator;
-      if (options.message) {
-        this.message = options.message;
-        this.generatedMessage = false;
-      } else {
-        this.message = getMessage(this);
-        this.generatedMessage = true;
-      }
-      var stackStartFunction = options.stackStartFunction || fail;
-      if (Error.captureStackTrace) {
-        Error.captureStackTrace(this, stackStartFunction);
-      } else {
-        // non v8 browsers so we can have a stacktrace
-        var err = new Error();
-        if (err.stack) {
-          var out = err.stack;
-
-          // try to strip useless frames
-          var fn_name = getName(stackStartFunction);
-          var idx = out.indexOf('\n' + fn_name);
-          if (idx >= 0) {
-            // once we have located the function frame
-            // we need to strip out everything before it (and its line)
-            var next_line = out.indexOf('\n', idx + 1);
-            out = out.substring(next_line + 1);
-          }
-
-          this.stack = out;
-        }
-      }
-    };
-
-    // assert.AssertionError instanceof Error
-    util$2.inherits(assert.AssertionError, Error);
-
-    function truncate(s, n) {
-      if (typeof s === 'string') {
-        return s.length < n ? s : s.slice(0, n);
-      } else {
-        return s;
-      }
-    }
-    function inspect(something) {
-      if (functionsHaveNames || !util$2.isFunction(something)) {
-        return util$2.inspect(something);
-      }
-      var rawname = getName(something);
-      var name = rawname ? ': ' + rawname : '';
-      return '[Function' +  name + ']';
-    }
-    function getMessage(self) {
-      return truncate(inspect(self.actual), 128) + ' ' +
-             self.operator + ' ' +
-             truncate(inspect(self.expected), 128);
-    }
-
-    // At present only the three keys mentioned above are used and
-    // understood by the spec. Implementations or sub modules can pass
-    // other keys to the AssertionError's constructor - they will be
-    // ignored.
-
-    // 3. All of the following functions must throw an AssertionError
-    // when a corresponding condition is not met, with a message that
-    // may be undefined if not provided.  All assertion methods provide
-    // both the actual and expected values to the assertion error for
-    // display purposes.
-
-    function fail(actual, expected, message, operator, stackStartFunction) {
-      throw new assert.AssertionError({
-        message: message,
-        actual: actual,
-        expected: expected,
-        operator: operator,
-        stackStartFunction: stackStartFunction
-      });
-    }
-
-    // EXTENSION! allows for well behaved errors defined elsewhere.
-    assert.fail = fail;
-
-    // 4. Pure assertion tests whether a value is truthy, as determined
-    // by !!guard.
-    // assert.ok(guard, message_opt);
-    // This statement is equivalent to assert.equal(true, !!guard,
-    // message_opt);. To test strictly for the value true, use
-    // assert.strictEqual(true, guard, message_opt);.
-
-    function ok(value, message) {
-      if (!value) fail(value, true, message, '==', assert.ok);
-    }
-    assert.ok = ok;
-
-    // 5. The equality assertion tests shallow, coercive equality with
-    // ==.
-    // assert.equal(actual, expected, message_opt);
-
-    assert.equal = function equal(actual, expected, message) {
-      if (actual != expected) fail(actual, expected, message, '==', assert.equal);
-    };
-
-    // 6. The non-equality assertion tests for whether two objects are not equal
-    // with != assert.notEqual(actual, expected, message_opt);
-
-    assert.notEqual = function notEqual(actual, expected, message) {
-      if (actual == expected) {
-        fail(actual, expected, message, '!=', assert.notEqual);
-      }
-    };
-
-    // 7. The equivalence assertion tests a deep equality relation.
-    // assert.deepEqual(actual, expected, message_opt);
-
-    assert.deepEqual = function deepEqual(actual, expected, message) {
-      if (!_deepEqual(actual, expected, false)) {
-        fail(actual, expected, message, 'deepEqual', assert.deepEqual);
-      }
-    };
-
-    assert.deepStrictEqual = function deepStrictEqual(actual, expected, message) {
-      if (!_deepEqual(actual, expected, true)) {
-        fail(actual, expected, message, 'deepStrictEqual', assert.deepStrictEqual);
-      }
-    };
-
-    function _deepEqual(actual, expected, strict, memos) {
-      // 7.1. All identical values are equivalent, as determined by ===.
-      if (actual === expected) {
-        return true;
-      } else if (isBuffer(actual) && isBuffer(expected)) {
-        return compare(actual, expected) === 0;
-
-      // 7.2. If the expected value is a Date object, the actual value is
-      // equivalent if it is also a Date object that refers to the same time.
-      } else if (util$2.isDate(actual) && util$2.isDate(expected)) {
-        return actual.getTime() === expected.getTime();
-
-      // 7.3 If the expected value is a RegExp object, the actual value is
-      // equivalent if it is also a RegExp object with the same source and
-      // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
-      } else if (util$2.isRegExp(actual) && util$2.isRegExp(expected)) {
-        return actual.source === expected.source &&
-               actual.global === expected.global &&
-               actual.multiline === expected.multiline &&
-               actual.lastIndex === expected.lastIndex &&
-               actual.ignoreCase === expected.ignoreCase;
-
-      // 7.4. Other pairs that do not both pass typeof value == 'object',
-      // equivalence is determined by ==.
-      } else if ((actual === null || typeof actual !== 'object') &&
-                 (expected === null || typeof expected !== 'object')) {
-        return strict ? actual === expected : actual == expected;
-
-      // If both values are instances of typed arrays, wrap their underlying
-      // ArrayBuffers in a Buffer each to increase performance
-      // This optimization requires the arrays to have the same type as checked by
-      // Object.prototype.toString (aka pToString). Never perform binary
-      // comparisons for Float*Arrays, though, since e.g. +0 === -0 but their
-      // bit patterns are not identical.
-      } else if (isView(actual) && isView(expected) &&
-                 pToString(actual) === pToString(expected) &&
-                 !(actual instanceof Float32Array ||
-                   actual instanceof Float64Array)) {
-        return compare(new Uint8Array(actual.buffer),
-                       new Uint8Array(expected.buffer)) === 0;
-
-      // 7.5 For all other Object pairs, including Array objects, equivalence is
-      // determined by having the same number of owned properties (as verified
-      // with Object.prototype.hasOwnProperty.call), the same set of keys
-      // (although not necessarily the same order), equivalent values for every
-      // corresponding key, and an identical 'prototype' property. Note: this
-      // accounts for both named and indexed properties on Arrays.
-      } else if (isBuffer(actual) !== isBuffer(expected)) {
-        return false;
-      } else {
-        memos = memos || {actual: [], expected: []};
-
-        var actualIndex = memos.actual.indexOf(actual);
-        if (actualIndex !== -1) {
-          if (actualIndex === memos.expected.indexOf(expected)) {
-            return true;
-          }
-        }
-
-        memos.actual.push(actual);
-        memos.expected.push(expected);
-
-        return objEquiv(actual, expected, strict, memos);
-      }
-    }
-
-    function isArguments(object) {
-      return Object.prototype.toString.call(object) == '[object Arguments]';
-    }
-
-    function objEquiv(a, b, strict, actualVisitedObjects) {
-      if (a === null || a === undefined || b === null || b === undefined)
-        return false;
-      // if one is a primitive, the other must be same
-      if (util$2.isPrimitive(a) || util$2.isPrimitive(b))
-        return a === b;
-      if (strict && Object.getPrototypeOf(a) !== Object.getPrototypeOf(b))
-        return false;
-      var aIsArgs = isArguments(a);
-      var bIsArgs = isArguments(b);
-      if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs))
-        return false;
-      if (aIsArgs) {
-        a = pSlice.call(a);
-        b = pSlice.call(b);
-        return _deepEqual(a, b, strict);
-      }
-      var ka = objectKeys(a);
-      var kb = objectKeys(b);
-      var key, i;
-      // having the same number of owned properties (keys incorporates
-      // hasOwnProperty)
-      if (ka.length !== kb.length)
-        return false;
-      //the same set of keys (although not necessarily the same order),
-      ka.sort();
-      kb.sort();
-      //~~~cheap key test
-      for (i = ka.length - 1; i >= 0; i--) {
-        if (ka[i] !== kb[i])
-          return false;
-      }
-      //equivalent values for every corresponding key, and
-      //~~~possibly expensive deep test
-      for (i = ka.length - 1; i >= 0; i--) {
-        key = ka[i];
-        if (!_deepEqual(a[key], b[key], strict, actualVisitedObjects))
-          return false;
-      }
-      return true;
-    }
-
-    // 8. The non-equivalence assertion tests for any deep inequality.
-    // assert.notDeepEqual(actual, expected, message_opt);
-
-    assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
-      if (_deepEqual(actual, expected, false)) {
-        fail(actual, expected, message, 'notDeepEqual', assert.notDeepEqual);
-      }
-    };
-
-    assert.notDeepStrictEqual = notDeepStrictEqual;
-    function notDeepStrictEqual(actual, expected, message) {
-      if (_deepEqual(actual, expected, true)) {
-        fail(actual, expected, message, 'notDeepStrictEqual', notDeepStrictEqual);
-      }
-    }
-
-
-    // 9. The strict equality assertion tests strict equality, as determined by ===.
-    // assert.strictEqual(actual, expected, message_opt);
-
-    assert.strictEqual = function strictEqual(actual, expected, message) {
-      if (actual !== expected) {
-        fail(actual, expected, message, '===', assert.strictEqual);
-      }
-    };
-
-    // 10. The strict non-equality assertion tests for strict inequality, as
-    // determined by !==.  assert.notStrictEqual(actual, expected, message_opt);
-
-    assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
-      if (actual === expected) {
-        fail(actual, expected, message, '!==', assert.notStrictEqual);
-      }
-    };
-
-    function expectedException(actual, expected) {
-      if (!actual || !expected) {
-        return false;
-      }
-
-      if (Object.prototype.toString.call(expected) == '[object RegExp]') {
-        return expected.test(actual);
-      }
-
-      try {
-        if (actual instanceof expected) {
-          return true;
-        }
-      } catch (e) {
-        // Ignore.  The instanceof check doesn't work for arrow functions.
-      }
-
-      if (Error.isPrototypeOf(expected)) {
-        return false;
-      }
-
-      return expected.call({}, actual) === true;
-    }
-
-    function _tryBlock(block) {
-      var error;
-      try {
-        block();
-      } catch (e) {
-        error = e;
-      }
-      return error;
-    }
-
-    function _throws(shouldThrow, block, expected, message) {
-      var actual;
-
-      if (typeof block !== 'function') {
-        throw new TypeError('"block" argument must be a function');
-      }
-
-      if (typeof expected === 'string') {
-        message = expected;
-        expected = null;
-      }
-
-      actual = _tryBlock(block);
-
-      message = (expected && expected.name ? ' (' + expected.name + ').' : '.') +
-                (message ? ' ' + message : '.');
-
-      if (shouldThrow && !actual) {
-        fail(actual, expected, 'Missing expected exception' + message);
-      }
-
-      var userProvidedMessage = typeof message === 'string';
-      var isUnwantedException = !shouldThrow && util$2.isError(actual);
-      var isUnexpectedException = !shouldThrow && actual && !expected;
-
-      if ((isUnwantedException &&
-          userProvidedMessage &&
-          expectedException(actual, expected)) ||
-          isUnexpectedException) {
-        fail(actual, expected, 'Got unwanted exception' + message);
-      }
-
-      if ((shouldThrow && actual && expected &&
-          !expectedException(actual, expected)) || (!shouldThrow && actual)) {
-        throw actual;
-      }
-    }
-
-    // 11. Expected to throw an error:
-    // assert.throws(block, Error_opt, message_opt);
-
-    assert.throws = function(block, /*optional*/error, /*optional*/message) {
-      _throws(true, block, error, message);
-    };
-
-    // EXTENSION! This is annoying to write outside this module.
-    assert.doesNotThrow = function(block, /*optional*/error, /*optional*/message) {
-      _throws(false, block, error, message);
-    };
-
-    assert.ifError = function(err) { if (err) throw err; };
-
-    var objectKeys = Object.keys || function (obj) {
-      var keys = [];
-      for (var key in obj) {
-        if (hasOwn.call(obj, key)) keys.push(key);
-      }
-      return keys;
-    };
-    });
-
-    var Buffer$l = safeBuffer.Buffer;
-
-
-
-
-    var MASTER_SECRET = Buffer$l.from('Bitcoin seed', 'utf8');
+    var MASTER_SECRET = Buffer$j.from('Bitcoin seed', 'utf8');
     var HARDENED_OFFSET = 0x80000000;
     var LEN = 78;
 
@@ -55857,8 +49589,8 @@ function decrypt (data, password) {
         return this._privateKey
       },
       set: function (value) {
-        assert_1$1.equal(value.length, 32, 'Private key must be 32 bytes.');
-        assert_1$1(elliptic$3.privateKeyVerify(value) === true, 'Invalid private key');
+        assert_1.equal(value.length, 32, 'Private key must be 32 bytes.');
+        assert_1(elliptic$3.privateKeyVerify(value) === true, 'Invalid private key');
 
         this._privateKey = value;
         this._publicKey = elliptic$3.publicKeyCreate(value, true);
@@ -55872,8 +49604,8 @@ function decrypt (data, password) {
         return this._publicKey
       },
       set: function (value) {
-        assert_1$1(value.length === 33 || value.length === 65, 'Public key must be 33 or 65 bytes.');
-        assert_1$1(elliptic$3.publicKeyVerify(value) === true, 'Invalid public key');
+        assert_1(value.length === 33 || value.length === 65, 'Public key must be 33 or 65 bytes.');
+        assert_1(elliptic$3.publicKeyVerify(value) === true, 'Invalid public key');
 
         this._publicKey = elliptic$3.publicKeyConvert(value, true); // force compressed point
         this._identifier = hash160(this.publicKey);
@@ -55884,7 +49616,7 @@ function decrypt (data, password) {
 
     Object.defineProperty(HDKey.prototype, 'privateExtendedKey', {
       get: function () {
-        if (this._privateKey) return coinstring.encode(serialize(this, this.versions.private, Buffer$l.concat([Buffer$l.alloc(1, 0), this.privateKey])))
+        if (this._privateKey) return coinstring.encode(serialize(this, this.versions.private, Buffer$j.concat([Buffer$j.alloc(1, 0), this.privateKey])))
         else return null
       }
     });
@@ -55904,13 +49636,13 @@ function decrypt (data, password) {
       var hdkey = this;
       entries.forEach(function (c, i) {
         if (i === 0) {
-          assert_1$1(/^[mM]{1}/.test(c), 'Path must start with "m" or "M"');
+          assert_1(/^[mM]{1}/.test(c), 'Path must start with "m" or "M"');
           return
         }
 
         var hardened = (c.length > 1) && (c[c.length - 1] === "'");
         var childIndex = parseInt(c, 10); // & (HARDENED_OFFSET - 1)
-        assert_1$1(childIndex < HARDENED_OFFSET, 'Invalid index');
+        assert_1(childIndex < HARDENED_OFFSET, 'Invalid index');
         if (hardened) childIndex += HARDENED_OFFSET;
 
         hdkey = hdkey.deriveChild(childIndex);
@@ -55921,24 +49653,24 @@ function decrypt (data, password) {
 
     HDKey.prototype.deriveChild = function (index) {
       var isHardened = index >= HARDENED_OFFSET;
-      var indexBuffer = Buffer$l.allocUnsafe(4);
+      var indexBuffer = Buffer$j.allocUnsafe(4);
       indexBuffer.writeUInt32BE(index, 0);
 
       var data;
 
       if (isHardened) { // Hardened child
-        assert_1$1(this.privateKey, 'Could not derive hardened child key');
+        assert_1(this.privateKey, 'Could not derive hardened child key');
 
         var pk = this.privateKey;
-        var zb = Buffer$l.alloc(1, 0);
-        pk = Buffer$l.concat([zb, pk]);
+        var zb = Buffer$j.alloc(1, 0);
+        pk = Buffer$j.concat([zb, pk]);
 
         // data = 0x00 || ser256(kpar) || ser32(index)
-        data = Buffer$l.concat([pk, indexBuffer]);
+        data = Buffer$j.concat([pk, indexBuffer]);
       } else { // Normal child
         // data = serP(point(kpar)) || ser32(index)
         //      = serP(Kpar) || ser32(index)
-        data = Buffer$l.concat([this.publicKey, indexBuffer]);
+        data = Buffer$j.concat([this.publicKey, indexBuffer]);
       }
 
       var I = crypto.createHmac('sha512', this.chainCode).update(data).digest();
@@ -56019,7 +49751,7 @@ function decrypt (data, password) {
       var keyBuffer = coinstring.decode(base58key);
 
       var version = keyBuffer.readUInt32BE(0);
-      assert_1$1(version === versions.private || version === versions.public, 'Version mismatch: does not match private or public');
+      assert_1(version === versions.private || version === versions.public, 'Version mismatch: does not match private or public');
 
       hdkey.depth = keyBuffer.readUInt8(4);
       hdkey.parentFingerprint = keyBuffer.readUInt32BE(5);
@@ -56028,10 +49760,10 @@ function decrypt (data, password) {
 
       var key = keyBuffer.slice(45);
       if (key.readUInt8(0) === 0) { // private
-        assert_1$1(version === versions.private, 'Version mismatch: version does not match private');
+        assert_1(version === versions.private, 'Version mismatch: version does not match private');
         hdkey.privateKey = key.slice(1); // cut off first 0x0 byte
       } else {
-        assert_1$1(version === versions.public, 'Version mismatch: version does not match public');
+        assert_1(version === versions.public, 'Version mismatch: version does not match public');
         hdkey.publicKey = key;
       }
 
@@ -56044,7 +49776,7 @@ function decrypt (data, password) {
 
     function serialize (hdkey, version, key) {
       // => version(4) || depth(1) || fingerprint(4) || index(4) || chain(32) || key(33)
-      var buffer = Buffer$l.allocUnsafe(LEN);
+      var buffer = Buffer$j.allocUnsafe(LEN);
 
       buffer.writeUInt32BE(version, 0);
       buffer.writeUInt8(hdkey.depth, 4);
@@ -56580,10 +50312,475 @@ function decrypt (data, password) {
 })));
 //# sourceMappingURL=index.umd.js.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(2).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer, __webpack_require__(5)))
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+if (!process.version ||
+    process.version.indexOf('v0.') === 0 ||
+    process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
+  module.exports = { nextTick: nextTick };
+} else {
+  module.exports = process
+}
+
+function nextTick(fn, arg1, arg2, arg3) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('"callback" argument must be a function');
+  }
+  var len = arguments.length;
+  var args, i;
+  switch (len) {
+  case 0:
+  case 1:
+    return process.nextTick(fn);
+  case 2:
+    return process.nextTick(function afterTickOne() {
+      fn.call(null, arg1);
+    });
+  case 3:
+    return process.nextTick(function afterTickTwo() {
+      fn.call(null, arg1, arg2);
+    });
+  case 4:
+    return process.nextTick(function afterTickThree() {
+      fn.call(null, arg1, arg2, arg3);
+    });
+  default:
+    args = new Array(len - 1);
+    i = 0;
+    while (i < args.length) {
+      args[i++] = arguments[i];
+    }
+    return process.nextTick(function afterTick() {
+      fn.apply(null, args);
+    });
+  }
+}
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8)))
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// based on the aes implimentation in triple sec
+// https://github.com/keybase/triplesec
+// which is in turn based on the one from crypto-js
+// https://code.google.com/p/crypto-js/
+
+var Buffer = __webpack_require__(1).Buffer
+
+function asUInt32Array (buf) {
+  if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf)
+
+  var len = (buf.length / 4) | 0
+  var out = new Array(len)
+
+  for (var i = 0; i < len; i++) {
+    out[i] = buf.readUInt32BE(i * 4)
+  }
+
+  return out
+}
+
+function scrubVec (v) {
+  for (var i = 0; i < v.length; v++) {
+    v[i] = 0
+  }
+}
+
+function cryptBlock (M, keySchedule, SUB_MIX, SBOX, nRounds) {
+  var SUB_MIX0 = SUB_MIX[0]
+  var SUB_MIX1 = SUB_MIX[1]
+  var SUB_MIX2 = SUB_MIX[2]
+  var SUB_MIX3 = SUB_MIX[3]
+
+  var s0 = M[0] ^ keySchedule[0]
+  var s1 = M[1] ^ keySchedule[1]
+  var s2 = M[2] ^ keySchedule[2]
+  var s3 = M[3] ^ keySchedule[3]
+  var t0, t1, t2, t3
+  var ksRow = 4
+
+  for (var round = 1; round < nRounds; round++) {
+    t0 = SUB_MIX0[s0 >>> 24] ^ SUB_MIX1[(s1 >>> 16) & 0xff] ^ SUB_MIX2[(s2 >>> 8) & 0xff] ^ SUB_MIX3[s3 & 0xff] ^ keySchedule[ksRow++]
+    t1 = SUB_MIX0[s1 >>> 24] ^ SUB_MIX1[(s2 >>> 16) & 0xff] ^ SUB_MIX2[(s3 >>> 8) & 0xff] ^ SUB_MIX3[s0 & 0xff] ^ keySchedule[ksRow++]
+    t2 = SUB_MIX0[s2 >>> 24] ^ SUB_MIX1[(s3 >>> 16) & 0xff] ^ SUB_MIX2[(s0 >>> 8) & 0xff] ^ SUB_MIX3[s1 & 0xff] ^ keySchedule[ksRow++]
+    t3 = SUB_MIX0[s3 >>> 24] ^ SUB_MIX1[(s0 >>> 16) & 0xff] ^ SUB_MIX2[(s1 >>> 8) & 0xff] ^ SUB_MIX3[s2 & 0xff] ^ keySchedule[ksRow++]
+    s0 = t0
+    s1 = t1
+    s2 = t2
+    s3 = t3
+  }
+
+  t0 = ((SBOX[s0 >>> 24] << 24) | (SBOX[(s1 >>> 16) & 0xff] << 16) | (SBOX[(s2 >>> 8) & 0xff] << 8) | SBOX[s3 & 0xff]) ^ keySchedule[ksRow++]
+  t1 = ((SBOX[s1 >>> 24] << 24) | (SBOX[(s2 >>> 16) & 0xff] << 16) | (SBOX[(s3 >>> 8) & 0xff] << 8) | SBOX[s0 & 0xff]) ^ keySchedule[ksRow++]
+  t2 = ((SBOX[s2 >>> 24] << 24) | (SBOX[(s3 >>> 16) & 0xff] << 16) | (SBOX[(s0 >>> 8) & 0xff] << 8) | SBOX[s1 & 0xff]) ^ keySchedule[ksRow++]
+  t3 = ((SBOX[s3 >>> 24] << 24) | (SBOX[(s0 >>> 16) & 0xff] << 16) | (SBOX[(s1 >>> 8) & 0xff] << 8) | SBOX[s2 & 0xff]) ^ keySchedule[ksRow++]
+  t0 = t0 >>> 0
+  t1 = t1 >>> 0
+  t2 = t2 >>> 0
+  t3 = t3 >>> 0
+
+  return [t0, t1, t2, t3]
+}
+
+// AES constants
+var RCON = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36]
+var G = (function () {
+  // Compute double table
+  var d = new Array(256)
+  for (var j = 0; j < 256; j++) {
+    if (j < 128) {
+      d[j] = j << 1
+    } else {
+      d[j] = (j << 1) ^ 0x11b
+    }
+  }
+
+  var SBOX = []
+  var INV_SBOX = []
+  var SUB_MIX = [[], [], [], []]
+  var INV_SUB_MIX = [[], [], [], []]
+
+  // Walk GF(2^8)
+  var x = 0
+  var xi = 0
+  for (var i = 0; i < 256; ++i) {
+    // Compute sbox
+    var sx = xi ^ (xi << 1) ^ (xi << 2) ^ (xi << 3) ^ (xi << 4)
+    sx = (sx >>> 8) ^ (sx & 0xff) ^ 0x63
+    SBOX[x] = sx
+    INV_SBOX[sx] = x
+
+    // Compute multiplication
+    var x2 = d[x]
+    var x4 = d[x2]
+    var x8 = d[x4]
+
+    // Compute sub bytes, mix columns tables
+    var t = (d[sx] * 0x101) ^ (sx * 0x1010100)
+    SUB_MIX[0][x] = (t << 24) | (t >>> 8)
+    SUB_MIX[1][x] = (t << 16) | (t >>> 16)
+    SUB_MIX[2][x] = (t << 8) | (t >>> 24)
+    SUB_MIX[3][x] = t
+
+    // Compute inv sub bytes, inv mix columns tables
+    t = (x8 * 0x1010101) ^ (x4 * 0x10001) ^ (x2 * 0x101) ^ (x * 0x1010100)
+    INV_SUB_MIX[0][sx] = (t << 24) | (t >>> 8)
+    INV_SUB_MIX[1][sx] = (t << 16) | (t >>> 16)
+    INV_SUB_MIX[2][sx] = (t << 8) | (t >>> 24)
+    INV_SUB_MIX[3][sx] = t
+
+    if (x === 0) {
+      x = xi = 1
+    } else {
+      x = x2 ^ d[d[d[x8 ^ x2]]]
+      xi ^= d[d[xi]]
+    }
+  }
+
+  return {
+    SBOX: SBOX,
+    INV_SBOX: INV_SBOX,
+    SUB_MIX: SUB_MIX,
+    INV_SUB_MIX: INV_SUB_MIX
+  }
+})()
+
+function AES (key) {
+  this._key = asUInt32Array(key)
+  this._reset()
+}
+
+AES.blockSize = 4 * 4
+AES.keySize = 256 / 8
+AES.prototype.blockSize = AES.blockSize
+AES.prototype.keySize = AES.keySize
+AES.prototype._reset = function () {
+  var keyWords = this._key
+  var keySize = keyWords.length
+  var nRounds = keySize + 6
+  var ksRows = (nRounds + 1) * 4
+
+  var keySchedule = []
+  for (var k = 0; k < keySize; k++) {
+    keySchedule[k] = keyWords[k]
+  }
+
+  for (k = keySize; k < ksRows; k++) {
+    var t = keySchedule[k - 1]
+
+    if (k % keySize === 0) {
+      t = (t << 8) | (t >>> 24)
+      t =
+        (G.SBOX[t >>> 24] << 24) |
+        (G.SBOX[(t >>> 16) & 0xff] << 16) |
+        (G.SBOX[(t >>> 8) & 0xff] << 8) |
+        (G.SBOX[t & 0xff])
+
+      t ^= RCON[(k / keySize) | 0] << 24
+    } else if (keySize > 6 && k % keySize === 4) {
+      t =
+        (G.SBOX[t >>> 24] << 24) |
+        (G.SBOX[(t >>> 16) & 0xff] << 16) |
+        (G.SBOX[(t >>> 8) & 0xff] << 8) |
+        (G.SBOX[t & 0xff])
+    }
+
+    keySchedule[k] = keySchedule[k - keySize] ^ t
+  }
+
+  var invKeySchedule = []
+  for (var ik = 0; ik < ksRows; ik++) {
+    var ksR = ksRows - ik
+    var tt = keySchedule[ksR - (ik % 4 ? 0 : 4)]
+
+    if (ik < 4 || ksR <= 4) {
+      invKeySchedule[ik] = tt
+    } else {
+      invKeySchedule[ik] =
+        G.INV_SUB_MIX[0][G.SBOX[tt >>> 24]] ^
+        G.INV_SUB_MIX[1][G.SBOX[(tt >>> 16) & 0xff]] ^
+        G.INV_SUB_MIX[2][G.SBOX[(tt >>> 8) & 0xff]] ^
+        G.INV_SUB_MIX[3][G.SBOX[tt & 0xff]]
+    }
+  }
+
+  this._nRounds = nRounds
+  this._keySchedule = keySchedule
+  this._invKeySchedule = invKeySchedule
+}
+
+AES.prototype.encryptBlockRaw = function (M) {
+  M = asUInt32Array(M)
+  return cryptBlock(M, this._keySchedule, G.SUB_MIX, G.SBOX, this._nRounds)
+}
+
+AES.prototype.encryptBlock = function (M) {
+  var out = this.encryptBlockRaw(M)
+  var buf = Buffer.allocUnsafe(16)
+  buf.writeUInt32BE(out[0], 0)
+  buf.writeUInt32BE(out[1], 4)
+  buf.writeUInt32BE(out[2], 8)
+  buf.writeUInt32BE(out[3], 12)
+  return buf
+}
+
+AES.prototype.decryptBlock = function (M) {
+  M = asUInt32Array(M)
+
+  // swap
+  var m1 = M[1]
+  M[1] = M[3]
+  M[3] = m1
+
+  var out = cryptBlock(M, this._invKeySchedule, G.INV_SUB_MIX, G.INV_SBOX, this._nRounds)
+  var buf = Buffer.allocUnsafe(16)
+  buf.writeUInt32BE(out[0], 0)
+  buf.writeUInt32BE(out[3], 4)
+  buf.writeUInt32BE(out[2], 8)
+  buf.writeUInt32BE(out[1], 12)
+  return buf
+}
+
+AES.prototype.scrub = function () {
+  scrubVec(this._keySchedule)
+  scrubVec(this._invKeySchedule)
+  scrubVec(this._key)
+}
+
+module.exports.AES = AES
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Buffer = __webpack_require__(1).Buffer
+var MD5 = __webpack_require__(33)
+
+/* eslint-disable camelcase */
+function EVP_BytesToKey (password, salt, keyBits, ivLen) {
+  if (!Buffer.isBuffer(password)) password = Buffer.from(password, 'binary')
+  if (salt) {
+    if (!Buffer.isBuffer(salt)) salt = Buffer.from(salt, 'binary')
+    if (salt.length !== 8) throw new RangeError('salt should be Buffer with 8 byte length')
+  }
+
+  var keyLen = keyBits / 8
+  var key = Buffer.alloc(keyLen)
+  var iv = Buffer.alloc(ivLen || 0)
+  var tmp = Buffer.alloc(0)
+
+  while (keyLen > 0 || ivLen > 0) {
+    var hash = new MD5()
+    hash.update(tmp)
+    hash.update(password)
+    if (salt) hash.update(salt)
+    tmp = hash.digest()
+
+    var used = 0
+
+    if (keyLen > 0) {
+      var keyStart = key.length - keyLen
+      used = Math.min(keyLen, tmp.length)
+      tmp.copy(key, keyStart, 0, used)
+      keyLen -= used
+    }
+
+    if (used < tmp.length && ivLen > 0) {
+      var ivStart = iv.length - ivLen
+      var length = Math.min(ivLen, tmp.length - used)
+      tmp.copy(iv, ivStart, used, used + length)
+      ivLen -= length
+    }
+  }
+
+  tmp.fill(0)
+  return { key: key, iv: iv }
+}
+
+module.exports = EVP_BytesToKey
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var curve = exports;
+
+curve.base = __webpack_require__(148);
+curve.short = __webpack_require__(149);
+curve.mont = __webpack_require__(150);
+curve.edwards = __webpack_require__(151);
+
 
 /***/ }),
 /* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(Buffer) {var asn1 = __webpack_require__(167)
+var aesid = __webpack_require__(179)
+var fixProc = __webpack_require__(180)
+var ciphers = __webpack_require__(37)
+var compat = __webpack_require__(55)
+module.exports = parseKeys
+
+function parseKeys (buffer) {
+  var password
+  if (typeof buffer === 'object' && !Buffer.isBuffer(buffer)) {
+    password = buffer.passphrase
+    buffer = buffer.key
+  }
+  if (typeof buffer === 'string') {
+    buffer = new Buffer(buffer)
+  }
+
+  var stripped = fixProc(buffer, password)
+
+  var type = stripped.tag
+  var data = stripped.data
+  var subtype, ndata
+  switch (type) {
+    case 'CERTIFICATE':
+      ndata = asn1.certificate.decode(data, 'der').tbsCertificate.subjectPublicKeyInfo
+      // falls through
+    case 'PUBLIC KEY':
+      if (!ndata) {
+        ndata = asn1.PublicKey.decode(data, 'der')
+      }
+      subtype = ndata.algorithm.algorithm.join('.')
+      switch (subtype) {
+        case '1.2.840.113549.1.1.1':
+          return asn1.RSAPublicKey.decode(ndata.subjectPublicKey.data, 'der')
+        case '1.2.840.10045.2.1':
+          ndata.subjectPrivateKey = ndata.subjectPublicKey
+          return {
+            type: 'ec',
+            data: ndata
+          }
+        case '1.2.840.10040.4.1':
+          ndata.algorithm.params.pub_key = asn1.DSAparam.decode(ndata.subjectPublicKey.data, 'der')
+          return {
+            type: 'dsa',
+            data: ndata.algorithm.params
+          }
+        default: throw new Error('unknown key id ' + subtype)
+      }
+      throw new Error('unknown key type ' + type)
+    case 'ENCRYPTED PRIVATE KEY':
+      data = asn1.EncryptedPrivateKey.decode(data, 'der')
+      data = decrypt(data, password)
+      // falls through
+    case 'PRIVATE KEY':
+      ndata = asn1.PrivateKey.decode(data, 'der')
+      subtype = ndata.algorithm.algorithm.join('.')
+      switch (subtype) {
+        case '1.2.840.113549.1.1.1':
+          return asn1.RSAPrivateKey.decode(ndata.subjectPrivateKey, 'der')
+        case '1.2.840.10045.2.1':
+          return {
+            curve: ndata.algorithm.curve,
+            privateKey: asn1.ECPrivateKey.decode(ndata.subjectPrivateKey, 'der').privateKey
+          }
+        case '1.2.840.10040.4.1':
+          ndata.algorithm.params.priv_key = asn1.DSAparam.decode(ndata.subjectPrivateKey, 'der')
+          return {
+            type: 'dsa',
+            params: ndata.algorithm.params
+          }
+        default: throw new Error('unknown key id ' + subtype)
+      }
+      throw new Error('unknown key type ' + type)
+    case 'RSA PUBLIC KEY':
+      return asn1.RSAPublicKey.decode(data, 'der')
+    case 'RSA PRIVATE KEY':
+      return asn1.RSAPrivateKey.decode(data, 'der')
+    case 'DSA PRIVATE KEY':
+      return {
+        type: 'dsa',
+        params: asn1.DSAPrivateKey.decode(data, 'der')
+      }
+    case 'EC PRIVATE KEY':
+      data = asn1.ECPrivateKey.decode(data, 'der')
+      return {
+        curve: data.parameters.value,
+        privateKey: data.privateKey
+      }
+    default: throw new Error('unknown key type ' + type)
+  }
+}
+parseKeys.signature = asn1.signature
+function decrypt (data, password) {
+  var salt = data.algorithm.decrypt.kde.kdeparams.salt
+  var iters = parseInt(data.algorithm.decrypt.kde.kdeparams.iters.toString(), 10)
+  var algo = aesid[data.algorithm.decrypt.cipher.algo.join('.')]
+  var iv = data.algorithm.decrypt.cipher.iv
+  var cipherText = data.subjectPrivateKey
+  var keylen = parseInt(algo.split('-')[1], 10) / 8
+  var key = compat.pbkdf2Sync(password, salt, iters, keylen)
+  var cipher = ciphers.createDecipheriv(algo, key, iv)
+  var out = []
+  out.push(cipher.update(cipherText))
+  out.push(cipher.final())
+  return Buffer.concat(out)
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -56891,20 +51088,20 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(41);
+exports = module.exports = __webpack_require__(44);
 exports.Stream = exports;
 exports.Readable = exports;
-exports.Writable = __webpack_require__(30);
-exports.Duplex = __webpack_require__(10);
-exports.Transform = __webpack_require__(44);
-exports.PassThrough = __webpack_require__(90);
+exports.Writable = __webpack_require__(31);
+exports.Duplex = __webpack_require__(11);
+exports.Transform = __webpack_require__(47);
+exports.PassThrough = __webpack_require__(109);
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56937,7 +51134,7 @@ exports.PassThrough = __webpack_require__(90);
 
 /*<replacement>*/
 
-var pna = __webpack_require__(22);
+var pna = __webpack_require__(24);
 /*</replacement>*/
 
 module.exports = Writable;
@@ -56974,18 +51171,18 @@ var Duplex;
 Writable.WritableState = WritableState;
 
 /*<replacement>*/
-var util = __webpack_require__(15);
+var util = __webpack_require__(16);
 util.inherits = __webpack_require__(0);
 /*</replacement>*/
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: __webpack_require__(89)
+  deprecate: __webpack_require__(108)
 };
 /*</replacement>*/
 
 /*<replacement>*/
-var Stream = __webpack_require__(42);
+var Stream = __webpack_require__(45);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -57001,14 +51198,14 @@ function _isUint8Array(obj) {
 
 /*</replacement>*/
 
-var destroyImpl = __webpack_require__(43);
+var destroyImpl = __webpack_require__(46);
 
 util.inherits(Writable, Stream);
 
 function nop() {}
 
 function WritableState(options, stream) {
-  Duplex = Duplex || __webpack_require__(10);
+  Duplex = Duplex || __webpack_require__(11);
 
   options = options || {};
 
@@ -57158,7 +51355,7 @@ if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.protot
 }
 
 function Writable(options) {
-  Duplex = Duplex || __webpack_require__(10);
+  Duplex = Duplex || __webpack_require__(11);
 
   // Writable ctor is applied to Duplexes, too.
   // `realHasInstance` is necessary because using plain `instanceof`
@@ -57595,10 +51792,10 @@ Writable.prototype._destroy = function (err, cb) {
   this.end();
   cb(err);
 };
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8), __webpack_require__(87).setImmediate, __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8), __webpack_require__(106).setImmediate, __webpack_require__(5)))
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57900,13 +52097,13 @@ function simpleEnd(buf) {
 }
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var inherits = __webpack_require__(0)
-var HashBase = __webpack_require__(46)
+var HashBase = __webpack_require__(49)
 var Buffer = __webpack_require__(1).Buffer
 
 var ARRAY16 = new Array(16)
@@ -58053,14 +52250,14 @@ module.exports = MD5
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var Buffer = __webpack_require__(2).Buffer
 var inherits = __webpack_require__(0)
-var HashBase = __webpack_require__(46)
+var HashBase = __webpack_require__(49)
 
 var ARRAY16 = new Array(16)
 
@@ -58223,7 +52420,7 @@ module.exports = RIPEMD160
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var exports = module.exports = function SHA (algorithm) {
@@ -58235,35 +52432,35 @@ var exports = module.exports = function SHA (algorithm) {
   return new Algorithm()
 }
 
-exports.sha = __webpack_require__(95)
-exports.sha1 = __webpack_require__(96)
-exports.sha224 = __webpack_require__(97)
-exports.sha256 = __webpack_require__(47)
-exports.sha384 = __webpack_require__(98)
-exports.sha512 = __webpack_require__(48)
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.utils = __webpack_require__(104);
-exports.Cipher = __webpack_require__(105);
-exports.DES = __webpack_require__(106);
-exports.CBC = __webpack_require__(107);
-exports.EDE = __webpack_require__(108);
+exports.sha = __webpack_require__(114)
+exports.sha1 = __webpack_require__(115)
+exports.sha224 = __webpack_require__(116)
+exports.sha256 = __webpack_require__(50)
+exports.sha384 = __webpack_require__(117)
+exports.sha512 = __webpack_require__(51)
 
 
 /***/ }),
 /* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ciphers = __webpack_require__(109)
-var deciphers = __webpack_require__(117)
-var modes = __webpack_require__(58)
+"use strict";
+
+
+exports.utils = __webpack_require__(123);
+exports.Cipher = __webpack_require__(124);
+exports.DES = __webpack_require__(125);
+exports.CBC = __webpack_require__(126);
+exports.EDE = __webpack_require__(127);
+
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ciphers = __webpack_require__(128)
+var deciphers = __webpack_require__(136)
+var modes = __webpack_require__(61)
 
 function getCiphers () {
   return Object.keys(modes)
@@ -58277,21 +52474,21 @@ exports.listCiphers = exports.getCiphers = getCiphers
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var modeModules = {
-  ECB: __webpack_require__(110),
-  CBC: __webpack_require__(111),
-  CFB: __webpack_require__(112),
-  CFB8: __webpack_require__(113),
-  CFB1: __webpack_require__(114),
-  OFB: __webpack_require__(115),
-  CTR: __webpack_require__(56),
-  GCM: __webpack_require__(56)
+  ECB: __webpack_require__(129),
+  CBC: __webpack_require__(130),
+  CFB: __webpack_require__(131),
+  CFB8: __webpack_require__(132),
+  CFB1: __webpack_require__(133),
+  OFB: __webpack_require__(134),
+  CTR: __webpack_require__(59),
+  GCM: __webpack_require__(59)
 }
 
-var modes = __webpack_require__(58)
+var modes = __webpack_require__(61)
 
 for (var key in modes) {
   modes[key].module = modeModules[modes[key].mode]
@@ -58301,11 +52498,11 @@ module.exports = modes
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var bn = __webpack_require__(3);
-var randomBytes = __webpack_require__(11);
+var randomBytes = __webpack_require__(12);
 module.exports = crt;
 function blind(priv) {
   var r = getr(priv);
@@ -58348,16 +52545,16 @@ function getr(priv) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hash = exports;
 
 hash.utils = __webpack_require__(7);
-hash.common = __webpack_require__(18);
-hash.sha = __webpack_require__(134);
-hash.ripemd = __webpack_require__(138);
-hash.hmac = __webpack_require__(139);
+hash.common = __webpack_require__(19);
+hash.sha = __webpack_require__(153);
+hash.ripemd = __webpack_require__(157);
+hash.hmac = __webpack_require__(158);
 
 // Proxy hash functions to the main object
 hash.sha1 = hash.sha.sha1;
@@ -58369,7 +52566,7 @@ hash.ripemd160 = hash.ripemd.ripemd160;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -58380,7 +52577,885 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 41 */
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = Writer;
+
+var util      = __webpack_require__(10);
+
+var BufferWriter; // cyclic
+
+var LongBits  = util.LongBits,
+    base64    = util.base64,
+    utf8      = util.utf8;
+
+/**
+ * Constructs a new writer operation instance.
+ * @classdesc Scheduled writer operation.
+ * @constructor
+ * @param {function(*, Uint8Array, number)} fn Function to call
+ * @param {number} len Value byte length
+ * @param {*} val Value to write
+ * @ignore
+ */
+function Op(fn, len, val) {
+
+    /**
+     * Function to call.
+     * @type {function(Uint8Array, number, *)}
+     */
+    this.fn = fn;
+
+    /**
+     * Value byte length.
+     * @type {number}
+     */
+    this.len = len;
+
+    /**
+     * Next operation.
+     * @type {Writer.Op|undefined}
+     */
+    this.next = undefined;
+
+    /**
+     * Value to write.
+     * @type {*}
+     */
+    this.val = val; // type varies
+}
+
+/* istanbul ignore next */
+function noop() {} // eslint-disable-line no-empty-function
+
+/**
+ * Constructs a new writer state instance.
+ * @classdesc Copied writer state.
+ * @memberof Writer
+ * @constructor
+ * @param {Writer} writer Writer to copy state from
+ * @ignore
+ */
+function State(writer) {
+
+    /**
+     * Current head.
+     * @type {Writer.Op}
+     */
+    this.head = writer.head;
+
+    /**
+     * Current tail.
+     * @type {Writer.Op}
+     */
+    this.tail = writer.tail;
+
+    /**
+     * Current buffer length.
+     * @type {number}
+     */
+    this.len = writer.len;
+
+    /**
+     * Next state.
+     * @type {State|null}
+     */
+    this.next = writer.states;
+}
+
+/**
+ * Constructs a new writer instance.
+ * @classdesc Wire format writer using `Uint8Array` if available, otherwise `Array`.
+ * @constructor
+ */
+function Writer() {
+
+    /**
+     * Current length.
+     * @type {number}
+     */
+    this.len = 0;
+
+    /**
+     * Operations head.
+     * @type {Object}
+     */
+    this.head = new Op(noop, 0, 0);
+
+    /**
+     * Operations tail
+     * @type {Object}
+     */
+    this.tail = this.head;
+
+    /**
+     * Linked forked states.
+     * @type {Object|null}
+     */
+    this.states = null;
+
+    // When a value is written, the writer calculates its byte length and puts it into a linked
+    // list of operations to perform when finish() is called. This both allows us to allocate
+    // buffers of the exact required size and reduces the amount of work we have to do compared
+    // to first calculating over objects and then encoding over objects. In our case, the encoding
+    // part is just a linked list walk calling operations with already prepared values.
+}
+
+/**
+ * Creates a new writer.
+ * @function
+ * @returns {BufferWriter|Writer} A {@link BufferWriter} when Buffers are supported, otherwise a {@link Writer}
+ */
+Writer.create = util.Buffer
+    ? function create_buffer_setup() {
+        return (Writer.create = function create_buffer() {
+            return new BufferWriter();
+        })();
+    }
+    /* istanbul ignore next */
+    : function create_array() {
+        return new Writer();
+    };
+
+/**
+ * Allocates a buffer of the specified size.
+ * @param {number} size Buffer size
+ * @returns {Uint8Array} Buffer
+ */
+Writer.alloc = function alloc(size) {
+    return new util.Array(size);
+};
+
+// Use Uint8Array buffer pool in the browser, just like node does with buffers
+/* istanbul ignore else */
+if (util.Array !== Array)
+    Writer.alloc = util.pool(Writer.alloc, util.Array.prototype.subarray);
+
+/**
+ * Pushes a new operation to the queue.
+ * @param {function(Uint8Array, number, *)} fn Function to call
+ * @param {number} len Value byte length
+ * @param {number} val Value to write
+ * @returns {Writer} `this`
+ * @private
+ */
+Writer.prototype._push = function push(fn, len, val) {
+    this.tail = this.tail.next = new Op(fn, len, val);
+    this.len += len;
+    return this;
+};
+
+function writeByte(val, buf, pos) {
+    buf[pos] = val & 255;
+}
+
+function writeVarint32(val, buf, pos) {
+    while (val > 127) {
+        buf[pos++] = val & 127 | 128;
+        val >>>= 7;
+    }
+    buf[pos] = val;
+}
+
+/**
+ * Constructs a new varint writer operation instance.
+ * @classdesc Scheduled varint writer operation.
+ * @extends Op
+ * @constructor
+ * @param {number} len Value byte length
+ * @param {number} val Value to write
+ * @ignore
+ */
+function VarintOp(len, val) {
+    this.len = len;
+    this.next = undefined;
+    this.val = val;
+}
+
+VarintOp.prototype = Object.create(Op.prototype);
+VarintOp.prototype.fn = writeVarint32;
+
+/**
+ * Writes an unsigned 32 bit value as a varint.
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.uint32 = function write_uint32(value) {
+    // here, the call to this.push has been inlined and a varint specific Op subclass is used.
+    // uint32 is by far the most frequently used operation and benefits significantly from this.
+    this.len += (this.tail = this.tail.next = new VarintOp(
+        (value = value >>> 0)
+                < 128       ? 1
+        : value < 16384     ? 2
+        : value < 2097152   ? 3
+        : value < 268435456 ? 4
+        :                     5,
+    value)).len;
+    return this;
+};
+
+/**
+ * Writes a signed 32 bit value as a varint.
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.int32 = function write_int32(value) {
+    return value < 0
+        ? this._push(writeVarint64, 10, LongBits.fromNumber(value)) // 10 bytes per spec
+        : this.uint32(value);
+};
+
+/**
+ * Writes a 32 bit value as a varint, zig-zag encoded.
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.sint32 = function write_sint32(value) {
+    return this.uint32((value << 1 ^ value >> 31) >>> 0);
+};
+
+function writeVarint64(val, buf, pos) {
+    while (val.hi) {
+        buf[pos++] = val.lo & 127 | 128;
+        val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
+        val.hi >>>= 7;
+    }
+    while (val.lo > 127) {
+        buf[pos++] = val.lo & 127 | 128;
+        val.lo = val.lo >>> 7;
+    }
+    buf[pos++] = val.lo;
+}
+
+/**
+ * Writes an unsigned 64 bit value as a varint.
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.uint64 = function write_uint64(value) {
+    var bits = LongBits.from(value);
+    return this._push(writeVarint64, bits.length(), bits);
+};
+
+/**
+ * Writes a signed 64 bit value as a varint.
+ * @function
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.int64 = Writer.prototype.uint64;
+
+/**
+ * Writes a signed 64 bit value as a varint, zig-zag encoded.
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.sint64 = function write_sint64(value) {
+    var bits = LongBits.from(value).zzEncode();
+    return this._push(writeVarint64, bits.length(), bits);
+};
+
+/**
+ * Writes a boolish value as a varint.
+ * @param {boolean} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.bool = function write_bool(value) {
+    return this._push(writeByte, 1, value ? 1 : 0);
+};
+
+function writeFixed32(val, buf, pos) {
+    buf[pos    ] =  val         & 255;
+    buf[pos + 1] =  val >>> 8   & 255;
+    buf[pos + 2] =  val >>> 16  & 255;
+    buf[pos + 3] =  val >>> 24;
+}
+
+/**
+ * Writes an unsigned 32 bit value as fixed 32 bits.
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.fixed32 = function write_fixed32(value) {
+    return this._push(writeFixed32, 4, value >>> 0);
+};
+
+/**
+ * Writes a signed 32 bit value as fixed 32 bits.
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.sfixed32 = Writer.prototype.fixed32;
+
+/**
+ * Writes an unsigned 64 bit value as fixed 64 bits.
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.fixed64 = function write_fixed64(value) {
+    var bits = LongBits.from(value);
+    return this._push(writeFixed32, 4, bits.lo)._push(writeFixed32, 4, bits.hi);
+};
+
+/**
+ * Writes a signed 64 bit value as fixed 64 bits.
+ * @function
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.sfixed64 = Writer.prototype.fixed64;
+
+/**
+ * Writes a float (32 bit).
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.float = function write_float(value) {
+    return this._push(util.float.writeFloatLE, 4, value);
+};
+
+/**
+ * Writes a double (64 bit float).
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.double = function write_double(value) {
+    return this._push(util.float.writeDoubleLE, 8, value);
+};
+
+var writeBytes = util.Array.prototype.set
+    ? function writeBytes_set(val, buf, pos) {
+        buf.set(val, pos); // also works for plain array values
+    }
+    /* istanbul ignore next */
+    : function writeBytes_for(val, buf, pos) {
+        for (var i = 0; i < val.length; ++i)
+            buf[pos + i] = val[i];
+    };
+
+/**
+ * Writes a sequence of bytes.
+ * @param {Uint8Array|string} value Buffer or base64 encoded string to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.bytes = function write_bytes(value) {
+    var len = value.length >>> 0;
+    if (!len)
+        return this._push(writeByte, 1, 0);
+    if (util.isString(value)) {
+        var buf = Writer.alloc(len = base64.length(value));
+        base64.decode(value, buf, 0);
+        value = buf;
+    }
+    return this.uint32(len)._push(writeBytes, len, value);
+};
+
+/**
+ * Writes a string.
+ * @param {string} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.string = function write_string(value) {
+    var len = utf8.length(value);
+    return len
+        ? this.uint32(len)._push(utf8.write, len, value)
+        : this._push(writeByte, 1, 0);
+};
+
+/**
+ * Forks this writer's state by pushing it to a stack.
+ * Calling {@link Writer#reset|reset} or {@link Writer#ldelim|ldelim} resets the writer to the previous state.
+ * @returns {Writer} `this`
+ */
+Writer.prototype.fork = function fork() {
+    this.states = new State(this);
+    this.head = this.tail = new Op(noop, 0, 0);
+    this.len = 0;
+    return this;
+};
+
+/**
+ * Resets this instance to the last state.
+ * @returns {Writer} `this`
+ */
+Writer.prototype.reset = function reset() {
+    if (this.states) {
+        this.head   = this.states.head;
+        this.tail   = this.states.tail;
+        this.len    = this.states.len;
+        this.states = this.states.next;
+    } else {
+        this.head = this.tail = new Op(noop, 0, 0);
+        this.len  = 0;
+    }
+    return this;
+};
+
+/**
+ * Resets to the last state and appends the fork state's current write length as a varint followed by its operations.
+ * @returns {Writer} `this`
+ */
+Writer.prototype.ldelim = function ldelim() {
+    var head = this.head,
+        tail = this.tail,
+        len  = this.len;
+    this.reset().uint32(len);
+    if (len) {
+        this.tail.next = head.next; // skip noop
+        this.tail = tail;
+        this.len += len;
+    }
+    return this;
+};
+
+/**
+ * Finishes the write operation.
+ * @returns {Uint8Array} Finished buffer
+ */
+Writer.prototype.finish = function finish() {
+    var head = this.head.next, // skip noop
+        buf  = this.constructor.alloc(this.len),
+        pos  = 0;
+    while (head) {
+        head.fn(head.val, buf, pos);
+        pos += head.len;
+        head = head.next;
+    }
+    // this.head = this.tail = null;
+    return buf;
+};
+
+Writer._configure = function(BufferWriter_) {
+    BufferWriter = BufferWriter_;
+};
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = Reader;
+
+var util      = __webpack_require__(10);
+
+var BufferReader; // cyclic
+
+var LongBits  = util.LongBits,
+    utf8      = util.utf8;
+
+/* istanbul ignore next */
+function indexOutOfRange(reader, writeLength) {
+    return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
+}
+
+/**
+ * Constructs a new reader instance using the specified buffer.
+ * @classdesc Wire format reader using `Uint8Array` if available, otherwise `Array`.
+ * @constructor
+ * @param {Uint8Array} buffer Buffer to read from
+ */
+function Reader(buffer) {
+
+    /**
+     * Read buffer.
+     * @type {Uint8Array}
+     */
+    this.buf = buffer;
+
+    /**
+     * Read buffer position.
+     * @type {number}
+     */
+    this.pos = 0;
+
+    /**
+     * Read buffer length.
+     * @type {number}
+     */
+    this.len = buffer.length;
+}
+
+var create_array = typeof Uint8Array !== "undefined"
+    ? function create_typed_array(buffer) {
+        if (buffer instanceof Uint8Array || Array.isArray(buffer))
+            return new Reader(buffer);
+        throw Error("illegal buffer");
+    }
+    /* istanbul ignore next */
+    : function create_array(buffer) {
+        if (Array.isArray(buffer))
+            return new Reader(buffer);
+        throw Error("illegal buffer");
+    };
+
+/**
+ * Creates a new reader using the specified buffer.
+ * @function
+ * @param {Uint8Array|Buffer} buffer Buffer to read from
+ * @returns {Reader|BufferReader} A {@link BufferReader} if `buffer` is a Buffer, otherwise a {@link Reader}
+ * @throws {Error} If `buffer` is not a valid buffer
+ */
+Reader.create = util.Buffer
+    ? function create_buffer_setup(buffer) {
+        return (Reader.create = function create_buffer(buffer) {
+            return util.Buffer.isBuffer(buffer)
+                ? new BufferReader(buffer)
+                /* istanbul ignore next */
+                : create_array(buffer);
+        })(buffer);
+    }
+    /* istanbul ignore next */
+    : create_array;
+
+Reader.prototype._slice = util.Array.prototype.subarray || /* istanbul ignore next */ util.Array.prototype.slice;
+
+/**
+ * Reads a varint as an unsigned 32 bit value.
+ * @function
+ * @returns {number} Value read
+ */
+Reader.prototype.uint32 = (function read_uint32_setup() {
+    var value = 4294967295; // optimizer type-hint, tends to deopt otherwise (?!)
+    return function read_uint32() {
+        value = (         this.buf[this.pos] & 127       ) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] & 127) <<  7) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] & 127) << 14) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] & 127) << 21) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] &  15) << 28) >>> 0; if (this.buf[this.pos++] < 128) return value;
+
+        /* istanbul ignore if */
+        if ((this.pos += 5) > this.len) {
+            this.pos = this.len;
+            throw indexOutOfRange(this, 10);
+        }
+        return value;
+    };
+})();
+
+/**
+ * Reads a varint as a signed 32 bit value.
+ * @returns {number} Value read
+ */
+Reader.prototype.int32 = function read_int32() {
+    return this.uint32() | 0;
+};
+
+/**
+ * Reads a zig-zag encoded varint as a signed 32 bit value.
+ * @returns {number} Value read
+ */
+Reader.prototype.sint32 = function read_sint32() {
+    var value = this.uint32();
+    return value >>> 1 ^ -(value & 1) | 0;
+};
+
+/* eslint-disable no-invalid-this */
+
+function readLongVarint() {
+    // tends to deopt with local vars for octet etc.
+    var bits = new LongBits(0, 0);
+    var i = 0;
+    if (this.len - this.pos > 4) { // fast route (lo)
+        for (; i < 4; ++i) {
+            // 1st..4th
+            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+        // 5th
+        bits.lo = (bits.lo | (this.buf[this.pos] & 127) << 28) >>> 0;
+        bits.hi = (bits.hi | (this.buf[this.pos] & 127) >>  4) >>> 0;
+        if (this.buf[this.pos++] < 128)
+            return bits;
+        i = 0;
+    } else {
+        for (; i < 3; ++i) {
+            /* istanbul ignore if */
+            if (this.pos >= this.len)
+                throw indexOutOfRange(this);
+            // 1st..3th
+            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+        // 4th
+        bits.lo = (bits.lo | (this.buf[this.pos++] & 127) << i * 7) >>> 0;
+        return bits;
+    }
+    if (this.len - this.pos > 4) { // fast route (hi)
+        for (; i < 5; ++i) {
+            // 6th..10th
+            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+    } else {
+        for (; i < 5; ++i) {
+            /* istanbul ignore if */
+            if (this.pos >= this.len)
+                throw indexOutOfRange(this);
+            // 6th..10th
+            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+    }
+    /* istanbul ignore next */
+    throw Error("invalid varint encoding");
+}
+
+/* eslint-enable no-invalid-this */
+
+/**
+ * Reads a varint as a signed 64 bit value.
+ * @name Reader#int64
+ * @function
+ * @returns {Long} Value read
+ */
+
+/**
+ * Reads a varint as an unsigned 64 bit value.
+ * @name Reader#uint64
+ * @function
+ * @returns {Long} Value read
+ */
+
+/**
+ * Reads a zig-zag encoded varint as a signed 64 bit value.
+ * @name Reader#sint64
+ * @function
+ * @returns {Long} Value read
+ */
+
+/**
+ * Reads a varint as a boolean.
+ * @returns {boolean} Value read
+ */
+Reader.prototype.bool = function read_bool() {
+    return this.uint32() !== 0;
+};
+
+function readFixed32_end(buf, end) { // note that this uses `end`, not `pos`
+    return (buf[end - 4]
+          | buf[end - 3] << 8
+          | buf[end - 2] << 16
+          | buf[end - 1] << 24) >>> 0;
+}
+
+/**
+ * Reads fixed 32 bits as an unsigned 32 bit integer.
+ * @returns {number} Value read
+ */
+Reader.prototype.fixed32 = function read_fixed32() {
+
+    /* istanbul ignore if */
+    if (this.pos + 4 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    return readFixed32_end(this.buf, this.pos += 4);
+};
+
+/**
+ * Reads fixed 32 bits as a signed 32 bit integer.
+ * @returns {number} Value read
+ */
+Reader.prototype.sfixed32 = function read_sfixed32() {
+
+    /* istanbul ignore if */
+    if (this.pos + 4 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    return readFixed32_end(this.buf, this.pos += 4) | 0;
+};
+
+/* eslint-disable no-invalid-this */
+
+function readFixed64(/* this: Reader */) {
+
+    /* istanbul ignore if */
+    if (this.pos + 8 > this.len)
+        throw indexOutOfRange(this, 8);
+
+    return new LongBits(readFixed32_end(this.buf, this.pos += 4), readFixed32_end(this.buf, this.pos += 4));
+}
+
+/* eslint-enable no-invalid-this */
+
+/**
+ * Reads fixed 64 bits.
+ * @name Reader#fixed64
+ * @function
+ * @returns {Long} Value read
+ */
+
+/**
+ * Reads zig-zag encoded fixed 64 bits.
+ * @name Reader#sfixed64
+ * @function
+ * @returns {Long} Value read
+ */
+
+/**
+ * Reads a float (32 bit) as a number.
+ * @function
+ * @returns {number} Value read
+ */
+Reader.prototype.float = function read_float() {
+
+    /* istanbul ignore if */
+    if (this.pos + 4 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    var value = util.float.readFloatLE(this.buf, this.pos);
+    this.pos += 4;
+    return value;
+};
+
+/**
+ * Reads a double (64 bit float) as a number.
+ * @function
+ * @returns {number} Value read
+ */
+Reader.prototype.double = function read_double() {
+
+    /* istanbul ignore if */
+    if (this.pos + 8 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    var value = util.float.readDoubleLE(this.buf, this.pos);
+    this.pos += 8;
+    return value;
+};
+
+/**
+ * Reads a sequence of bytes preceeded by its length as a varint.
+ * @returns {Uint8Array} Value read
+ */
+Reader.prototype.bytes = function read_bytes() {
+    var length = this.uint32(),
+        start  = this.pos,
+        end    = this.pos + length;
+
+    /* istanbul ignore if */
+    if (end > this.len)
+        throw indexOutOfRange(this, length);
+
+    this.pos += length;
+    if (Array.isArray(this.buf)) // plain array
+        return this.buf.slice(start, end);
+    return start === end // fix for IE 10/Win8 and others' subarray returning array of size 1
+        ? new this.buf.constructor(0)
+        : this._slice.call(this.buf, start, end);
+};
+
+/**
+ * Reads a string preceeded by its byte length as a varint.
+ * @returns {string} Value read
+ */
+Reader.prototype.string = function read_string() {
+    var bytes = this.bytes();
+    return utf8.read(bytes, 0, bytes.length);
+};
+
+/**
+ * Skips the specified number of bytes if specified, otherwise skips a varint.
+ * @param {number} [length] Length if known, otherwise a varint is assumed
+ * @returns {Reader} `this`
+ */
+Reader.prototype.skip = function skip(length) {
+    if (typeof length === "number") {
+        /* istanbul ignore if */
+        if (this.pos + length > this.len)
+            throw indexOutOfRange(this, length);
+        this.pos += length;
+    } else {
+        do {
+            /* istanbul ignore if */
+            if (this.pos >= this.len)
+                throw indexOutOfRange(this);
+        } while (this.buf[this.pos++] & 128);
+    }
+    return this;
+};
+
+/**
+ * Skips the next element of the specified wire type.
+ * @param {number} wireType Wire type received
+ * @returns {Reader} `this`
+ */
+Reader.prototype.skipType = function(wireType) {
+    switch (wireType) {
+        case 0:
+            this.skip();
+            break;
+        case 1:
+            this.skip(8);
+            break;
+        case 2:
+            this.skip(this.uint32());
+            break;
+        case 3:
+            while ((wireType = this.uint32() & 7) !== 4) {
+                this.skipType(wireType);
+            }
+            break;
+        case 5:
+            this.skip(4);
+            break;
+
+        /* istanbul ignore next */
+        default:
+            throw Error("invalid wire type " + wireType + " at offset " + this.pos);
+    }
+    return this;
+};
+
+Reader._configure = function(BufferReader_) {
+    BufferReader = BufferReader_;
+
+    var fn = util.Long ? "toLong" : /* istanbul ignore next */ "toNumber";
+    util.merge(Reader.prototype, {
+
+        int64: function read_int64() {
+            return readLongVarint.call(this)[fn](false);
+        },
+
+        uint64: function read_uint64() {
+            return readLongVarint.call(this)[fn](true);
+        },
+
+        sint64: function read_sint64() {
+            return readLongVarint.call(this).zzDecode()[fn](false);
+        },
+
+        fixed64: function read_fixed64() {
+            return readFixed64.call(this)[fn](true);
+        },
+
+        sfixed64: function read_sfixed64() {
+            return readFixed64.call(this)[fn](false);
+        }
+
+    });
+};
+
+
+/***/ }),
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58409,13 +53484,13 @@ module.exports = Array.isArray || function (arr) {
 
 /*<replacement>*/
 
-var pna = __webpack_require__(22);
+var pna = __webpack_require__(24);
 /*</replacement>*/
 
 module.exports = Readable;
 
 /*<replacement>*/
-var isArray = __webpack_require__(40);
+var isArray = __webpack_require__(41);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -58425,7 +53500,7 @@ var Duplex;
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
-var EE = __webpack_require__(28).EventEmitter;
+var EE = __webpack_require__(29).EventEmitter;
 
 var EElistenerCount = function (emitter, type) {
   return emitter.listeners(type).length;
@@ -58433,7 +53508,7 @@ var EElistenerCount = function (emitter, type) {
 /*</replacement>*/
 
 /*<replacement>*/
-var Stream = __webpack_require__(42);
+var Stream = __webpack_require__(45);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -58450,12 +53525,12 @@ function _isUint8Array(obj) {
 /*</replacement>*/
 
 /*<replacement>*/
-var util = __webpack_require__(15);
+var util = __webpack_require__(16);
 util.inherits = __webpack_require__(0);
 /*</replacement>*/
 
 /*<replacement>*/
-var debugUtil = __webpack_require__(84);
+var debugUtil = __webpack_require__(103);
 var debug = void 0;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
@@ -58464,8 +53539,8 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-var BufferList = __webpack_require__(85);
-var destroyImpl = __webpack_require__(43);
+var BufferList = __webpack_require__(104);
+var destroyImpl = __webpack_require__(46);
 var StringDecoder;
 
 util.inherits(Readable, Stream);
@@ -58485,7 +53560,7 @@ function prependListener(emitter, event, fn) {
 }
 
 function ReadableState(options, stream) {
-  Duplex = Duplex || __webpack_require__(10);
+  Duplex = Duplex || __webpack_require__(11);
 
   options = options || {};
 
@@ -58555,14 +53630,14 @@ function ReadableState(options, stream) {
   this.decoder = null;
   this.encoding = null;
   if (options.encoding) {
-    if (!StringDecoder) StringDecoder = __webpack_require__(31).StringDecoder;
+    if (!StringDecoder) StringDecoder = __webpack_require__(32).StringDecoder;
     this.decoder = new StringDecoder(options.encoding);
     this.encoding = options.encoding;
   }
 }
 
 function Readable(options) {
-  Duplex = Duplex || __webpack_require__(10);
+  Duplex = Duplex || __webpack_require__(11);
 
   if (!(this instanceof Readable)) return new Readable(options);
 
@@ -58711,7 +53786,7 @@ Readable.prototype.isPaused = function () {
 
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
-  if (!StringDecoder) StringDecoder = __webpack_require__(31).StringDecoder;
+  if (!StringDecoder) StringDecoder = __webpack_require__(32).StringDecoder;
   this._readableState.decoder = new StringDecoder(enc);
   this._readableState.encoding = enc;
   return this;
@@ -59406,14 +54481,14 @@ function indexOf(xs, x) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(8)))
 
 /***/ }),
-/* 42 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(28).EventEmitter;
+module.exports = __webpack_require__(29).EventEmitter;
 
 
 /***/ }),
-/* 43 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59421,7 +54496,7 @@ module.exports = __webpack_require__(28).EventEmitter;
 
 /*<replacement>*/
 
-var pna = __webpack_require__(22);
+var pna = __webpack_require__(24);
 /*</replacement>*/
 
 // undocumented cb() API, needed for core, not for public API
@@ -59493,7 +54568,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 44 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59564,10 +54639,10 @@ module.exports = {
 
 module.exports = Transform;
 
-var Duplex = __webpack_require__(10);
+var Duplex = __webpack_require__(11);
 
 /*<replacement>*/
-var util = __webpack_require__(15);
+var util = __webpack_require__(16);
 util.inherits = __webpack_require__(0);
 /*</replacement>*/
 
@@ -59713,28 +54788,28 @@ function done(stream, er, data) {
 }
 
 /***/ }),
-/* 45 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = __webpack_require__(11)
-exports.createHash = exports.Hash = __webpack_require__(16)
-exports.createHmac = exports.Hmac = __webpack_require__(49)
+exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = __webpack_require__(12)
+exports.createHash = exports.Hash = __webpack_require__(17)
+exports.createHmac = exports.Hmac = __webpack_require__(52)
 
-var algos = __webpack_require__(100)
+var algos = __webpack_require__(119)
 var algoKeys = Object.keys(algos)
 var hashes = ['sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'md5', 'rmd160'].concat(algoKeys)
 exports.getHashes = function () {
   return hashes
 }
 
-var p = __webpack_require__(52)
+var p = __webpack_require__(55)
 exports.pbkdf2 = p.pbkdf2
 exports.pbkdf2Sync = p.pbkdf2Sync
 
-var aes = __webpack_require__(102)
+var aes = __webpack_require__(121)
 
 exports.Cipher = aes.Cipher
 exports.createCipher = aes.createCipher
@@ -59747,7 +54822,7 @@ exports.createDecipheriv = aes.createDecipheriv
 exports.getCiphers = aes.getCiphers
 exports.listCiphers = aes.listCiphers
 
-var dh = __webpack_require__(119)
+var dh = __webpack_require__(138)
 
 exports.DiffieHellmanGroup = dh.DiffieHellmanGroup
 exports.createDiffieHellmanGroup = dh.createDiffieHellmanGroup
@@ -59755,16 +54830,16 @@ exports.getDiffieHellman = dh.getDiffieHellman
 exports.createDiffieHellman = dh.createDiffieHellman
 exports.DiffieHellman = dh.DiffieHellman
 
-var sign = __webpack_require__(125)
+var sign = __webpack_require__(144)
 
 exports.createSign = sign.createSign
 exports.Sign = sign.Sign
 exports.createVerify = sign.createVerify
 exports.Verify = sign.Verify
 
-exports.createECDH = __webpack_require__(163)
+exports.createECDH = __webpack_require__(182)
 
-var publicEncrypt = __webpack_require__(164)
+var publicEncrypt = __webpack_require__(183)
 
 exports.publicEncrypt = publicEncrypt.publicEncrypt
 exports.privateEncrypt = publicEncrypt.privateEncrypt
@@ -59784,7 +54859,7 @@ exports.privateDecrypt = publicEncrypt.privateDecrypt
 //   }
 // })
 
-var rf = __webpack_require__(167)
+var rf = __webpack_require__(186)
 
 exports.randomFill = rf.randomFill
 exports.randomFillSync = rf.randomFillSync
@@ -59817,13 +54892,13 @@ exports.constants = {
 
 
 /***/ }),
-/* 46 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var Buffer = __webpack_require__(1).Buffer
-var Transform = __webpack_require__(14).Transform
+var Transform = __webpack_require__(15).Transform
 var inherits = __webpack_require__(0)
 
 function throwIfNotStringOrBuffer (val, prefix) {
@@ -59919,7 +54994,7 @@ module.exports = HashBase
 
 
 /***/ }),
-/* 47 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -59931,7 +55006,7 @@ module.exports = HashBase
  */
 
 var inherits = __webpack_require__(0)
-var Hash = __webpack_require__(12)
+var Hash = __webpack_require__(13)
 var Buffer = __webpack_require__(1).Buffer
 
 var K = [
@@ -60060,11 +55135,11 @@ module.exports = Sha256
 
 
 /***/ }),
-/* 48 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0)
-var Hash = __webpack_require__(12)
+var Hash = __webpack_require__(13)
 var Buffer = __webpack_require__(1).Buffer
 
 var K = [
@@ -60326,19 +55401,19 @@ module.exports = Sha512
 
 
 /***/ }),
-/* 49 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var inherits = __webpack_require__(0)
-var Legacy = __webpack_require__(99)
+var Legacy = __webpack_require__(118)
 var Base = __webpack_require__(9)
 var Buffer = __webpack_require__(1).Buffer
-var md5 = __webpack_require__(50)
-var RIPEMD160 = __webpack_require__(33)
+var md5 = __webpack_require__(53)
+var RIPEMD160 = __webpack_require__(34)
 
-var sha = __webpack_require__(34)
+var sha = __webpack_require__(35)
 
 var ZEROS = Buffer.alloc(128)
 
@@ -60395,10 +55470,10 @@ module.exports = function createHmac (alg, key) {
 
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MD5 = __webpack_require__(32)
+var MD5 = __webpack_require__(33)
 
 module.exports = function (buffer) {
   return new MD5().update(buffer).digest()
@@ -60406,21 +55481,21 @@ module.exports = function (buffer) {
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(module) {
 
 module.exports = {"sha224WithRSAEncryption":{"sign":"rsa","hash":"sha224","id":"302d300d06096086480165030402040500041c"},"RSA-SHA224":{"sign":"ecdsa/rsa","hash":"sha224","id":"302d300d06096086480165030402040500041c"},"sha256WithRSAEncryption":{"sign":"rsa","hash":"sha256","id":"3031300d060960864801650304020105000420"},"RSA-SHA256":{"sign":"ecdsa/rsa","hash":"sha256","id":"3031300d060960864801650304020105000420"},"sha384WithRSAEncryption":{"sign":"rsa","hash":"sha384","id":"3041300d060960864801650304020205000430"},"RSA-SHA384":{"sign":"ecdsa/rsa","hash":"sha384","id":"3041300d060960864801650304020205000430"},"sha512WithRSAEncryption":{"sign":"rsa","hash":"sha512","id":"3051300d060960864801650304020305000440"},"RSA-SHA512":{"sign":"ecdsa/rsa","hash":"sha512","id":"3051300d060960864801650304020305000440"},"RSA-SHA1":{"sign":"rsa","hash":"sha1","id":"3021300906052b0e03021a05000414"},"ecdsa-with-SHA1":{"sign":"ecdsa","hash":"sha1","id":""},"sha256":{"sign":"ecdsa","hash":"sha256","id":""},"sha224":{"sign":"ecdsa","hash":"sha224","id":""},"sha384":{"sign":"ecdsa","hash":"sha384","id":""},"sha512":{"sign":"ecdsa","hash":"sha512","id":""},"DSA-SHA":{"sign":"dsa","hash":"sha1","id":""},"DSA-SHA1":{"sign":"dsa","hash":"sha1","id":""},"DSA":{"sign":"dsa","hash":"sha1","id":""},"DSA-WITH-SHA224":{"sign":"dsa","hash":"sha224","id":""},"DSA-SHA224":{"sign":"dsa","hash":"sha224","id":""},"DSA-WITH-SHA256":{"sign":"dsa","hash":"sha256","id":""},"DSA-SHA256":{"sign":"dsa","hash":"sha256","id":""},"DSA-WITH-SHA384":{"sign":"dsa","hash":"sha384","id":""},"DSA-SHA384":{"sign":"dsa","hash":"sha384","id":""},"DSA-WITH-SHA512":{"sign":"dsa","hash":"sha512","id":""},"DSA-SHA512":{"sign":"dsa","hash":"sha512","id":""},"DSA-RIPEMD160":{"sign":"dsa","hash":"rmd160","id":""},"ripemd160WithRSA":{"sign":"rsa","hash":"rmd160","id":"3021300906052b2403020105000414"},"RSA-RIPEMD160":{"sign":"rsa","hash":"rmd160","id":"3021300906052b2403020105000414"},"md5WithRSAEncryption":{"sign":"rsa","hash":"md5","id":"3020300c06082a864886f70d020505000410"},"RSA-MD5":{"sign":"rsa","hash":"md5","id":"3020300c06082a864886f70d020505000410"}};
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.pbkdf2 = __webpack_require__(101)
-exports.pbkdf2Sync = __webpack_require__(55)
+exports.pbkdf2 = __webpack_require__(120)
+exports.pbkdf2Sync = __webpack_require__(58)
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
@@ -60455,7 +55530,7 @@ module.exports = function (password, salt, iterations, keylen) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var defaultEncoding
@@ -60472,15 +55547,15 @@ module.exports = defaultEncoding
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8)))
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var md5 = __webpack_require__(50)
-var RIPEMD160 = __webpack_require__(33)
-var sha = __webpack_require__(34)
+var md5 = __webpack_require__(53)
+var RIPEMD160 = __webpack_require__(34)
+var sha = __webpack_require__(35)
 
-var checkParameters = __webpack_require__(53)
-var defaultEncoding = __webpack_require__(54)
+var checkParameters = __webpack_require__(56)
+var defaultEncoding = __webpack_require__(57)
 var Buffer = __webpack_require__(1).Buffer
 var ZEROS = Buffer.alloc(128)
 var sizes = {
@@ -60582,12 +55657,12 @@ module.exports = pbkdf2
 
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var xor = __webpack_require__(17)
+var xor = __webpack_require__(18)
 var Buffer = __webpack_require__(1).Buffer
-var incr32 = __webpack_require__(57)
+var incr32 = __webpack_require__(60)
 
 function getBlock (self) {
   var out = self._cipher.encryptBlockRaw(self._prev)
@@ -60618,7 +55693,7 @@ exports.encrypt = function (self, chunk) {
 
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports) {
 
 function incr32 (iv) {
@@ -60639,22 +55714,22 @@ module.exports = incr32
 
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(module) {
 
 module.exports = {"aes-128-ecb":{"cipher":"AES","key":128,"iv":0,"mode":"ECB","type":"block"},"aes-192-ecb":{"cipher":"AES","key":192,"iv":0,"mode":"ECB","type":"block"},"aes-256-ecb":{"cipher":"AES","key":256,"iv":0,"mode":"ECB","type":"block"},"aes-128-cbc":{"cipher":"AES","key":128,"iv":16,"mode":"CBC","type":"block"},"aes-192-cbc":{"cipher":"AES","key":192,"iv":16,"mode":"CBC","type":"block"},"aes-256-cbc":{"cipher":"AES","key":256,"iv":16,"mode":"CBC","type":"block"},"aes128":{"cipher":"AES","key":128,"iv":16,"mode":"CBC","type":"block"},"aes192":{"cipher":"AES","key":192,"iv":16,"mode":"CBC","type":"block"},"aes256":{"cipher":"AES","key":256,"iv":16,"mode":"CBC","type":"block"},"aes-128-cfb":{"cipher":"AES","key":128,"iv":16,"mode":"CFB","type":"stream"},"aes-192-cfb":{"cipher":"AES","key":192,"iv":16,"mode":"CFB","type":"stream"},"aes-256-cfb":{"cipher":"AES","key":256,"iv":16,"mode":"CFB","type":"stream"},"aes-128-cfb8":{"cipher":"AES","key":128,"iv":16,"mode":"CFB8","type":"stream"},"aes-192-cfb8":{"cipher":"AES","key":192,"iv":16,"mode":"CFB8","type":"stream"},"aes-256-cfb8":{"cipher":"AES","key":256,"iv":16,"mode":"CFB8","type":"stream"},"aes-128-cfb1":{"cipher":"AES","key":128,"iv":16,"mode":"CFB1","type":"stream"},"aes-192-cfb1":{"cipher":"AES","key":192,"iv":16,"mode":"CFB1","type":"stream"},"aes-256-cfb1":{"cipher":"AES","key":256,"iv":16,"mode":"CFB1","type":"stream"},"aes-128-ofb":{"cipher":"AES","key":128,"iv":16,"mode":"OFB","type":"stream"},"aes-192-ofb":{"cipher":"AES","key":192,"iv":16,"mode":"OFB","type":"stream"},"aes-256-ofb":{"cipher":"AES","key":256,"iv":16,"mode":"OFB","type":"stream"},"aes-128-ctr":{"cipher":"AES","key":128,"iv":16,"mode":"CTR","type":"stream"},"aes-192-ctr":{"cipher":"AES","key":192,"iv":16,"mode":"CTR","type":"stream"},"aes-256-ctr":{"cipher":"AES","key":256,"iv":16,"mode":"CTR","type":"stream"},"aes-128-gcm":{"cipher":"AES","key":128,"iv":12,"mode":"GCM","type":"auth"},"aes-192-gcm":{"cipher":"AES","key":192,"iv":12,"mode":"GCM","type":"auth"},"aes-256-gcm":{"cipher":"AES","key":256,"iv":12,"mode":"GCM","type":"auth"}};
 
 /***/ }),
-/* 59 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var aes = __webpack_require__(23)
+var aes = __webpack_require__(25)
 var Buffer = __webpack_require__(1).Buffer
 var Transform = __webpack_require__(9)
 var inherits = __webpack_require__(0)
-var GHASH = __webpack_require__(116)
-var xor = __webpack_require__(17)
-var incr32 = __webpack_require__(57)
+var GHASH = __webpack_require__(135)
+var xor = __webpack_require__(18)
+var incr32 = __webpack_require__(60)
 
 function xorTest (a, b) {
   var out = 0
@@ -60768,10 +55843,10 @@ module.exports = StreamCipher
 
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var aes = __webpack_require__(23)
+var aes = __webpack_require__(25)
 var Buffer = __webpack_require__(1).Buffer
 var Transform = __webpack_require__(9)
 var inherits = __webpack_require__(0)
@@ -60801,16 +55876,16 @@ module.exports = StreamCipher
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var randomBytes = __webpack_require__(11);
+var randomBytes = __webpack_require__(12);
 module.exports = findPrime;
 findPrime.simpleSieve = simpleSieve;
 findPrime.fermatTest = fermatTest;
 var BN = __webpack_require__(3);
 var TWENTYFOUR = new BN(24);
-var MillerRabin = __webpack_require__(62);
+var MillerRabin = __webpack_require__(65);
 var millerRabin = new MillerRabin();
 var ONE = new BN(1);
 var TWO = new BN(2);
@@ -60912,11 +55987,11 @@ function findPrime(bits, gen) {
 
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var bn = __webpack_require__(3);
-var brorand = __webpack_require__(63);
+var brorand = __webpack_require__(66);
 
 function MillerRabin(rand) {
   this.rand = rand || new brorand.Rand();
@@ -61033,7 +56108,7 @@ MillerRabin.prototype.getDivisor = function getDivisor(n, k) {
 
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var r;
@@ -61091,7 +56166,7 @@ if (typeof self === 'object') {
 } else {
   // Node.js or Web worker with no crypto support
   try {
-    var crypto = __webpack_require__(122);
+    var crypto = __webpack_require__(141);
     if (typeof crypto.randomBytes !== 'function')
       throw new Error('Not supported');
 
@@ -61104,7 +56179,7 @@ if (typeof self === 'object') {
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61169,7 +56244,7 @@ utils.encode = function encode(arr, enc) {
 
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61225,15 +56300,15 @@ exports.g1_256 = g1_256;
 
 
 /***/ }),
-/* 66 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(7);
-var common = __webpack_require__(18);
-var shaCommon = __webpack_require__(65);
+var common = __webpack_require__(19);
+var shaCommon = __webpack_require__(68);
 var assert = __webpack_require__(6);
 
 var sum32 = utils.sum32;
@@ -61337,14 +56412,14 @@ SHA256.prototype._digest = function digest(enc) {
 
 
 /***/ }),
-/* 67 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(7);
-var common = __webpack_require__(18);
+var common = __webpack_require__(19);
 var assert = __webpack_require__(6);
 
 var rotr64_hi = utils.rotr64_hi;
@@ -61674,11 +56749,11 @@ function g1_512_lo(xh, xl) {
 
 
 /***/ }),
-/* 68 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0);
-var Reporter = __webpack_require__(20).Reporter;
+var Reporter = __webpack_require__(21).Reporter;
 var Buffer = __webpack_require__(2).Buffer;
 
 function DecoderBuffer(base, options) {
@@ -61796,7 +56871,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
 
 
 /***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var constants = exports;
@@ -61817,16 +56892,16 @@ constants._reverse = function reverse(map) {
   return res;
 };
 
-constants.der = __webpack_require__(154);
+constants.der = __webpack_require__(173);
 
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0);
 
-var asn1 = __webpack_require__(19);
+var asn1 = __webpack_require__(20);
 var base = asn1.base;
 var bignum = asn1.bignum;
 
@@ -62151,13 +57226,13 @@ function derDecodeLen(buf, primitive, fail) {
 
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0);
 var Buffer = __webpack_require__(2).Buffer;
 
-var asn1 = __webpack_require__(19);
+var asn1 = __webpack_require__(20);
 var base = asn1.base;
 
 // Import DER constants
@@ -62452,16 +57527,16 @@ function encodeTag(tag, primitive, cls, reporter) {
 
 
 /***/ }),
-/* 72 */
+/* 75 */
 /***/ (function(module) {
 
 module.exports = {"1.3.132.0.10":"secp256k1","1.3.132.0.33":"p224","1.2.840.10045.3.1.1":"p192","1.2.840.10045.3.1.7":"p256","1.3.132.0.34":"p384","1.3.132.0.35":"p521"};
 
 /***/ }),
-/* 73 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var createHash = __webpack_require__(16)
+var createHash = __webpack_require__(17)
 var Buffer = __webpack_require__(1).Buffer
 
 module.exports = function (seed, len) {
@@ -62483,7 +57558,7 @@ function i2ops (c) {
 
 
 /***/ }),
-/* 74 */
+/* 77 */
 /***/ (function(module, exports) {
 
 module.exports = function xor (a, b) {
@@ -62497,7 +57572,7 @@ module.exports = function xor (a, b) {
 
 
 /***/ }),
-/* 75 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var BN = __webpack_require__(3)
@@ -62515,15 +57590,15 @@ module.exports = withPublic
 
 
 /***/ }),
-/* 76 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(77);
-module.exports = __webpack_require__(78);
+__webpack_require__(80);
+module.exports = __webpack_require__(81);
 
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -62996,15 +58071,17 @@ module.exports = __webpack_require__(78);
 
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Zilliqa", function() { return Zilliqa; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Transaction", function() { return Transaction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BN", function() { return BN; });
-const {BN} = __webpack_require__(13);
-const {Zilliqa} = __webpack_require__(79);
+const {BN} = __webpack_require__(14);
+const {Zilliqa} = __webpack_require__(82);
+const {Transaction} = __webpack_require__(23);
 
 
 
@@ -63013,11 +58090,11 @@ if (typeof window !== 'undefined' && typeof window.Zilliqa === 'undefined') {
 }
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(21), __webpack_require__(27), __webpack_require__(168), __webpack_require__(169)) :
+   true ? factory(exports, __webpack_require__(22), __webpack_require__(23), __webpack_require__(187), __webpack_require__(188)) :
   undefined;
 }(this, (function (exports,core,account,contract,blockchain) { 'use strict';
 
@@ -63042,7 +58119,7 @@ if (typeof window !== 'undefined' && typeof window.Zilliqa === 'undefined') {
 
 
 /***/ }),
-/* 80 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __root__ = (function (root) {
@@ -63531,7 +58608,7 @@ module.exports.default = fetch;
 
 
 /***/ }),
-/* 81 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63689,7 +58766,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 82 */
+/* 85 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -63779,11 +58856,2803 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 83 */
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
+
+
+var $protobuf = __webpack_require__(87);
+
+// Common aliases
+var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
+
+// Exported root namespace
+var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
+
+$root.ZilliqaMessage = (function() {
+
+    /**
+     * Namespace ZilliqaMessage.
+     * @exports ZilliqaMessage
+     * @namespace
+     */
+    var ZilliqaMessage = {};
+
+    ZilliqaMessage.ByteArray = (function() {
+
+        /**
+         * Properties of a ByteArray.
+         * @memberof ZilliqaMessage
+         * @interface IByteArray
+         * @property {Uint8Array} data ByteArray data
+         */
+
+        /**
+         * Constructs a new ByteArray.
+         * @memberof ZilliqaMessage
+         * @classdesc Represents a ByteArray.
+         * @implements IByteArray
+         * @constructor
+         * @param {ZilliqaMessage.IByteArray=} [properties] Properties to set
+         */
+        function ByteArray(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ByteArray data.
+         * @member {Uint8Array} data
+         * @memberof ZilliqaMessage.ByteArray
+         * @instance
+         */
+        ByteArray.prototype.data = $util.newBuffer([]);
+
+        /**
+         * Creates a new ByteArray instance using the specified properties.
+         * @function create
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {ZilliqaMessage.IByteArray=} [properties] Properties to set
+         * @returns {ZilliqaMessage.ByteArray} ByteArray instance
+         */
+        ByteArray.create = function create(properties) {
+            return new ByteArray(properties);
+        };
+
+        /**
+         * Encodes the specified ByteArray message. Does not implicitly {@link ZilliqaMessage.ByteArray.verify|verify} messages.
+         * @function encode
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {ZilliqaMessage.IByteArray} message ByteArray message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ByteArray.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.data);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ByteArray message, length delimited. Does not implicitly {@link ZilliqaMessage.ByteArray.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {ZilliqaMessage.IByteArray} message ByteArray message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ByteArray.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ByteArray message from the specified reader or buffer.
+         * @function decode
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {ZilliqaMessage.ByteArray} ByteArray
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ByteArray.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ByteArray();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.data = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            if (!message.hasOwnProperty("data"))
+                throw $util.ProtocolError("missing required 'data'", { instance: message });
+            return message;
+        };
+
+        /**
+         * Decodes a ByteArray message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {ZilliqaMessage.ByteArray} ByteArray
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ByteArray.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ByteArray message.
+         * @function verify
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ByteArray.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                return "data: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a ByteArray message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {ZilliqaMessage.ByteArray} ByteArray
+         */
+        ByteArray.fromObject = function fromObject(object) {
+            if (object instanceof $root.ZilliqaMessage.ByteArray)
+                return object;
+            var message = new $root.ZilliqaMessage.ByteArray();
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length)
+                    message.data = object.data;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ByteArray message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof ZilliqaMessage.ByteArray
+         * @static
+         * @param {ZilliqaMessage.ByteArray} message ByteArray
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ByteArray.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            return object;
+        };
+
+        /**
+         * Converts this ByteArray to JSON.
+         * @function toJSON
+         * @memberof ZilliqaMessage.ByteArray
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ByteArray.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ByteArray;
+    })();
+
+    ZilliqaMessage.ProtoTransactionCoreInfo = (function() {
+
+        /**
+         * Properties of a ProtoTransactionCoreInfo.
+         * @memberof ZilliqaMessage
+         * @interface IProtoTransactionCoreInfo
+         * @property {ZilliqaMessage.IByteArray} version ProtoTransactionCoreInfo version
+         * @property {ZilliqaMessage.IByteArray} nonce ProtoTransactionCoreInfo nonce
+         * @property {Uint8Array} toaddr ProtoTransactionCoreInfo toaddr
+         * @property {ZilliqaMessage.IByteArray} senderpubkey ProtoTransactionCoreInfo senderpubkey
+         * @property {ZilliqaMessage.IByteArray} amount ProtoTransactionCoreInfo amount
+         * @property {ZilliqaMessage.IByteArray} gasprice ProtoTransactionCoreInfo gasprice
+         * @property {ZilliqaMessage.IByteArray} gaslimit ProtoTransactionCoreInfo gaslimit
+         * @property {Uint8Array} code ProtoTransactionCoreInfo code
+         * @property {Uint8Array} data ProtoTransactionCoreInfo data
+         */
+
+        /**
+         * Constructs a new ProtoTransactionCoreInfo.
+         * @memberof ZilliqaMessage
+         * @classdesc Represents a ProtoTransactionCoreInfo.
+         * @implements IProtoTransactionCoreInfo
+         * @constructor
+         * @param {ZilliqaMessage.IProtoTransactionCoreInfo=} [properties] Properties to set
+         */
+        function ProtoTransactionCoreInfo(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProtoTransactionCoreInfo version.
+         * @member {ZilliqaMessage.IByteArray} version
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.version = null;
+
+        /**
+         * ProtoTransactionCoreInfo nonce.
+         * @member {ZilliqaMessage.IByteArray} nonce
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.nonce = null;
+
+        /**
+         * ProtoTransactionCoreInfo toaddr.
+         * @member {Uint8Array} toaddr
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.toaddr = $util.newBuffer([]);
+
+        /**
+         * ProtoTransactionCoreInfo senderpubkey.
+         * @member {ZilliqaMessage.IByteArray} senderpubkey
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.senderpubkey = null;
+
+        /**
+         * ProtoTransactionCoreInfo amount.
+         * @member {ZilliqaMessage.IByteArray} amount
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.amount = null;
+
+        /**
+         * ProtoTransactionCoreInfo gasprice.
+         * @member {ZilliqaMessage.IByteArray} gasprice
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.gasprice = null;
+
+        /**
+         * ProtoTransactionCoreInfo gaslimit.
+         * @member {ZilliqaMessage.IByteArray} gaslimit
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.gaslimit = null;
+
+        /**
+         * ProtoTransactionCoreInfo code.
+         * @member {Uint8Array} code
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.code = $util.newBuffer([]);
+
+        /**
+         * ProtoTransactionCoreInfo data.
+         * @member {Uint8Array} data
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         */
+        ProtoTransactionCoreInfo.prototype.data = $util.newBuffer([]);
+
+        /**
+         * Creates a new ProtoTransactionCoreInfo instance using the specified properties.
+         * @function create
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionCoreInfo=} [properties] Properties to set
+         * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo instance
+         */
+        ProtoTransactionCoreInfo.create = function create(properties) {
+            return new ProtoTransactionCoreInfo(properties);
+        };
+
+        /**
+         * Encodes the specified ProtoTransactionCoreInfo message. Does not implicitly {@link ZilliqaMessage.ProtoTransactionCoreInfo.verify|verify} messages.
+         * @function encode
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionCoreInfo} message ProtoTransactionCoreInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransactionCoreInfo.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            $root.ZilliqaMessage.ByteArray.encode(message.version, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            $root.ZilliqaMessage.ByteArray.encode(message.nonce, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.toaddr);
+            $root.ZilliqaMessage.ByteArray.encode(message.senderpubkey, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            $root.ZilliqaMessage.ByteArray.encode(message.amount, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            $root.ZilliqaMessage.ByteArray.encode(message.gasprice, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            $root.ZilliqaMessage.ByteArray.encode(message.gaslimit, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.code);
+            writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.data);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProtoTransactionCoreInfo message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransactionCoreInfo.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionCoreInfo} message ProtoTransactionCoreInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransactionCoreInfo.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProtoTransactionCoreInfo message from the specified reader or buffer.
+         * @function decode
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransactionCoreInfo.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransactionCoreInfo();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.version = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.nonce = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.toaddr = reader.bytes();
+                    break;
+                case 4:
+                    message.senderpubkey = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.amount = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                case 6:
+                    message.gasprice = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                case 7:
+                    message.gaslimit = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                case 8:
+                    message.code = reader.bytes();
+                    break;
+                case 9:
+                    message.data = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            if (!message.hasOwnProperty("version"))
+                throw $util.ProtocolError("missing required 'version'", { instance: message });
+            if (!message.hasOwnProperty("nonce"))
+                throw $util.ProtocolError("missing required 'nonce'", { instance: message });
+            if (!message.hasOwnProperty("toaddr"))
+                throw $util.ProtocolError("missing required 'toaddr'", { instance: message });
+            if (!message.hasOwnProperty("senderpubkey"))
+                throw $util.ProtocolError("missing required 'senderpubkey'", { instance: message });
+            if (!message.hasOwnProperty("amount"))
+                throw $util.ProtocolError("missing required 'amount'", { instance: message });
+            if (!message.hasOwnProperty("gasprice"))
+                throw $util.ProtocolError("missing required 'gasprice'", { instance: message });
+            if (!message.hasOwnProperty("gaslimit"))
+                throw $util.ProtocolError("missing required 'gaslimit'", { instance: message });
+            if (!message.hasOwnProperty("code"))
+                throw $util.ProtocolError("missing required 'code'", { instance: message });
+            if (!message.hasOwnProperty("data"))
+                throw $util.ProtocolError("missing required 'data'", { instance: message });
+            return message;
+        };
+
+        /**
+         * Decodes a ProtoTransactionCoreInfo message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransactionCoreInfo.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProtoTransactionCoreInfo message.
+         * @function verify
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProtoTransactionCoreInfo.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.version);
+                if (error)
+                    return "version." + error;
+            }
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.nonce);
+                if (error)
+                    return "nonce." + error;
+            }
+            if (!(message.toaddr && typeof message.toaddr.length === "number" || $util.isString(message.toaddr)))
+                return "toaddr: buffer expected";
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.senderpubkey);
+                if (error)
+                    return "senderpubkey." + error;
+            }
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.amount);
+                if (error)
+                    return "amount." + error;
+            }
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.gasprice);
+                if (error)
+                    return "gasprice." + error;
+            }
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.gaslimit);
+                if (error)
+                    return "gaslimit." + error;
+            }
+            if (!(message.code && typeof message.code.length === "number" || $util.isString(message.code)))
+                return "code: buffer expected";
+            if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                return "data: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a ProtoTransactionCoreInfo message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {ZilliqaMessage.ProtoTransactionCoreInfo} ProtoTransactionCoreInfo
+         */
+        ProtoTransactionCoreInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.ZilliqaMessage.ProtoTransactionCoreInfo)
+                return object;
+            var message = new $root.ZilliqaMessage.ProtoTransactionCoreInfo();
+            if (object.version != null) {
+                if (typeof object.version !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.version: object expected");
+                message.version = $root.ZilliqaMessage.ByteArray.fromObject(object.version);
+            }
+            if (object.nonce != null) {
+                if (typeof object.nonce !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.nonce: object expected");
+                message.nonce = $root.ZilliqaMessage.ByteArray.fromObject(object.nonce);
+            }
+            if (object.toaddr != null)
+                if (typeof object.toaddr === "string")
+                    $util.base64.decode(object.toaddr, message.toaddr = $util.newBuffer($util.base64.length(object.toaddr)), 0);
+                else if (object.toaddr.length)
+                    message.toaddr = object.toaddr;
+            if (object.senderpubkey != null) {
+                if (typeof object.senderpubkey !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.senderpubkey: object expected");
+                message.senderpubkey = $root.ZilliqaMessage.ByteArray.fromObject(object.senderpubkey);
+            }
+            if (object.amount != null) {
+                if (typeof object.amount !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.amount: object expected");
+                message.amount = $root.ZilliqaMessage.ByteArray.fromObject(object.amount);
+            }
+            if (object.gasprice != null) {
+                if (typeof object.gasprice !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.gasprice: object expected");
+                message.gasprice = $root.ZilliqaMessage.ByteArray.fromObject(object.gasprice);
+            }
+            if (object.gaslimit != null) {
+                if (typeof object.gaslimit !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionCoreInfo.gaslimit: object expected");
+                message.gaslimit = $root.ZilliqaMessage.ByteArray.fromObject(object.gaslimit);
+            }
+            if (object.code != null)
+                if (typeof object.code === "string")
+                    $util.base64.decode(object.code, message.code = $util.newBuffer($util.base64.length(object.code)), 0);
+                else if (object.code.length)
+                    message.code = object.code;
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length)
+                    message.data = object.data;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProtoTransactionCoreInfo message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @static
+         * @param {ZilliqaMessage.ProtoTransactionCoreInfo} message ProtoTransactionCoreInfo
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProtoTransactionCoreInfo.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.version = null;
+                object.nonce = null;
+                if (options.bytes === String)
+                    object.toaddr = "";
+                else {
+                    object.toaddr = [];
+                    if (options.bytes !== Array)
+                        object.toaddr = $util.newBuffer(object.toaddr);
+                }
+                object.senderpubkey = null;
+                object.amount = null;
+                object.gasprice = null;
+                object.gaslimit = null;
+                if (options.bytes === String)
+                    object.code = "";
+                else {
+                    object.code = [];
+                    if (options.bytes !== Array)
+                        object.code = $util.newBuffer(object.code);
+                }
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
+            }
+            if (message.version != null && message.hasOwnProperty("version"))
+                object.version = $root.ZilliqaMessage.ByteArray.toObject(message.version, options);
+            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                object.nonce = $root.ZilliqaMessage.ByteArray.toObject(message.nonce, options);
+            if (message.toaddr != null && message.hasOwnProperty("toaddr"))
+                object.toaddr = options.bytes === String ? $util.base64.encode(message.toaddr, 0, message.toaddr.length) : options.bytes === Array ? Array.prototype.slice.call(message.toaddr) : message.toaddr;
+            if (message.senderpubkey != null && message.hasOwnProperty("senderpubkey"))
+                object.senderpubkey = $root.ZilliqaMessage.ByteArray.toObject(message.senderpubkey, options);
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                object.amount = $root.ZilliqaMessage.ByteArray.toObject(message.amount, options);
+            if (message.gasprice != null && message.hasOwnProperty("gasprice"))
+                object.gasprice = $root.ZilliqaMessage.ByteArray.toObject(message.gasprice, options);
+            if (message.gaslimit != null && message.hasOwnProperty("gaslimit"))
+                object.gaslimit = $root.ZilliqaMessage.ByteArray.toObject(message.gaslimit, options);
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = options.bytes === String ? $util.base64.encode(message.code, 0, message.code.length) : options.bytes === Array ? Array.prototype.slice.call(message.code) : message.code;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            return object;
+        };
+
+        /**
+         * Converts this ProtoTransactionCoreInfo to JSON.
+         * @function toJSON
+         * @memberof ZilliqaMessage.ProtoTransactionCoreInfo
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProtoTransactionCoreInfo.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ProtoTransactionCoreInfo;
+    })();
+
+    ZilliqaMessage.ProtoTransaction = (function() {
+
+        /**
+         * Properties of a ProtoTransaction.
+         * @memberof ZilliqaMessage
+         * @interface IProtoTransaction
+         * @property {Uint8Array} tranid ProtoTransaction tranid
+         * @property {ZilliqaMessage.IProtoTransactionCoreInfo} info ProtoTransaction info
+         * @property {ZilliqaMessage.IByteArray} signature ProtoTransaction signature
+         */
+
+        /**
+         * Constructs a new ProtoTransaction.
+         * @memberof ZilliqaMessage
+         * @classdesc Represents a ProtoTransaction.
+         * @implements IProtoTransaction
+         * @constructor
+         * @param {ZilliqaMessage.IProtoTransaction=} [properties] Properties to set
+         */
+        function ProtoTransaction(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProtoTransaction tranid.
+         * @member {Uint8Array} tranid
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @instance
+         */
+        ProtoTransaction.prototype.tranid = $util.newBuffer([]);
+
+        /**
+         * ProtoTransaction info.
+         * @member {ZilliqaMessage.IProtoTransactionCoreInfo} info
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @instance
+         */
+        ProtoTransaction.prototype.info = null;
+
+        /**
+         * ProtoTransaction signature.
+         * @member {ZilliqaMessage.IByteArray} signature
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @instance
+         */
+        ProtoTransaction.prototype.signature = null;
+
+        /**
+         * Creates a new ProtoTransaction instance using the specified properties.
+         * @function create
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {ZilliqaMessage.IProtoTransaction=} [properties] Properties to set
+         * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction instance
+         */
+        ProtoTransaction.create = function create(properties) {
+            return new ProtoTransaction(properties);
+        };
+
+        /**
+         * Encodes the specified ProtoTransaction message. Does not implicitly {@link ZilliqaMessage.ProtoTransaction.verify|verify} messages.
+         * @function encode
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {ZilliqaMessage.IProtoTransaction} message ProtoTransaction message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransaction.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.tranid);
+            $root.ZilliqaMessage.ProtoTransactionCoreInfo.encode(message.info, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            $root.ZilliqaMessage.ByteArray.encode(message.signature, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProtoTransaction message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransaction.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {ZilliqaMessage.IProtoTransaction} message ProtoTransaction message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransaction.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProtoTransaction message from the specified reader or buffer.
+         * @function decode
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransaction.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransaction();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.tranid = reader.bytes();
+                    break;
+                case 2:
+                    message.info = $root.ZilliqaMessage.ProtoTransactionCoreInfo.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.signature = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            if (!message.hasOwnProperty("tranid"))
+                throw $util.ProtocolError("missing required 'tranid'", { instance: message });
+            if (!message.hasOwnProperty("info"))
+                throw $util.ProtocolError("missing required 'info'", { instance: message });
+            if (!message.hasOwnProperty("signature"))
+                throw $util.ProtocolError("missing required 'signature'", { instance: message });
+            return message;
+        };
+
+        /**
+         * Decodes a ProtoTransaction message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransaction.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProtoTransaction message.
+         * @function verify
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProtoTransaction.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (!(message.tranid && typeof message.tranid.length === "number" || $util.isString(message.tranid)))
+                return "tranid: buffer expected";
+            {
+                var error = $root.ZilliqaMessage.ProtoTransactionCoreInfo.verify(message.info);
+                if (error)
+                    return "info." + error;
+            }
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.signature);
+                if (error)
+                    return "signature." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ProtoTransaction message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {ZilliqaMessage.ProtoTransaction} ProtoTransaction
+         */
+        ProtoTransaction.fromObject = function fromObject(object) {
+            if (object instanceof $root.ZilliqaMessage.ProtoTransaction)
+                return object;
+            var message = new $root.ZilliqaMessage.ProtoTransaction();
+            if (object.tranid != null)
+                if (typeof object.tranid === "string")
+                    $util.base64.decode(object.tranid, message.tranid = $util.newBuffer($util.base64.length(object.tranid)), 0);
+                else if (object.tranid.length)
+                    message.tranid = object.tranid;
+            if (object.info != null) {
+                if (typeof object.info !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransaction.info: object expected");
+                message.info = $root.ZilliqaMessage.ProtoTransactionCoreInfo.fromObject(object.info);
+            }
+            if (object.signature != null) {
+                if (typeof object.signature !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransaction.signature: object expected");
+                message.signature = $root.ZilliqaMessage.ByteArray.fromObject(object.signature);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProtoTransaction message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @static
+         * @param {ZilliqaMessage.ProtoTransaction} message ProtoTransaction
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProtoTransaction.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.tranid = "";
+                else {
+                    object.tranid = [];
+                    if (options.bytes !== Array)
+                        object.tranid = $util.newBuffer(object.tranid);
+                }
+                object.info = null;
+                object.signature = null;
+            }
+            if (message.tranid != null && message.hasOwnProperty("tranid"))
+                object.tranid = options.bytes === String ? $util.base64.encode(message.tranid, 0, message.tranid.length) : options.bytes === Array ? Array.prototype.slice.call(message.tranid) : message.tranid;
+            if (message.info != null && message.hasOwnProperty("info"))
+                object.info = $root.ZilliqaMessage.ProtoTransactionCoreInfo.toObject(message.info, options);
+            if (message.signature != null && message.hasOwnProperty("signature"))
+                object.signature = $root.ZilliqaMessage.ByteArray.toObject(message.signature, options);
+            return object;
+        };
+
+        /**
+         * Converts this ProtoTransaction to JSON.
+         * @function toJSON
+         * @memberof ZilliqaMessage.ProtoTransaction
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProtoTransaction.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ProtoTransaction;
+    })();
+
+    ZilliqaMessage.ProtoTransactionReceipt = (function() {
+
+        /**
+         * Properties of a ProtoTransactionReceipt.
+         * @memberof ZilliqaMessage
+         * @interface IProtoTransactionReceipt
+         * @property {Uint8Array} receipt ProtoTransactionReceipt receipt
+         * @property {ZilliqaMessage.IByteArray} cumgas ProtoTransactionReceipt cumgas
+         */
+
+        /**
+         * Constructs a new ProtoTransactionReceipt.
+         * @memberof ZilliqaMessage
+         * @classdesc Represents a ProtoTransactionReceipt.
+         * @implements IProtoTransactionReceipt
+         * @constructor
+         * @param {ZilliqaMessage.IProtoTransactionReceipt=} [properties] Properties to set
+         */
+        function ProtoTransactionReceipt(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProtoTransactionReceipt receipt.
+         * @member {Uint8Array} receipt
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @instance
+         */
+        ProtoTransactionReceipt.prototype.receipt = $util.newBuffer([]);
+
+        /**
+         * ProtoTransactionReceipt cumgas.
+         * @member {ZilliqaMessage.IByteArray} cumgas
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @instance
+         */
+        ProtoTransactionReceipt.prototype.cumgas = null;
+
+        /**
+         * Creates a new ProtoTransactionReceipt instance using the specified properties.
+         * @function create
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionReceipt=} [properties] Properties to set
+         * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt instance
+         */
+        ProtoTransactionReceipt.create = function create(properties) {
+            return new ProtoTransactionReceipt(properties);
+        };
+
+        /**
+         * Encodes the specified ProtoTransactionReceipt message. Does not implicitly {@link ZilliqaMessage.ProtoTransactionReceipt.verify|verify} messages.
+         * @function encode
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionReceipt} message ProtoTransactionReceipt message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransactionReceipt.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.receipt);
+            $root.ZilliqaMessage.ByteArray.encode(message.cumgas, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProtoTransactionReceipt message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransactionReceipt.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionReceipt} message ProtoTransactionReceipt message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransactionReceipt.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProtoTransactionReceipt message from the specified reader or buffer.
+         * @function decode
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransactionReceipt.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransactionReceipt();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.receipt = reader.bytes();
+                    break;
+                case 2:
+                    message.cumgas = $root.ZilliqaMessage.ByteArray.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            if (!message.hasOwnProperty("receipt"))
+                throw $util.ProtocolError("missing required 'receipt'", { instance: message });
+            if (!message.hasOwnProperty("cumgas"))
+                throw $util.ProtocolError("missing required 'cumgas'", { instance: message });
+            return message;
+        };
+
+        /**
+         * Decodes a ProtoTransactionReceipt message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransactionReceipt.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProtoTransactionReceipt message.
+         * @function verify
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProtoTransactionReceipt.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (!(message.receipt && typeof message.receipt.length === "number" || $util.isString(message.receipt)))
+                return "receipt: buffer expected";
+            {
+                var error = $root.ZilliqaMessage.ByteArray.verify(message.cumgas);
+                if (error)
+                    return "cumgas." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ProtoTransactionReceipt message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {ZilliqaMessage.ProtoTransactionReceipt} ProtoTransactionReceipt
+         */
+        ProtoTransactionReceipt.fromObject = function fromObject(object) {
+            if (object instanceof $root.ZilliqaMessage.ProtoTransactionReceipt)
+                return object;
+            var message = new $root.ZilliqaMessage.ProtoTransactionReceipt();
+            if (object.receipt != null)
+                if (typeof object.receipt === "string")
+                    $util.base64.decode(object.receipt, message.receipt = $util.newBuffer($util.base64.length(object.receipt)), 0);
+                else if (object.receipt.length)
+                    message.receipt = object.receipt;
+            if (object.cumgas != null) {
+                if (typeof object.cumgas !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionReceipt.cumgas: object expected");
+                message.cumgas = $root.ZilliqaMessage.ByteArray.fromObject(object.cumgas);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProtoTransactionReceipt message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @static
+         * @param {ZilliqaMessage.ProtoTransactionReceipt} message ProtoTransactionReceipt
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProtoTransactionReceipt.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.receipt = "";
+                else {
+                    object.receipt = [];
+                    if (options.bytes !== Array)
+                        object.receipt = $util.newBuffer(object.receipt);
+                }
+                object.cumgas = null;
+            }
+            if (message.receipt != null && message.hasOwnProperty("receipt"))
+                object.receipt = options.bytes === String ? $util.base64.encode(message.receipt, 0, message.receipt.length) : options.bytes === Array ? Array.prototype.slice.call(message.receipt) : message.receipt;
+            if (message.cumgas != null && message.hasOwnProperty("cumgas"))
+                object.cumgas = $root.ZilliqaMessage.ByteArray.toObject(message.cumgas, options);
+            return object;
+        };
+
+        /**
+         * Converts this ProtoTransactionReceipt to JSON.
+         * @function toJSON
+         * @memberof ZilliqaMessage.ProtoTransactionReceipt
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProtoTransactionReceipt.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ProtoTransactionReceipt;
+    })();
+
+    ZilliqaMessage.ProtoTransactionWithReceipt = (function() {
+
+        /**
+         * Properties of a ProtoTransactionWithReceipt.
+         * @memberof ZilliqaMessage
+         * @interface IProtoTransactionWithReceipt
+         * @property {ZilliqaMessage.IProtoTransaction} transaction ProtoTransactionWithReceipt transaction
+         * @property {ZilliqaMessage.IProtoTransactionReceipt} receipt ProtoTransactionWithReceipt receipt
+         */
+
+        /**
+         * Constructs a new ProtoTransactionWithReceipt.
+         * @memberof ZilliqaMessage
+         * @classdesc Represents a ProtoTransactionWithReceipt.
+         * @implements IProtoTransactionWithReceipt
+         * @constructor
+         * @param {ZilliqaMessage.IProtoTransactionWithReceipt=} [properties] Properties to set
+         */
+        function ProtoTransactionWithReceipt(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProtoTransactionWithReceipt transaction.
+         * @member {ZilliqaMessage.IProtoTransaction} transaction
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @instance
+         */
+        ProtoTransactionWithReceipt.prototype.transaction = null;
+
+        /**
+         * ProtoTransactionWithReceipt receipt.
+         * @member {ZilliqaMessage.IProtoTransactionReceipt} receipt
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @instance
+         */
+        ProtoTransactionWithReceipt.prototype.receipt = null;
+
+        /**
+         * Creates a new ProtoTransactionWithReceipt instance using the specified properties.
+         * @function create
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionWithReceipt=} [properties] Properties to set
+         * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt instance
+         */
+        ProtoTransactionWithReceipt.create = function create(properties) {
+            return new ProtoTransactionWithReceipt(properties);
+        };
+
+        /**
+         * Encodes the specified ProtoTransactionWithReceipt message. Does not implicitly {@link ZilliqaMessage.ProtoTransactionWithReceipt.verify|verify} messages.
+         * @function encode
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionWithReceipt} message ProtoTransactionWithReceipt message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransactionWithReceipt.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            $root.ZilliqaMessage.ProtoTransaction.encode(message.transaction, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            $root.ZilliqaMessage.ProtoTransactionReceipt.encode(message.receipt, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProtoTransactionWithReceipt message, length delimited. Does not implicitly {@link ZilliqaMessage.ProtoTransactionWithReceipt.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {ZilliqaMessage.IProtoTransactionWithReceipt} message ProtoTransactionWithReceipt message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProtoTransactionWithReceipt.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProtoTransactionWithReceipt message from the specified reader or buffer.
+         * @function decode
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransactionWithReceipt.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ZilliqaMessage.ProtoTransactionWithReceipt();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.transaction = $root.ZilliqaMessage.ProtoTransaction.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.receipt = $root.ZilliqaMessage.ProtoTransactionReceipt.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            if (!message.hasOwnProperty("transaction"))
+                throw $util.ProtocolError("missing required 'transaction'", { instance: message });
+            if (!message.hasOwnProperty("receipt"))
+                throw $util.ProtocolError("missing required 'receipt'", { instance: message });
+            return message;
+        };
+
+        /**
+         * Decodes a ProtoTransactionWithReceipt message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProtoTransactionWithReceipt.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProtoTransactionWithReceipt message.
+         * @function verify
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProtoTransactionWithReceipt.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            {
+                var error = $root.ZilliqaMessage.ProtoTransaction.verify(message.transaction);
+                if (error)
+                    return "transaction." + error;
+            }
+            {
+                var error = $root.ZilliqaMessage.ProtoTransactionReceipt.verify(message.receipt);
+                if (error)
+                    return "receipt." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ProtoTransactionWithReceipt message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {ZilliqaMessage.ProtoTransactionWithReceipt} ProtoTransactionWithReceipt
+         */
+        ProtoTransactionWithReceipt.fromObject = function fromObject(object) {
+            if (object instanceof $root.ZilliqaMessage.ProtoTransactionWithReceipt)
+                return object;
+            var message = new $root.ZilliqaMessage.ProtoTransactionWithReceipt();
+            if (object.transaction != null) {
+                if (typeof object.transaction !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionWithReceipt.transaction: object expected");
+                message.transaction = $root.ZilliqaMessage.ProtoTransaction.fromObject(object.transaction);
+            }
+            if (object.receipt != null) {
+                if (typeof object.receipt !== "object")
+                    throw TypeError(".ZilliqaMessage.ProtoTransactionWithReceipt.receipt: object expected");
+                message.receipt = $root.ZilliqaMessage.ProtoTransactionReceipt.fromObject(object.receipt);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProtoTransactionWithReceipt message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @static
+         * @param {ZilliqaMessage.ProtoTransactionWithReceipt} message ProtoTransactionWithReceipt
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProtoTransactionWithReceipt.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.transaction = null;
+                object.receipt = null;
+            }
+            if (message.transaction != null && message.hasOwnProperty("transaction"))
+                object.transaction = $root.ZilliqaMessage.ProtoTransaction.toObject(message.transaction, options);
+            if (message.receipt != null && message.hasOwnProperty("receipt"))
+                object.receipt = $root.ZilliqaMessage.ProtoTransactionReceipt.toObject(message.receipt, options);
+            return object;
+        };
+
+        /**
+         * Converts this ProtoTransactionWithReceipt to JSON.
+         * @function toJSON
+         * @memberof ZilliqaMessage.ProtoTransactionWithReceipt
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProtoTransactionWithReceipt.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ProtoTransactionWithReceipt;
+    })();
+
+    return ZilliqaMessage;
+})();
+
+module.exports = $root;
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// minimal library entry point.
+
+
+module.exports = __webpack_require__(88);
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var protobuf = exports;
+
+/**
+ * Build type, one of `"full"`, `"light"` or `"minimal"`.
+ * @name build
+ * @type {string}
+ * @const
+ */
+protobuf.build = "minimal";
+
+// Serialization
+protobuf.Writer       = __webpack_require__(42);
+protobuf.BufferWriter = __webpack_require__(97);
+protobuf.Reader       = __webpack_require__(43);
+protobuf.BufferReader = __webpack_require__(98);
+
+// Utility
+protobuf.util         = __webpack_require__(10);
+protobuf.rpc          = __webpack_require__(99);
+protobuf.roots        = __webpack_require__(101);
+protobuf.configure    = configure;
+
+/* istanbul ignore next */
+/**
+ * Reconfigures the library according to the environment.
+ * @returns {undefined}
+ */
+function configure() {
+    protobuf.Reader._configure(protobuf.BufferReader);
+    protobuf.util._configure();
+}
+
+// Set up buffer utility according to the environment
+protobuf.Writer._configure(protobuf.BufferWriter);
+configure();
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = asPromise;
+
+/**
+ * Callback as used by {@link util.asPromise}.
+ * @typedef asPromiseCallback
+ * @type {function}
+ * @param {Error|null} error Error, if any
+ * @param {...*} params Additional arguments
+ * @returns {undefined}
+ */
+
+/**
+ * Returns a promise from a node-style callback function.
+ * @memberof util
+ * @param {asPromiseCallback} fn Function to call
+ * @param {*} ctx Function context
+ * @param {...*} params Function arguments
+ * @returns {Promise<*>} Promisified function
+ */
+function asPromise(fn, ctx/*, varargs */) {
+    var params  = new Array(arguments.length - 1),
+        offset  = 0,
+        index   = 2,
+        pending = true;
+    while (index < arguments.length)
+        params[offset++] = arguments[index++];
+    return new Promise(function executor(resolve, reject) {
+        params[offset] = function callback(err/*, varargs */) {
+            if (pending) {
+                pending = false;
+                if (err)
+                    reject(err);
+                else {
+                    var params = new Array(arguments.length - 1),
+                        offset = 0;
+                    while (offset < params.length)
+                        params[offset++] = arguments[offset];
+                    resolve.apply(null, params);
+                }
+            }
+        };
+        try {
+            fn.apply(ctx || null, params);
+        } catch (err) {
+            if (pending) {
+                pending = false;
+                reject(err);
+            }
+        }
+    });
+}
+
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A minimal base64 implementation for number arrays.
+ * @memberof util
+ * @namespace
+ */
+var base64 = exports;
+
+/**
+ * Calculates the byte length of a base64 encoded string.
+ * @param {string} string Base64 encoded string
+ * @returns {number} Byte length
+ */
+base64.length = function length(string) {
+    var p = string.length;
+    if (!p)
+        return 0;
+    var n = 0;
+    while (--p % 4 > 1 && string.charAt(p) === "=")
+        ++n;
+    return Math.ceil(string.length * 3) / 4 - n;
+};
+
+// Base64 encoding table
+var b64 = new Array(64);
+
+// Base64 decoding table
+var s64 = new Array(123);
+
+// 65..90, 97..122, 48..57, 43, 47
+for (var i = 0; i < 64;)
+    s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
+
+/**
+ * Encodes a buffer to a base64 encoded string.
+ * @param {Uint8Array} buffer Source buffer
+ * @param {number} start Source start
+ * @param {number} end Source end
+ * @returns {string} Base64 encoded string
+ */
+base64.encode = function encode(buffer, start, end) {
+    var parts = null,
+        chunk = [];
+    var i = 0, // output index
+        j = 0, // goto index
+        t;     // temporary
+    while (start < end) {
+        var b = buffer[start++];
+        switch (j) {
+            case 0:
+                chunk[i++] = b64[b >> 2];
+                t = (b & 3) << 4;
+                j = 1;
+                break;
+            case 1:
+                chunk[i++] = b64[t | b >> 4];
+                t = (b & 15) << 2;
+                j = 2;
+                break;
+            case 2:
+                chunk[i++] = b64[t | b >> 6];
+                chunk[i++] = b64[b & 63];
+                j = 0;
+                break;
+        }
+        if (i > 8191) {
+            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
+            i = 0;
+        }
+    }
+    if (j) {
+        chunk[i++] = b64[t];
+        chunk[i++] = 61;
+        if (j === 1)
+            chunk[i++] = 61;
+    }
+    if (parts) {
+        if (i)
+            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
+        return parts.join("");
+    }
+    return String.fromCharCode.apply(String, chunk.slice(0, i));
+};
+
+var invalidEncoding = "invalid encoding";
+
+/**
+ * Decodes a base64 encoded string to a buffer.
+ * @param {string} string Source string
+ * @param {Uint8Array} buffer Destination buffer
+ * @param {number} offset Destination offset
+ * @returns {number} Number of bytes written
+ * @throws {Error} If encoding is invalid
+ */
+base64.decode = function decode(string, buffer, offset) {
+    var start = offset;
+    var j = 0, // goto index
+        t;     // temporary
+    for (var i = 0; i < string.length;) {
+        var c = string.charCodeAt(i++);
+        if (c === 61 && j > 1)
+            break;
+        if ((c = s64[c]) === undefined)
+            throw Error(invalidEncoding);
+        switch (j) {
+            case 0:
+                t = c;
+                j = 1;
+                break;
+            case 1:
+                buffer[offset++] = t << 2 | (c & 48) >> 4;
+                t = c;
+                j = 2;
+                break;
+            case 2:
+                buffer[offset++] = (t & 15) << 4 | (c & 60) >> 2;
+                t = c;
+                j = 3;
+                break;
+            case 3:
+                buffer[offset++] = (t & 3) << 6 | c;
+                j = 0;
+                break;
+        }
+    }
+    if (j === 1)
+        throw Error(invalidEncoding);
+    return offset - start;
+};
+
+/**
+ * Tests if the specified string appears to be base64 encoded.
+ * @param {string} string String to test
+ * @returns {boolean} `true` if probably base64 encoded, otherwise false
+ */
+base64.test = function test(string) {
+    return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
+};
+
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = EventEmitter;
+
+/**
+ * Constructs a new event emitter instance.
+ * @classdesc A minimal event emitter.
+ * @memberof util
+ * @constructor
+ */
+function EventEmitter() {
+
+    /**
+     * Registered listeners.
+     * @type {Object.<string,*>}
+     * @private
+     */
+    this._listeners = {};
+}
+
+/**
+ * Registers an event listener.
+ * @param {string} evt Event name
+ * @param {function} fn Listener
+ * @param {*} [ctx] Listener context
+ * @returns {util.EventEmitter} `this`
+ */
+EventEmitter.prototype.on = function on(evt, fn, ctx) {
+    (this._listeners[evt] || (this._listeners[evt] = [])).push({
+        fn  : fn,
+        ctx : ctx || this
+    });
+    return this;
+};
+
+/**
+ * Removes an event listener or any matching listeners if arguments are omitted.
+ * @param {string} [evt] Event name. Removes all listeners if omitted.
+ * @param {function} [fn] Listener to remove. Removes all listeners of `evt` if omitted.
+ * @returns {util.EventEmitter} `this`
+ */
+EventEmitter.prototype.off = function off(evt, fn) {
+    if (evt === undefined)
+        this._listeners = {};
+    else {
+        if (fn === undefined)
+            this._listeners[evt] = [];
+        else {
+            var listeners = this._listeners[evt];
+            for (var i = 0; i < listeners.length;)
+                if (listeners[i].fn === fn)
+                    listeners.splice(i, 1);
+                else
+                    ++i;
+        }
+    }
+    return this;
+};
+
+/**
+ * Emits an event by calling its listeners with the specified arguments.
+ * @param {string} evt Event name
+ * @param {...*} args Arguments
+ * @returns {util.EventEmitter} `this`
+ */
+EventEmitter.prototype.emit = function emit(evt) {
+    var listeners = this._listeners[evt];
+    if (listeners) {
+        var args = [],
+            i = 1;
+        for (; i < arguments.length;)
+            args.push(arguments[i++]);
+        for (i = 0; i < listeners.length;)
+            listeners[i].fn.apply(listeners[i++].ctx, args);
+    }
+    return this;
+};
+
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = factory(factory);
+
+/**
+ * Reads / writes floats / doubles from / to buffers.
+ * @name util.float
+ * @namespace
+ */
+
+/**
+ * Writes a 32 bit float to a buffer using little endian byte order.
+ * @name util.float.writeFloatLE
+ * @function
+ * @param {number} val Value to write
+ * @param {Uint8Array} buf Target buffer
+ * @param {number} pos Target buffer offset
+ * @returns {undefined}
+ */
+
+/**
+ * Writes a 32 bit float to a buffer using big endian byte order.
+ * @name util.float.writeFloatBE
+ * @function
+ * @param {number} val Value to write
+ * @param {Uint8Array} buf Target buffer
+ * @param {number} pos Target buffer offset
+ * @returns {undefined}
+ */
+
+/**
+ * Reads a 32 bit float from a buffer using little endian byte order.
+ * @name util.float.readFloatLE
+ * @function
+ * @param {Uint8Array} buf Source buffer
+ * @param {number} pos Source buffer offset
+ * @returns {number} Value read
+ */
+
+/**
+ * Reads a 32 bit float from a buffer using big endian byte order.
+ * @name util.float.readFloatBE
+ * @function
+ * @param {Uint8Array} buf Source buffer
+ * @param {number} pos Source buffer offset
+ * @returns {number} Value read
+ */
+
+/**
+ * Writes a 64 bit double to a buffer using little endian byte order.
+ * @name util.float.writeDoubleLE
+ * @function
+ * @param {number} val Value to write
+ * @param {Uint8Array} buf Target buffer
+ * @param {number} pos Target buffer offset
+ * @returns {undefined}
+ */
+
+/**
+ * Writes a 64 bit double to a buffer using big endian byte order.
+ * @name util.float.writeDoubleBE
+ * @function
+ * @param {number} val Value to write
+ * @param {Uint8Array} buf Target buffer
+ * @param {number} pos Target buffer offset
+ * @returns {undefined}
+ */
+
+/**
+ * Reads a 64 bit double from a buffer using little endian byte order.
+ * @name util.float.readDoubleLE
+ * @function
+ * @param {Uint8Array} buf Source buffer
+ * @param {number} pos Source buffer offset
+ * @returns {number} Value read
+ */
+
+/**
+ * Reads a 64 bit double from a buffer using big endian byte order.
+ * @name util.float.readDoubleBE
+ * @function
+ * @param {Uint8Array} buf Source buffer
+ * @param {number} pos Source buffer offset
+ * @returns {number} Value read
+ */
+
+// Factory function for the purpose of node-based testing in modified global environments
+function factory(exports) {
+
+    // float: typed array
+    if (typeof Float32Array !== "undefined") (function() {
+
+        var f32 = new Float32Array([ -0 ]),
+            f8b = new Uint8Array(f32.buffer),
+            le  = f8b[3] === 128;
+
+        function writeFloat_f32_cpy(val, buf, pos) {
+            f32[0] = val;
+            buf[pos    ] = f8b[0];
+            buf[pos + 1] = f8b[1];
+            buf[pos + 2] = f8b[2];
+            buf[pos + 3] = f8b[3];
+        }
+
+        function writeFloat_f32_rev(val, buf, pos) {
+            f32[0] = val;
+            buf[pos    ] = f8b[3];
+            buf[pos + 1] = f8b[2];
+            buf[pos + 2] = f8b[1];
+            buf[pos + 3] = f8b[0];
+        }
+
+        /* istanbul ignore next */
+        exports.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
+        /* istanbul ignore next */
+        exports.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
+
+        function readFloat_f32_cpy(buf, pos) {
+            f8b[0] = buf[pos    ];
+            f8b[1] = buf[pos + 1];
+            f8b[2] = buf[pos + 2];
+            f8b[3] = buf[pos + 3];
+            return f32[0];
+        }
+
+        function readFloat_f32_rev(buf, pos) {
+            f8b[3] = buf[pos    ];
+            f8b[2] = buf[pos + 1];
+            f8b[1] = buf[pos + 2];
+            f8b[0] = buf[pos + 3];
+            return f32[0];
+        }
+
+        /* istanbul ignore next */
+        exports.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
+        /* istanbul ignore next */
+        exports.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
+
+    // float: ieee754
+    })(); else (function() {
+
+        function writeFloat_ieee754(writeUint, val, buf, pos) {
+            var sign = val < 0 ? 1 : 0;
+            if (sign)
+                val = -val;
+            if (val === 0)
+                writeUint(1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos);
+            else if (isNaN(val))
+                writeUint(2143289344, buf, pos);
+            else if (val > 3.4028234663852886e+38) // +-Infinity
+                writeUint((sign << 31 | 2139095040) >>> 0, buf, pos);
+            else if (val < 1.1754943508222875e-38) // denormal
+                writeUint((sign << 31 | Math.round(val / 1.401298464324817e-45)) >>> 0, buf, pos);
+            else {
+                var exponent = Math.floor(Math.log(val) / Math.LN2),
+                    mantissa = Math.round(val * Math.pow(2, -exponent) * 8388608) & 8388607;
+                writeUint((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
+            }
+        }
+
+        exports.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
+        exports.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
+
+        function readFloat_ieee754(readUint, buf, pos) {
+            var uint = readUint(buf, pos),
+                sign = (uint >> 31) * 2 + 1,
+                exponent = uint >>> 23 & 255,
+                mantissa = uint & 8388607;
+            return exponent === 255
+                ? mantissa
+                ? NaN
+                : sign * Infinity
+                : exponent === 0 // denormal
+                ? sign * 1.401298464324817e-45 * mantissa
+                : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
+        }
+
+        exports.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
+        exports.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
+
+    })();
+
+    // double: typed array
+    if (typeof Float64Array !== "undefined") (function() {
+
+        var f64 = new Float64Array([-0]),
+            f8b = new Uint8Array(f64.buffer),
+            le  = f8b[7] === 128;
+
+        function writeDouble_f64_cpy(val, buf, pos) {
+            f64[0] = val;
+            buf[pos    ] = f8b[0];
+            buf[pos + 1] = f8b[1];
+            buf[pos + 2] = f8b[2];
+            buf[pos + 3] = f8b[3];
+            buf[pos + 4] = f8b[4];
+            buf[pos + 5] = f8b[5];
+            buf[pos + 6] = f8b[6];
+            buf[pos + 7] = f8b[7];
+        }
+
+        function writeDouble_f64_rev(val, buf, pos) {
+            f64[0] = val;
+            buf[pos    ] = f8b[7];
+            buf[pos + 1] = f8b[6];
+            buf[pos + 2] = f8b[5];
+            buf[pos + 3] = f8b[4];
+            buf[pos + 4] = f8b[3];
+            buf[pos + 5] = f8b[2];
+            buf[pos + 6] = f8b[1];
+            buf[pos + 7] = f8b[0];
+        }
+
+        /* istanbul ignore next */
+        exports.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
+        /* istanbul ignore next */
+        exports.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
+
+        function readDouble_f64_cpy(buf, pos) {
+            f8b[0] = buf[pos    ];
+            f8b[1] = buf[pos + 1];
+            f8b[2] = buf[pos + 2];
+            f8b[3] = buf[pos + 3];
+            f8b[4] = buf[pos + 4];
+            f8b[5] = buf[pos + 5];
+            f8b[6] = buf[pos + 6];
+            f8b[7] = buf[pos + 7];
+            return f64[0];
+        }
+
+        function readDouble_f64_rev(buf, pos) {
+            f8b[7] = buf[pos    ];
+            f8b[6] = buf[pos + 1];
+            f8b[5] = buf[pos + 2];
+            f8b[4] = buf[pos + 3];
+            f8b[3] = buf[pos + 4];
+            f8b[2] = buf[pos + 5];
+            f8b[1] = buf[pos + 6];
+            f8b[0] = buf[pos + 7];
+            return f64[0];
+        }
+
+        /* istanbul ignore next */
+        exports.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
+        /* istanbul ignore next */
+        exports.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
+
+    // double: ieee754
+    })(); else (function() {
+
+        function writeDouble_ieee754(writeUint, off0, off1, val, buf, pos) {
+            var sign = val < 0 ? 1 : 0;
+            if (sign)
+                val = -val;
+            if (val === 0) {
+                writeUint(0, buf, pos + off0);
+                writeUint(1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos + off1);
+            } else if (isNaN(val)) {
+                writeUint(0, buf, pos + off0);
+                writeUint(2146959360, buf, pos + off1);
+            } else if (val > 1.7976931348623157e+308) { // +-Infinity
+                writeUint(0, buf, pos + off0);
+                writeUint((sign << 31 | 2146435072) >>> 0, buf, pos + off1);
+            } else {
+                var mantissa;
+                if (val < 2.2250738585072014e-308) { // denormal
+                    mantissa = val / 5e-324;
+                    writeUint(mantissa >>> 0, buf, pos + off0);
+                    writeUint((sign << 31 | mantissa / 4294967296) >>> 0, buf, pos + off1);
+                } else {
+                    var exponent = Math.floor(Math.log(val) / Math.LN2);
+                    if (exponent === 1024)
+                        exponent = 1023;
+                    mantissa = val * Math.pow(2, -exponent);
+                    writeUint(mantissa * 4503599627370496 >>> 0, buf, pos + off0);
+                    writeUint((sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0, buf, pos + off1);
+                }
+            }
+        }
+
+        exports.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
+        exports.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
+
+        function readDouble_ieee754(readUint, off0, off1, buf, pos) {
+            var lo = readUint(buf, pos + off0),
+                hi = readUint(buf, pos + off1);
+            var sign = (hi >> 31) * 2 + 1,
+                exponent = hi >>> 20 & 2047,
+                mantissa = 4294967296 * (hi & 1048575) + lo;
+            return exponent === 2047
+                ? mantissa
+                ? NaN
+                : sign * Infinity
+                : exponent === 0 // denormal
+                ? sign * 5e-324 * mantissa
+                : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
+        }
+
+        exports.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
+        exports.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
+
+    })();
+
+    return exports;
+}
+
+// uint helpers
+
+function writeUintLE(val, buf, pos) {
+    buf[pos    ] =  val        & 255;
+    buf[pos + 1] =  val >>> 8  & 255;
+    buf[pos + 2] =  val >>> 16 & 255;
+    buf[pos + 3] =  val >>> 24;
+}
+
+function writeUintBE(val, buf, pos) {
+    buf[pos    ] =  val >>> 24;
+    buf[pos + 1] =  val >>> 16 & 255;
+    buf[pos + 2] =  val >>> 8  & 255;
+    buf[pos + 3] =  val        & 255;
+}
+
+function readUintLE(buf, pos) {
+    return (buf[pos    ]
+          | buf[pos + 1] << 8
+          | buf[pos + 2] << 16
+          | buf[pos + 3] << 24) >>> 0;
+}
+
+function readUintBE(buf, pos) {
+    return (buf[pos    ] << 24
+          | buf[pos + 1] << 16
+          | buf[pos + 2] << 8
+          | buf[pos + 3]) >>> 0;
+}
+
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = inquire;
+
+/**
+ * Requires a module only if available.
+ * @memberof util
+ * @param {string} moduleName Module to require
+ * @returns {?Object} Required module if available and not empty, otherwise `null`
+ */
+function inquire(moduleName) {
+    try {
+        var mod = eval("quire".replace(/^/,"re"))(moduleName); // eslint-disable-line no-eval
+        if (mod && (mod.length || Object.keys(mod).length))
+            return mod;
+    } catch (e) {} // eslint-disable-line no-empty
+    return null;
+}
+
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A minimal UTF8 implementation for number arrays.
+ * @memberof util
+ * @namespace
+ */
+var utf8 = exports;
+
+/**
+ * Calculates the UTF8 byte length of a string.
+ * @param {string} string String
+ * @returns {number} Byte length
+ */
+utf8.length = function utf8_length(string) {
+    var len = 0,
+        c = 0;
+    for (var i = 0; i < string.length; ++i) {
+        c = string.charCodeAt(i);
+        if (c < 128)
+            len += 1;
+        else if (c < 2048)
+            len += 2;
+        else if ((c & 0xFC00) === 0xD800 && (string.charCodeAt(i + 1) & 0xFC00) === 0xDC00) {
+            ++i;
+            len += 4;
+        } else
+            len += 3;
+    }
+    return len;
+};
+
+/**
+ * Reads UTF8 bytes as a string.
+ * @param {Uint8Array} buffer Source buffer
+ * @param {number} start Source start
+ * @param {number} end Source end
+ * @returns {string} String read
+ */
+utf8.read = function utf8_read(buffer, start, end) {
+    var len = end - start;
+    if (len < 1)
+        return "";
+    var parts = null,
+        chunk = [],
+        i = 0, // char offset
+        t;     // temporary
+    while (start < end) {
+        t = buffer[start++];
+        if (t < 128)
+            chunk[i++] = t;
+        else if (t > 191 && t < 224)
+            chunk[i++] = (t & 31) << 6 | buffer[start++] & 63;
+        else if (t > 239 && t < 365) {
+            t = ((t & 7) << 18 | (buffer[start++] & 63) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63) - 0x10000;
+            chunk[i++] = 0xD800 + (t >> 10);
+            chunk[i++] = 0xDC00 + (t & 1023);
+        } else
+            chunk[i++] = (t & 15) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63;
+        if (i > 8191) {
+            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
+            i = 0;
+        }
+    }
+    if (parts) {
+        if (i)
+            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
+        return parts.join("");
+    }
+    return String.fromCharCode.apply(String, chunk.slice(0, i));
+};
+
+/**
+ * Writes a string as UTF8 bytes.
+ * @param {string} string Source string
+ * @param {Uint8Array} buffer Destination buffer
+ * @param {number} offset Destination offset
+ * @returns {number} Bytes written
+ */
+utf8.write = function utf8_write(string, buffer, offset) {
+    var start = offset,
+        c1, // character 1
+        c2; // character 2
+    for (var i = 0; i < string.length; ++i) {
+        c1 = string.charCodeAt(i);
+        if (c1 < 128) {
+            buffer[offset++] = c1;
+        } else if (c1 < 2048) {
+            buffer[offset++] = c1 >> 6       | 192;
+            buffer[offset++] = c1       & 63 | 128;
+        } else if ((c1 & 0xFC00) === 0xD800 && ((c2 = string.charCodeAt(i + 1)) & 0xFC00) === 0xDC00) {
+            c1 = 0x10000 + ((c1 & 0x03FF) << 10) + (c2 & 0x03FF);
+            ++i;
+            buffer[offset++] = c1 >> 18      | 240;
+            buffer[offset++] = c1 >> 12 & 63 | 128;
+            buffer[offset++] = c1 >> 6  & 63 | 128;
+            buffer[offset++] = c1       & 63 | 128;
+        } else {
+            buffer[offset++] = c1 >> 12      | 224;
+            buffer[offset++] = c1 >> 6  & 63 | 128;
+            buffer[offset++] = c1       & 63 | 128;
+        }
+    }
+    return offset - start;
+};
+
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = pool;
+
+/**
+ * An allocator as used by {@link util.pool}.
+ * @typedef PoolAllocator
+ * @type {function}
+ * @param {number} size Buffer size
+ * @returns {Uint8Array} Buffer
+ */
+
+/**
+ * A slicer as used by {@link util.pool}.
+ * @typedef PoolSlicer
+ * @type {function}
+ * @param {number} start Start offset
+ * @param {number} end End offset
+ * @returns {Uint8Array} Buffer slice
+ * @this {Uint8Array}
+ */
+
+/**
+ * A general purpose buffer pool.
+ * @memberof util
+ * @function
+ * @param {PoolAllocator} alloc Allocator
+ * @param {PoolSlicer} slice Slicer
+ * @param {number} [size=8192] Slab size
+ * @returns {PoolAllocator} Pooled allocator
+ */
+function pool(alloc, slice, size) {
+    var SIZE   = size || 8192;
+    var MAX    = SIZE >>> 1;
+    var slab   = null;
+    var offset = SIZE;
+    return function pool_alloc(size) {
+        if (size < 1 || size > MAX)
+            return alloc(size);
+        if (offset + size > SIZE) {
+            slab = alloc(SIZE);
+            offset = 0;
+        }
+        var buf = slice.call(slab, offset, offset += size);
+        if (offset & 7) // align to 32 bit
+            offset = (offset | 7) + 1;
+        return buf;
+    };
+}
+
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = LongBits;
+
+var util = __webpack_require__(10);
+
+/**
+ * Constructs new long bits.
+ * @classdesc Helper class for working with the low and high bits of a 64 bit value.
+ * @memberof util
+ * @constructor
+ * @param {number} lo Low 32 bits, unsigned
+ * @param {number} hi High 32 bits, unsigned
+ */
+function LongBits(lo, hi) {
+
+    // note that the casts below are theoretically unnecessary as of today, but older statically
+    // generated converter code might still call the ctor with signed 32bits. kept for compat.
+
+    /**
+     * Low bits.
+     * @type {number}
+     */
+    this.lo = lo >>> 0;
+
+    /**
+     * High bits.
+     * @type {number}
+     */
+    this.hi = hi >>> 0;
+}
+
+/**
+ * Zero bits.
+ * @memberof util.LongBits
+ * @type {util.LongBits}
+ */
+var zero = LongBits.zero = new LongBits(0, 0);
+
+zero.toNumber = function() { return 0; };
+zero.zzEncode = zero.zzDecode = function() { return this; };
+zero.length = function() { return 1; };
+
+/**
+ * Zero hash.
+ * @memberof util.LongBits
+ * @type {string}
+ */
+var zeroHash = LongBits.zeroHash = "\0\0\0\0\0\0\0\0";
+
+/**
+ * Constructs new long bits from the specified number.
+ * @param {number} value Value
+ * @returns {util.LongBits} Instance
+ */
+LongBits.fromNumber = function fromNumber(value) {
+    if (value === 0)
+        return zero;
+    var sign = value < 0;
+    if (sign)
+        value = -value;
+    var lo = value >>> 0,
+        hi = (value - lo) / 4294967296 >>> 0;
+    if (sign) {
+        hi = ~hi >>> 0;
+        lo = ~lo >>> 0;
+        if (++lo > 4294967295) {
+            lo = 0;
+            if (++hi > 4294967295)
+                hi = 0;
+        }
+    }
+    return new LongBits(lo, hi);
+};
+
+/**
+ * Constructs new long bits from a number, long or string.
+ * @param {Long|number|string} value Value
+ * @returns {util.LongBits} Instance
+ */
+LongBits.from = function from(value) {
+    if (typeof value === "number")
+        return LongBits.fromNumber(value);
+    if (util.isString(value)) {
+        /* istanbul ignore else */
+        if (util.Long)
+            value = util.Long.fromString(value);
+        else
+            return LongBits.fromNumber(parseInt(value, 10));
+    }
+    return value.low || value.high ? new LongBits(value.low >>> 0, value.high >>> 0) : zero;
+};
+
+/**
+ * Converts this long bits to a possibly unsafe JavaScript number.
+ * @param {boolean} [unsigned=false] Whether unsigned or not
+ * @returns {number} Possibly unsafe number
+ */
+LongBits.prototype.toNumber = function toNumber(unsigned) {
+    if (!unsigned && this.hi >>> 31) {
+        var lo = ~this.lo + 1 >>> 0,
+            hi = ~this.hi     >>> 0;
+        if (!lo)
+            hi = hi + 1 >>> 0;
+        return -(lo + hi * 4294967296);
+    }
+    return this.lo + this.hi * 4294967296;
+};
+
+/**
+ * Converts this long bits to a long.
+ * @param {boolean} [unsigned=false] Whether unsigned or not
+ * @returns {Long} Long
+ */
+LongBits.prototype.toLong = function toLong(unsigned) {
+    return util.Long
+        ? new util.Long(this.lo | 0, this.hi | 0, Boolean(unsigned))
+        /* istanbul ignore next */
+        : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
+};
+
+var charCodeAt = String.prototype.charCodeAt;
+
+/**
+ * Constructs new long bits from the specified 8 characters long hash.
+ * @param {string} hash Hash
+ * @returns {util.LongBits} Bits
+ */
+LongBits.fromHash = function fromHash(hash) {
+    if (hash === zeroHash)
+        return zero;
+    return new LongBits(
+        ( charCodeAt.call(hash, 0)
+        | charCodeAt.call(hash, 1) << 8
+        | charCodeAt.call(hash, 2) << 16
+        | charCodeAt.call(hash, 3) << 24) >>> 0
+    ,
+        ( charCodeAt.call(hash, 4)
+        | charCodeAt.call(hash, 5) << 8
+        | charCodeAt.call(hash, 6) << 16
+        | charCodeAt.call(hash, 7) << 24) >>> 0
+    );
+};
+
+/**
+ * Converts this long bits to a 8 characters long hash.
+ * @returns {string} Hash
+ */
+LongBits.prototype.toHash = function toHash() {
+    return String.fromCharCode(
+        this.lo        & 255,
+        this.lo >>> 8  & 255,
+        this.lo >>> 16 & 255,
+        this.lo >>> 24      ,
+        this.hi        & 255,
+        this.hi >>> 8  & 255,
+        this.hi >>> 16 & 255,
+        this.hi >>> 24
+    );
+};
+
+/**
+ * Zig-zag encodes this long bits.
+ * @returns {util.LongBits} `this`
+ */
+LongBits.prototype.zzEncode = function zzEncode() {
+    var mask =   this.hi >> 31;
+    this.hi  = ((this.hi << 1 | this.lo >>> 31) ^ mask) >>> 0;
+    this.lo  = ( this.lo << 1                   ^ mask) >>> 0;
+    return this;
+};
+
+/**
+ * Zig-zag decodes this long bits.
+ * @returns {util.LongBits} `this`
+ */
+LongBits.prototype.zzDecode = function zzDecode() {
+    var mask = -(this.lo & 1);
+    this.lo  = ((this.lo >>> 1 | this.hi << 31) ^ mask) >>> 0;
+    this.hi  = ( this.hi >>> 1                  ^ mask) >>> 0;
+    return this;
+};
+
+/**
+ * Calculates the length of this longbits when encoded as a varint.
+ * @returns {number} Length
+ */
+LongBits.prototype.length = function length() {
+    var part0 =  this.lo,
+        part1 = (this.lo >>> 28 | this.hi << 4) >>> 0,
+        part2 =  this.hi >>> 24;
+    return part2 === 0
+         ? part1 === 0
+           ? part0 < 16384
+             ? part0 < 128 ? 1 : 2
+             : part0 < 2097152 ? 3 : 4
+           : part1 < 16384
+             ? part1 < 128 ? 5 : 6
+             : part1 < 2097152 ? 7 : 8
+         : part2 < 128 ? 9 : 10;
+};
+
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = BufferWriter;
+
+// extends Writer
+var Writer = __webpack_require__(42);
+(BufferWriter.prototype = Object.create(Writer.prototype)).constructor = BufferWriter;
+
+var util = __webpack_require__(10);
+
+var Buffer = util.Buffer;
+
+/**
+ * Constructs a new buffer writer instance.
+ * @classdesc Wire format writer using node buffers.
+ * @extends Writer
+ * @constructor
+ */
+function BufferWriter() {
+    Writer.call(this);
+}
+
+/**
+ * Allocates a buffer of the specified size.
+ * @param {number} size Buffer size
+ * @returns {Buffer} Buffer
+ */
+BufferWriter.alloc = function alloc_buffer(size) {
+    return (BufferWriter.alloc = util._Buffer_allocUnsafe)(size);
+};
+
+var writeBytesBuffer = Buffer && Buffer.prototype instanceof Uint8Array && Buffer.prototype.set.name === "set"
+    ? function writeBytesBuffer_set(val, buf, pos) {
+        buf.set(val, pos); // faster than copy (requires node >= 4 where Buffers extend Uint8Array and set is properly inherited)
+                           // also works for plain array values
+    }
+    /* istanbul ignore next */
+    : function writeBytesBuffer_copy(val, buf, pos) {
+        if (val.copy) // Buffer values
+            val.copy(buf, pos, 0, val.length);
+        else for (var i = 0; i < val.length;) // plain array values
+            buf[pos++] = val[i++];
+    };
+
+/**
+ * @override
+ */
+BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
+    if (util.isString(value))
+        value = util._Buffer_from(value, "base64");
+    var len = value.length >>> 0;
+    this.uint32(len);
+    if (len)
+        this._push(writeBytesBuffer, len, value);
+    return this;
+};
+
+function writeStringBuffer(val, buf, pos) {
+    if (val.length < 40) // plain js is faster for short strings (probably due to redundant assertions)
+        util.utf8.write(val, buf, pos);
+    else
+        buf.utf8Write(val, pos);
+}
+
+/**
+ * @override
+ */
+BufferWriter.prototype.string = function write_string_buffer(value) {
+    var len = Buffer.byteLength(value);
+    this.uint32(len);
+    if (len)
+        this._push(writeStringBuffer, len, value);
+    return this;
+};
+
+
+/**
+ * Finishes the write operation.
+ * @name BufferWriter#finish
+ * @function
+ * @returns {Buffer} Finished buffer
+ */
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = BufferReader;
+
+// extends Reader
+var Reader = __webpack_require__(43);
+(BufferReader.prototype = Object.create(Reader.prototype)).constructor = BufferReader;
+
+var util = __webpack_require__(10);
+
+/**
+ * Constructs a new buffer reader instance.
+ * @classdesc Wire format reader using node buffers.
+ * @extends Reader
+ * @constructor
+ * @param {Buffer} buffer Buffer to read from
+ */
+function BufferReader(buffer) {
+    Reader.call(this, buffer);
+
+    /**
+     * Read buffer.
+     * @name BufferReader#buf
+     * @type {Buffer}
+     */
+}
+
+/* istanbul ignore else */
+if (util.Buffer)
+    BufferReader.prototype._slice = util.Buffer.prototype.slice;
+
+/**
+ * @override
+ */
+BufferReader.prototype.string = function read_string_buffer() {
+    var len = this.uint32(); // modifies pos
+    return this.buf.utf8Slice(this.pos, this.pos = Math.min(this.pos + len, this.len));
+};
+
+/**
+ * Reads a sequence of bytes preceeded by its length as a varint.
+ * @name BufferReader#bytes
+ * @function
+ * @returns {Buffer} Value read
+ */
+
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Streaming RPC helpers.
+ * @namespace
+ */
+var rpc = exports;
+
+/**
+ * RPC implementation passed to {@link Service#create} performing a service request on network level, i.e. by utilizing http requests or websockets.
+ * @typedef RPCImpl
+ * @type {function}
+ * @param {Method|rpc.ServiceMethod<Message<{}>,Message<{}>>} method Reflected or static method being called
+ * @param {Uint8Array} requestData Request data
+ * @param {RPCImplCallback} callback Callback function
+ * @returns {undefined}
+ * @example
+ * function rpcImpl(method, requestData, callback) {
+ *     if (protobuf.util.lcFirst(method.name) !== "myMethod") // compatible with static code
+ *         throw Error("no such method");
+ *     asynchronouslyObtainAResponse(requestData, function(err, responseData) {
+ *         callback(err, responseData);
+ *     });
+ * }
+ */
+
+/**
+ * Node-style callback as used by {@link RPCImpl}.
+ * @typedef RPCImplCallback
+ * @type {function}
+ * @param {Error|null} error Error, if any, otherwise `null`
+ * @param {Uint8Array|null} [response] Response data or `null` to signal end of stream, if there hasn't been an error
+ * @returns {undefined}
+ */
+
+rpc.Service = __webpack_require__(100);
+
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = Service;
+
+var util = __webpack_require__(10);
+
+// Extends EventEmitter
+(Service.prototype = Object.create(util.EventEmitter.prototype)).constructor = Service;
+
+/**
+ * A service method callback as used by {@link rpc.ServiceMethod|ServiceMethod}.
+ *
+ * Differs from {@link RPCImplCallback} in that it is an actual callback of a service method which may not return `response = null`.
+ * @typedef rpc.ServiceMethodCallback
+ * @template TRes extends Message<TRes>
+ * @type {function}
+ * @param {Error|null} error Error, if any
+ * @param {TRes} [response] Response message
+ * @returns {undefined}
+ */
+
+/**
+ * A service method part of a {@link rpc.Service} as created by {@link Service.create}.
+ * @typedef rpc.ServiceMethod
+ * @template TReq extends Message<TReq>
+ * @template TRes extends Message<TRes>
+ * @type {function}
+ * @param {TReq|Properties<TReq>} request Request message or plain object
+ * @param {rpc.ServiceMethodCallback<TRes>} [callback] Node-style callback called with the error, if any, and the response message
+ * @returns {Promise<Message<TRes>>} Promise if `callback` has been omitted, otherwise `undefined`
+ */
+
+/**
+ * Constructs a new RPC service instance.
+ * @classdesc An RPC service as returned by {@link Service#create}.
+ * @exports rpc.Service
+ * @extends util.EventEmitter
+ * @constructor
+ * @param {RPCImpl} rpcImpl RPC implementation
+ * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+ * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+ */
+function Service(rpcImpl, requestDelimited, responseDelimited) {
+
+    if (typeof rpcImpl !== "function")
+        throw TypeError("rpcImpl must be a function");
+
+    util.EventEmitter.call(this);
+
+    /**
+     * RPC implementation. Becomes `null` once the service is ended.
+     * @type {RPCImpl|null}
+     */
+    this.rpcImpl = rpcImpl;
+
+    /**
+     * Whether requests are length-delimited.
+     * @type {boolean}
+     */
+    this.requestDelimited = Boolean(requestDelimited);
+
+    /**
+     * Whether responses are length-delimited.
+     * @type {boolean}
+     */
+    this.responseDelimited = Boolean(responseDelimited);
+}
+
+/**
+ * Calls a service method through {@link rpc.Service#rpcImpl|rpcImpl}.
+ * @param {Method|rpc.ServiceMethod<TReq,TRes>} method Reflected or static method
+ * @param {Constructor<TReq>} requestCtor Request constructor
+ * @param {Constructor<TRes>} responseCtor Response constructor
+ * @param {TReq|Properties<TReq>} request Request message or plain object
+ * @param {rpc.ServiceMethodCallback<TRes>} callback Service callback
+ * @returns {undefined}
+ * @template TReq extends Message<TReq>
+ * @template TRes extends Message<TRes>
+ */
+Service.prototype.rpcCall = function rpcCall(method, requestCtor, responseCtor, request, callback) {
+
+    if (!request)
+        throw TypeError("request must be specified");
+
+    var self = this;
+    if (!callback)
+        return util.asPromise(rpcCall, self, method, requestCtor, responseCtor, request);
+
+    if (!self.rpcImpl) {
+        setTimeout(function() { callback(Error("already ended")); }, 0);
+        return undefined;
+    }
+
+    try {
+        return self.rpcImpl(
+            method,
+            requestCtor[self.requestDelimited ? "encodeDelimited" : "encode"](request).finish(),
+            function rpcCallback(err, response) {
+
+                if (err) {
+                    self.emit("error", err, method);
+                    return callback(err);
+                }
+
+                if (response === null) {
+                    self.end(/* endedByRPC */ true);
+                    return undefined;
+                }
+
+                if (!(response instanceof responseCtor)) {
+                    try {
+                        response = responseCtor[self.responseDelimited ? "decodeDelimited" : "decode"](response);
+                    } catch (err) {
+                        self.emit("error", err, method);
+                        return callback(err);
+                    }
+                }
+
+                self.emit("data", response, method);
+                return callback(null, response);
+            }
+        );
+    } catch (err) {
+        self.emit("error", err, method);
+        setTimeout(function() { callback(err); }, 0);
+        return undefined;
+    }
+};
+
+/**
+ * Ends this service and emits the `end` event.
+ * @param {boolean} [endedByRPC=false] Whether the service has been ended by the RPC implementation.
+ * @returns {rpc.Service} `this`
+ */
+Service.prototype.end = function end(endedByRPC) {
+    if (this.rpcImpl) {
+        if (!endedByRPC) // signal end to rpcImpl
+            this.rpcImpl(null, null, null);
+        this.rpcImpl = null;
+        this.emit("end").off();
+    }
+    return this;
+};
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = {};
+
+/**
+ * Named roots.
+ * This is where pbjs stores generated structures (the option `-r, --root` specifies a name).
+ * Can also be used manually to make roots available accross modules.
+ * @name roots
+ * @type {Object.<string,Root>}
+ * @example
+ * // pbjs -r myroot -o compiled.js ...
+ *
+ * // in another module:
+ * require("./compiled.js");
+ *
+ * // in any subsequent module:
+ * var root = protobuf.roots["myroot"];
+ */
+
+
+/***/ }),
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, Buffer) {(function (global, factory) {
-   true ? factory(exports, __webpack_require__(13), __webpack_require__(14)) :
+   true ? factory(exports, __webpack_require__(14), __webpack_require__(15)) :
   undefined;
 }(this, (function (exports,util,stream) { 'use strict';
 
@@ -63806,7 +61675,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
           randBz = window.crypto.getRandomValues(new Uint8Array(bytes));
       }
       else if (true) {
-          randBz = __webpack_require__(45).randomBytes(bytes);
+          randBz = __webpack_require__(48).randomBytes(bytes);
       }
       else {}
       var randStr = '';
@@ -77766,1793 +75635,6 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
     return toString$1.call(arr) == '[object Array]';
   };
 
-  var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer = createCommonjsModule(function (module, exports) {
-
-
-
-
-
-  exports.Buffer = Buffer;
-  exports.SlowBuffer = SlowBuffer;
-  exports.INSPECT_MAX_BYTES = 50;
-
-  /**
-   * If `Buffer.TYPED_ARRAY_SUPPORT`:
-   *   === true    Use Uint8Array implementation (fastest)
-   *   === false   Use Object implementation (most compatible, even IE6)
-   *
-   * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
-   * Opera 11.6+, iOS 4.2+.
-   *
-   * Due to various browser bugs, sometimes the Object implementation will be used even
-   * when the browser supports typed arrays.
-   *
-   * Note:
-   *
-   *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
-   *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
-   *
-   *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
-   *
-   *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
-   *     incorrect length in some situations.
-
-   * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
-   * get the Object implementation, which is slower but behaves correctly.
-   */
-  Buffer.TYPED_ARRAY_SUPPORT = commonjsGlobal.TYPED_ARRAY_SUPPORT !== undefined
-    ? commonjsGlobal.TYPED_ARRAY_SUPPORT
-    : typedArraySupport();
-
-  /*
-   * Export kMaxLength after typed array support is determined.
-   */
-  exports.kMaxLength = kMaxLength();
-
-  function typedArraySupport () {
-    try {
-      var arr = new Uint8Array(1);
-      arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }};
-      return arr.foo() === 42 && // typed array instances can be augmented
-          typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-          arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
-    } catch (e) {
-      return false
-    }
-  }
-
-  function kMaxLength () {
-    return Buffer.TYPED_ARRAY_SUPPORT
-      ? 0x7fffffff
-      : 0x3fffffff
-  }
-
-  function createBuffer (that, length) {
-    if (kMaxLength() < length) {
-      throw new RangeError('Invalid typed array length')
-    }
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      // Return an augmented `Uint8Array` instance, for best performance
-      that = new Uint8Array(length);
-      that.__proto__ = Buffer.prototype;
-    } else {
-      // Fallback: Return an object instance of the Buffer class
-      if (that === null) {
-        that = new Buffer(length);
-      }
-      that.length = length;
-    }
-
-    return that
-  }
-
-  /**
-   * The Buffer constructor returns instances of `Uint8Array` that have their
-   * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
-   * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
-   * and the `Uint8Array` methods. Square bracket notation works as expected -- it
-   * returns a single octet.
-   *
-   * The `Uint8Array` prototype remains unmodified.
-   */
-
-  function Buffer (arg, encodingOrOffset, length) {
-    if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
-      return new Buffer(arg, encodingOrOffset, length)
-    }
-
-    // Common case.
-    if (typeof arg === 'number') {
-      if (typeof encodingOrOffset === 'string') {
-        throw new Error(
-          'If encoding is specified then the first argument must be a string'
-        )
-      }
-      return allocUnsafe(this, arg)
-    }
-    return from(this, arg, encodingOrOffset, length)
-  }
-
-  Buffer.poolSize = 8192; // not used by this implementation
-
-  // TODO: Legacy, not needed anymore. Remove in next major version.
-  Buffer._augment = function (arr) {
-    arr.__proto__ = Buffer.prototype;
-    return arr
-  };
-
-  function from (that, value, encodingOrOffset, length) {
-    if (typeof value === 'number') {
-      throw new TypeError('"value" argument must not be a number')
-    }
-
-    if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-      return fromArrayBuffer(that, value, encodingOrOffset, length)
-    }
-
-    if (typeof value === 'string') {
-      return fromString(that, value, encodingOrOffset)
-    }
-
-    return fromObject(that, value)
-  }
-
-  /**
-   * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
-   * if value is a number.
-   * Buffer.from(str[, encoding])
-   * Buffer.from(array)
-   * Buffer.from(buffer)
-   * Buffer.from(arrayBuffer[, byteOffset[, length]])
-   **/
-  Buffer.from = function (value, encodingOrOffset, length) {
-    return from(null, value, encodingOrOffset, length)
-  };
-
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    Buffer.prototype.__proto__ = Uint8Array.prototype;
-    Buffer.__proto__ = Uint8Array;
-    if (typeof Symbol !== 'undefined' && Symbol.species &&
-        Buffer[Symbol.species] === Buffer) {
-      // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-      Object.defineProperty(Buffer, Symbol.species, {
-        value: null,
-        configurable: true
-      });
-    }
-  }
-
-  function assertSize (size) {
-    if (typeof size !== 'number') {
-      throw new TypeError('"size" argument must be a number')
-    } else if (size < 0) {
-      throw new RangeError('"size" argument must not be negative')
-    }
-  }
-
-  function alloc (that, size, fill, encoding) {
-    assertSize(size);
-    if (size <= 0) {
-      return createBuffer(that, size)
-    }
-    if (fill !== undefined) {
-      // Only pay attention to encoding if it's a string. This
-      // prevents accidentally sending in a number that would
-      // be interpretted as a start offset.
-      return typeof encoding === 'string'
-        ? createBuffer(that, size).fill(fill, encoding)
-        : createBuffer(that, size).fill(fill)
-    }
-    return createBuffer(that, size)
-  }
-
-  /**
-   * Creates a new filled Buffer instance.
-   * alloc(size[, fill[, encoding]])
-   **/
-  Buffer.alloc = function (size, fill, encoding) {
-    return alloc(null, size, fill, encoding)
-  };
-
-  function allocUnsafe (that, size) {
-    assertSize(size);
-    that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
-    if (!Buffer.TYPED_ARRAY_SUPPORT) {
-      for (var i = 0; i < size; ++i) {
-        that[i] = 0;
-      }
-    }
-    return that
-  }
-
-  /**
-   * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
-   * */
-  Buffer.allocUnsafe = function (size) {
-    return allocUnsafe(null, size)
-  };
-  /**
-   * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
-   */
-  Buffer.allocUnsafeSlow = function (size) {
-    return allocUnsafe(null, size)
-  };
-
-  function fromString (that, string, encoding) {
-    if (typeof encoding !== 'string' || encoding === '') {
-      encoding = 'utf8';
-    }
-
-    if (!Buffer.isEncoding(encoding)) {
-      throw new TypeError('"encoding" must be a valid string encoding')
-    }
-
-    var length = byteLength(string, encoding) | 0;
-    that = createBuffer(that, length);
-
-    var actual = that.write(string, encoding);
-
-    if (actual !== length) {
-      // Writing a hex string, for example, that contains invalid characters will
-      // cause everything after the first invalid character to be ignored. (e.g.
-      // 'abxxcd' will be treated as 'ab')
-      that = that.slice(0, actual);
-    }
-
-    return that
-  }
-
-  function fromArrayLike (that, array) {
-    var length = array.length < 0 ? 0 : checked(array.length) | 0;
-    that = createBuffer(that, length);
-    for (var i = 0; i < length; i += 1) {
-      that[i] = array[i] & 255;
-    }
-    return that
-  }
-
-  function fromArrayBuffer (that, array, byteOffset, length) {
-    array.byteLength; // this throws if `array` is not a valid ArrayBuffer
-
-    if (byteOffset < 0 || array.byteLength < byteOffset) {
-      throw new RangeError('\'offset\' is out of bounds')
-    }
-
-    if (array.byteLength < byteOffset + (length || 0)) {
-      throw new RangeError('\'length\' is out of bounds')
-    }
-
-    if (byteOffset === undefined && length === undefined) {
-      array = new Uint8Array(array);
-    } else if (length === undefined) {
-      array = new Uint8Array(array, byteOffset);
-    } else {
-      array = new Uint8Array(array, byteOffset, length);
-    }
-
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      // Return an augmented `Uint8Array` instance, for best performance
-      that = array;
-      that.__proto__ = Buffer.prototype;
-    } else {
-      // Fallback: Return an object instance of the Buffer class
-      that = fromArrayLike(that, array);
-    }
-    return that
-  }
-
-  function fromObject (that, obj) {
-    if (Buffer.isBuffer(obj)) {
-      var len = checked(obj.length) | 0;
-      that = createBuffer(that, len);
-
-      if (that.length === 0) {
-        return that
-      }
-
-      obj.copy(that, 0, 0, len);
-      return that
-    }
-
-    if (obj) {
-      if ((typeof ArrayBuffer !== 'undefined' &&
-          obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-        if (typeof obj.length !== 'number' || isnan(obj.length)) {
-          return createBuffer(that, 0)
-        }
-        return fromArrayLike(that, obj)
-      }
-
-      if (obj.type === 'Buffer' && isarray(obj.data)) {
-        return fromArrayLike(that, obj.data)
-      }
-    }
-
-    throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
-  }
-
-  function checked (length) {
-    // Note: cannot use `length < kMaxLength()` here because that fails when
-    // length is NaN (which is otherwise coerced to zero.)
-    if (length >= kMaxLength()) {
-      throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                           'size: 0x' + kMaxLength().toString(16) + ' bytes')
-    }
-    return length | 0
-  }
-
-  function SlowBuffer (length) {
-    if (+length != length) { // eslint-disable-line eqeqeq
-      length = 0;
-    }
-    return Buffer.alloc(+length)
-  }
-
-  Buffer.isBuffer = function isBuffer (b) {
-    return !!(b != null && b._isBuffer)
-  };
-
-  Buffer.compare = function compare (a, b) {
-    if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-      throw new TypeError('Arguments must be Buffers')
-    }
-
-    if (a === b) return 0
-
-    var x = a.length;
-    var y = b.length;
-
-    for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-      if (a[i] !== b[i]) {
-        x = a[i];
-        y = b[i];
-        break
-      }
-    }
-
-    if (x < y) return -1
-    if (y < x) return 1
-    return 0
-  };
-
-  Buffer.isEncoding = function isEncoding (encoding) {
-    switch (String(encoding).toLowerCase()) {
-      case 'hex':
-      case 'utf8':
-      case 'utf-8':
-      case 'ascii':
-      case 'latin1':
-      case 'binary':
-      case 'base64':
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return true
-      default:
-        return false
-    }
-  };
-
-  Buffer.concat = function concat (list, length) {
-    if (!isarray(list)) {
-      throw new TypeError('"list" argument must be an Array of Buffers')
-    }
-
-    if (list.length === 0) {
-      return Buffer.alloc(0)
-    }
-
-    var i;
-    if (length === undefined) {
-      length = 0;
-      for (i = 0; i < list.length; ++i) {
-        length += list[i].length;
-      }
-    }
-
-    var buffer = Buffer.allocUnsafe(length);
-    var pos = 0;
-    for (i = 0; i < list.length; ++i) {
-      var buf = list[i];
-      if (!Buffer.isBuffer(buf)) {
-        throw new TypeError('"list" argument must be an Array of Buffers')
-      }
-      buf.copy(buffer, pos);
-      pos += buf.length;
-    }
-    return buffer
-  };
-
-  function byteLength (string, encoding) {
-    if (Buffer.isBuffer(string)) {
-      return string.length
-    }
-    if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
-        (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
-      return string.byteLength
-    }
-    if (typeof string !== 'string') {
-      string = '' + string;
-    }
-
-    var len = string.length;
-    if (len === 0) return 0
-
-    // Use a for loop to avoid recursion
-    var loweredCase = false;
-    for (;;) {
-      switch (encoding) {
-        case 'ascii':
-        case 'latin1':
-        case 'binary':
-          return len
-        case 'utf8':
-        case 'utf-8':
-        case undefined:
-          return utf8ToBytes(string).length
-        case 'ucs2':
-        case 'ucs-2':
-        case 'utf16le':
-        case 'utf-16le':
-          return len * 2
-        case 'hex':
-          return len >>> 1
-        case 'base64':
-          return base64ToBytes(string).length
-        default:
-          if (loweredCase) return utf8ToBytes(string).length // assume utf8
-          encoding = ('' + encoding).toLowerCase();
-          loweredCase = true;
-      }
-    }
-  }
-  Buffer.byteLength = byteLength;
-
-  function slowToString (encoding, start, end) {
-    var loweredCase = false;
-
-    // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-    // property of a typed array.
-
-    // This behaves neither like String nor Uint8Array in that we set start/end
-    // to their upper/lower bounds if the value passed is out of range.
-    // undefined is handled specially as per ECMA-262 6th Edition,
-    // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-    if (start === undefined || start < 0) {
-      start = 0;
-    }
-    // Return early if start > this.length. Done here to prevent potential uint32
-    // coercion fail below.
-    if (start > this.length) {
-      return ''
-    }
-
-    if (end === undefined || end > this.length) {
-      end = this.length;
-    }
-
-    if (end <= 0) {
-      return ''
-    }
-
-    // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-    end >>>= 0;
-    start >>>= 0;
-
-    if (end <= start) {
-      return ''
-    }
-
-    if (!encoding) encoding = 'utf8';
-
-    while (true) {
-      switch (encoding) {
-        case 'hex':
-          return hexSlice(this, start, end)
-
-        case 'utf8':
-        case 'utf-8':
-          return utf8Slice(this, start, end)
-
-        case 'ascii':
-          return asciiSlice(this, start, end)
-
-        case 'latin1':
-        case 'binary':
-          return latin1Slice(this, start, end)
-
-        case 'base64':
-          return base64Slice(this, start, end)
-
-        case 'ucs2':
-        case 'ucs-2':
-        case 'utf16le':
-        case 'utf-16le':
-          return utf16leSlice(this, start, end)
-
-        default:
-          if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-          encoding = (encoding + '').toLowerCase();
-          loweredCase = true;
-      }
-    }
-  }
-
-  // The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
-  // Buffer instances.
-  Buffer.prototype._isBuffer = true;
-
-  function swap (b, n, m) {
-    var i = b[n];
-    b[n] = b[m];
-    b[m] = i;
-  }
-
-  Buffer.prototype.swap16 = function swap16 () {
-    var len = this.length;
-    if (len % 2 !== 0) {
-      throw new RangeError('Buffer size must be a multiple of 16-bits')
-    }
-    for (var i = 0; i < len; i += 2) {
-      swap(this, i, i + 1);
-    }
-    return this
-  };
-
-  Buffer.prototype.swap32 = function swap32 () {
-    var len = this.length;
-    if (len % 4 !== 0) {
-      throw new RangeError('Buffer size must be a multiple of 32-bits')
-    }
-    for (var i = 0; i < len; i += 4) {
-      swap(this, i, i + 3);
-      swap(this, i + 1, i + 2);
-    }
-    return this
-  };
-
-  Buffer.prototype.swap64 = function swap64 () {
-    var len = this.length;
-    if (len % 8 !== 0) {
-      throw new RangeError('Buffer size must be a multiple of 64-bits')
-    }
-    for (var i = 0; i < len; i += 8) {
-      swap(this, i, i + 7);
-      swap(this, i + 1, i + 6);
-      swap(this, i + 2, i + 5);
-      swap(this, i + 3, i + 4);
-    }
-    return this
-  };
-
-  Buffer.prototype.toString = function toString () {
-    var length = this.length | 0;
-    if (length === 0) return ''
-    if (arguments.length === 0) return utf8Slice(this, 0, length)
-    return slowToString.apply(this, arguments)
-  };
-
-  Buffer.prototype.equals = function equals (b) {
-    if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-    if (this === b) return true
-    return Buffer.compare(this, b) === 0
-  };
-
-  Buffer.prototype.inspect = function inspect () {
-    var str = '';
-    var max = exports.INSPECT_MAX_BYTES;
-    if (this.length > 0) {
-      str = this.toString('hex', 0, max).match(/.{2}/g).join(' ');
-      if (this.length > max) str += ' ... ';
-    }
-    return '<Buffer ' + str + '>'
-  };
-
-  Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-    if (!Buffer.isBuffer(target)) {
-      throw new TypeError('Argument must be a Buffer')
-    }
-
-    if (start === undefined) {
-      start = 0;
-    }
-    if (end === undefined) {
-      end = target ? target.length : 0;
-    }
-    if (thisStart === undefined) {
-      thisStart = 0;
-    }
-    if (thisEnd === undefined) {
-      thisEnd = this.length;
-    }
-
-    if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-      throw new RangeError('out of range index')
-    }
-
-    if (thisStart >= thisEnd && start >= end) {
-      return 0
-    }
-    if (thisStart >= thisEnd) {
-      return -1
-    }
-    if (start >= end) {
-      return 1
-    }
-
-    start >>>= 0;
-    end >>>= 0;
-    thisStart >>>= 0;
-    thisEnd >>>= 0;
-
-    if (this === target) return 0
-
-    var x = thisEnd - thisStart;
-    var y = end - start;
-    var len = Math.min(x, y);
-
-    var thisCopy = this.slice(thisStart, thisEnd);
-    var targetCopy = target.slice(start, end);
-
-    for (var i = 0; i < len; ++i) {
-      if (thisCopy[i] !== targetCopy[i]) {
-        x = thisCopy[i];
-        y = targetCopy[i];
-        break
-      }
-    }
-
-    if (x < y) return -1
-    if (y < x) return 1
-    return 0
-  };
-
-  // Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-  // OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-  //
-  // Arguments:
-  // - buffer - a Buffer to search
-  // - val - a string, Buffer, or number
-  // - byteOffset - an index into `buffer`; will be clamped to an int32
-  // - encoding - an optional encoding, relevant is val is a string
-  // - dir - true for indexOf, false for lastIndexOf
-  function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-    // Empty buffer means no match
-    if (buffer.length === 0) return -1
-
-    // Normalize byteOffset
-    if (typeof byteOffset === 'string') {
-      encoding = byteOffset;
-      byteOffset = 0;
-    } else if (byteOffset > 0x7fffffff) {
-      byteOffset = 0x7fffffff;
-    } else if (byteOffset < -0x80000000) {
-      byteOffset = -0x80000000;
-    }
-    byteOffset = +byteOffset;  // Coerce to Number.
-    if (isNaN(byteOffset)) {
-      // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-      byteOffset = dir ? 0 : (buffer.length - 1);
-    }
-
-    // Normalize byteOffset: negative offsets start from the end of the buffer
-    if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
-    if (byteOffset >= buffer.length) {
-      if (dir) return -1
-      else byteOffset = buffer.length - 1;
-    } else if (byteOffset < 0) {
-      if (dir) byteOffset = 0;
-      else return -1
-    }
-
-    // Normalize val
-    if (typeof val === 'string') {
-      val = Buffer.from(val, encoding);
-    }
-
-    // Finally, search either indexOf (if dir is true) or lastIndexOf
-    if (Buffer.isBuffer(val)) {
-      // Special case: looking for empty string/buffer always fails
-      if (val.length === 0) {
-        return -1
-      }
-      return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-    } else if (typeof val === 'number') {
-      val = val & 0xFF; // Search for a byte value [0-255]
-      if (Buffer.TYPED_ARRAY_SUPPORT &&
-          typeof Uint8Array.prototype.indexOf === 'function') {
-        if (dir) {
-          return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-        } else {
-          return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-        }
-      }
-      return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
-    }
-
-    throw new TypeError('val must be string, number or Buffer')
-  }
-
-  function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-    var indexSize = 1;
-    var arrLength = arr.length;
-    var valLength = val.length;
-
-    if (encoding !== undefined) {
-      encoding = String(encoding).toLowerCase();
-      if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-          encoding === 'utf16le' || encoding === 'utf-16le') {
-        if (arr.length < 2 || val.length < 2) {
-          return -1
-        }
-        indexSize = 2;
-        arrLength /= 2;
-        valLength /= 2;
-        byteOffset /= 2;
-      }
-    }
-
-    function read (buf, i) {
-      if (indexSize === 1) {
-        return buf[i]
-      } else {
-        return buf.readUInt16BE(i * indexSize)
-      }
-    }
-
-    var i;
-    if (dir) {
-      var foundIndex = -1;
-      for (i = byteOffset; i < arrLength; i++) {
-        if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-          if (foundIndex === -1) foundIndex = i;
-          if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-        } else {
-          if (foundIndex !== -1) i -= i - foundIndex;
-          foundIndex = -1;
-        }
-      }
-    } else {
-      if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
-      for (i = byteOffset; i >= 0; i--) {
-        var found = true;
-        for (var j = 0; j < valLength; j++) {
-          if (read(arr, i + j) !== read(val, j)) {
-            found = false;
-            break
-          }
-        }
-        if (found) return i
-      }
-    }
-
-    return -1
-  }
-
-  Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-    return this.indexOf(val, byteOffset, encoding) !== -1
-  };
-
-  Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-    return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-  };
-
-  Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-    return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-  };
-
-  function hexWrite (buf, string, offset, length) {
-    offset = Number(offset) || 0;
-    var remaining = buf.length - offset;
-    if (!length) {
-      length = remaining;
-    } else {
-      length = Number(length);
-      if (length > remaining) {
-        length = remaining;
-      }
-    }
-
-    // must be an even number of digits
-    var strLen = string.length;
-    if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
-
-    if (length > strLen / 2) {
-      length = strLen / 2;
-    }
-    for (var i = 0; i < length; ++i) {
-      var parsed = parseInt(string.substr(i * 2, 2), 16);
-      if (isNaN(parsed)) return i
-      buf[offset + i] = parsed;
-    }
-    return i
-  }
-
-  function utf8Write (buf, string, offset, length) {
-    return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-  }
-
-  function asciiWrite (buf, string, offset, length) {
-    return blitBuffer(asciiToBytes(string), buf, offset, length)
-  }
-
-  function latin1Write (buf, string, offset, length) {
-    return asciiWrite(buf, string, offset, length)
-  }
-
-  function base64Write (buf, string, offset, length) {
-    return blitBuffer(base64ToBytes(string), buf, offset, length)
-  }
-
-  function ucs2Write (buf, string, offset, length) {
-    return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-  }
-
-  Buffer.prototype.write = function write (string, offset, length, encoding) {
-    // Buffer#write(string)
-    if (offset === undefined) {
-      encoding = 'utf8';
-      length = this.length;
-      offset = 0;
-    // Buffer#write(string, encoding)
-    } else if (length === undefined && typeof offset === 'string') {
-      encoding = offset;
-      length = this.length;
-      offset = 0;
-    // Buffer#write(string, offset[, length][, encoding])
-    } else if (isFinite(offset)) {
-      offset = offset | 0;
-      if (isFinite(length)) {
-        length = length | 0;
-        if (encoding === undefined) encoding = 'utf8';
-      } else {
-        encoding = length;
-        length = undefined;
-      }
-    // legacy write(string, encoding, offset, length) - remove in v0.13
-    } else {
-      throw new Error(
-        'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-      )
-    }
-
-    var remaining = this.length - offset;
-    if (length === undefined || length > remaining) length = remaining;
-
-    if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-      throw new RangeError('Attempt to write outside buffer bounds')
-    }
-
-    if (!encoding) encoding = 'utf8';
-
-    var loweredCase = false;
-    for (;;) {
-      switch (encoding) {
-        case 'hex':
-          return hexWrite(this, string, offset, length)
-
-        case 'utf8':
-        case 'utf-8':
-          return utf8Write(this, string, offset, length)
-
-        case 'ascii':
-          return asciiWrite(this, string, offset, length)
-
-        case 'latin1':
-        case 'binary':
-          return latin1Write(this, string, offset, length)
-
-        case 'base64':
-          // Warning: maxLength not taken into account in base64Write
-          return base64Write(this, string, offset, length)
-
-        case 'ucs2':
-        case 'ucs-2':
-        case 'utf16le':
-        case 'utf-16le':
-          return ucs2Write(this, string, offset, length)
-
-        default:
-          if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-          encoding = ('' + encoding).toLowerCase();
-          loweredCase = true;
-      }
-    }
-  };
-
-  Buffer.prototype.toJSON = function toJSON () {
-    return {
-      type: 'Buffer',
-      data: Array.prototype.slice.call(this._arr || this, 0)
-    }
-  };
-
-  function base64Slice (buf, start, end) {
-    if (start === 0 && end === buf.length) {
-      return base64Js.fromByteArray(buf)
-    } else {
-      return base64Js.fromByteArray(buf.slice(start, end))
-    }
-  }
-
-  function utf8Slice (buf, start, end) {
-    end = Math.min(buf.length, end);
-    var res = [];
-
-    var i = start;
-    while (i < end) {
-      var firstByte = buf[i];
-      var codePoint = null;
-      var bytesPerSequence = (firstByte > 0xEF) ? 4
-        : (firstByte > 0xDF) ? 3
-        : (firstByte > 0xBF) ? 2
-        : 1;
-
-      if (i + bytesPerSequence <= end) {
-        var secondByte, thirdByte, fourthByte, tempCodePoint;
-
-        switch (bytesPerSequence) {
-          case 1:
-            if (firstByte < 0x80) {
-              codePoint = firstByte;
-            }
-            break
-          case 2:
-            secondByte = buf[i + 1];
-            if ((secondByte & 0xC0) === 0x80) {
-              tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F);
-              if (tempCodePoint > 0x7F) {
-                codePoint = tempCodePoint;
-              }
-            }
-            break
-          case 3:
-            secondByte = buf[i + 1];
-            thirdByte = buf[i + 2];
-            if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-              tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F);
-              if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-                codePoint = tempCodePoint;
-              }
-            }
-            break
-          case 4:
-            secondByte = buf[i + 1];
-            thirdByte = buf[i + 2];
-            fourthByte = buf[i + 3];
-            if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-              tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F);
-              if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-                codePoint = tempCodePoint;
-              }
-            }
-        }
-      }
-
-      if (codePoint === null) {
-        // we did not generate a valid codePoint so insert a
-        // replacement char (U+FFFD) and advance only 1 byte
-        codePoint = 0xFFFD;
-        bytesPerSequence = 1;
-      } else if (codePoint > 0xFFFF) {
-        // encode to utf16 (surrogate pair dance)
-        codePoint -= 0x10000;
-        res.push(codePoint >>> 10 & 0x3FF | 0xD800);
-        codePoint = 0xDC00 | codePoint & 0x3FF;
-      }
-
-      res.push(codePoint);
-      i += bytesPerSequence;
-    }
-
-    return decodeCodePointsArray(res)
-  }
-
-  // Based on http://stackoverflow.com/a/22747272/680742, the browser with
-  // the lowest limit is Chrome, with 0x10000 args.
-  // We go 1 magnitude less, for safety
-  var MAX_ARGUMENTS_LENGTH = 0x1000;
-
-  function decodeCodePointsArray (codePoints) {
-    var len = codePoints.length;
-    if (len <= MAX_ARGUMENTS_LENGTH) {
-      return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
-    }
-
-    // Decode in chunks to avoid "call stack size exceeded".
-    var res = '';
-    var i = 0;
-    while (i < len) {
-      res += String.fromCharCode.apply(
-        String,
-        codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-      );
-    }
-    return res
-  }
-
-  function asciiSlice (buf, start, end) {
-    var ret = '';
-    end = Math.min(buf.length, end);
-
-    for (var i = start; i < end; ++i) {
-      ret += String.fromCharCode(buf[i] & 0x7F);
-    }
-    return ret
-  }
-
-  function latin1Slice (buf, start, end) {
-    var ret = '';
-    end = Math.min(buf.length, end);
-
-    for (var i = start; i < end; ++i) {
-      ret += String.fromCharCode(buf[i]);
-    }
-    return ret
-  }
-
-  function hexSlice (buf, start, end) {
-    var len = buf.length;
-
-    if (!start || start < 0) start = 0;
-    if (!end || end < 0 || end > len) end = len;
-
-    var out = '';
-    for (var i = start; i < end; ++i) {
-      out += toHex(buf[i]);
-    }
-    return out
-  }
-
-  function utf16leSlice (buf, start, end) {
-    var bytes = buf.slice(start, end);
-    var res = '';
-    for (var i = 0; i < bytes.length; i += 2) {
-      res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
-    }
-    return res
-  }
-
-  Buffer.prototype.slice = function slice (start, end) {
-    var len = this.length;
-    start = ~~start;
-    end = end === undefined ? len : ~~end;
-
-    if (start < 0) {
-      start += len;
-      if (start < 0) start = 0;
-    } else if (start > len) {
-      start = len;
-    }
-
-    if (end < 0) {
-      end += len;
-      if (end < 0) end = 0;
-    } else if (end > len) {
-      end = len;
-    }
-
-    if (end < start) end = start;
-
-    var newBuf;
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      newBuf = this.subarray(start, end);
-      newBuf.__proto__ = Buffer.prototype;
-    } else {
-      var sliceLen = end - start;
-      newBuf = new Buffer(sliceLen, undefined);
-      for (var i = 0; i < sliceLen; ++i) {
-        newBuf[i] = this[i + start];
-      }
-    }
-
-    return newBuf
-  };
-
-  /*
-   * Need to make sure that buffer isn't trying to write out of bounds.
-   */
-  function checkOffset (offset, ext, length) {
-    if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-    if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
-  }
-
-  Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-    offset = offset | 0;
-    byteLength = byteLength | 0;
-    if (!noAssert) checkOffset(offset, byteLength, this.length);
-
-    var val = this[offset];
-    var mul = 1;
-    var i = 0;
-    while (++i < byteLength && (mul *= 0x100)) {
-      val += this[offset + i] * mul;
-    }
-
-    return val
-  };
-
-  Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-    offset = offset | 0;
-    byteLength = byteLength | 0;
-    if (!noAssert) {
-      checkOffset(offset, byteLength, this.length);
-    }
-
-    var val = this[offset + --byteLength];
-    var mul = 1;
-    while (byteLength > 0 && (mul *= 0x100)) {
-      val += this[offset + --byteLength] * mul;
-    }
-
-    return val
-  };
-
-  Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 1, this.length);
-    return this[offset]
-  };
-
-  Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    return this[offset] | (this[offset + 1] << 8)
-  };
-
-  Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    return (this[offset] << 8) | this[offset + 1]
-  };
-
-  Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 4, this.length);
-
-    return ((this[offset]) |
-        (this[offset + 1] << 8) |
-        (this[offset + 2] << 16)) +
-        (this[offset + 3] * 0x1000000)
-  };
-
-  Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 4, this.length);
-
-    return (this[offset] * 0x1000000) +
-      ((this[offset + 1] << 16) |
-      (this[offset + 2] << 8) |
-      this[offset + 3])
-  };
-
-  Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-    offset = offset | 0;
-    byteLength = byteLength | 0;
-    if (!noAssert) checkOffset(offset, byteLength, this.length);
-
-    var val = this[offset];
-    var mul = 1;
-    var i = 0;
-    while (++i < byteLength && (mul *= 0x100)) {
-      val += this[offset + i] * mul;
-    }
-    mul *= 0x80;
-
-    if (val >= mul) val -= Math.pow(2, 8 * byteLength);
-
-    return val
-  };
-
-  Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-    offset = offset | 0;
-    byteLength = byteLength | 0;
-    if (!noAssert) checkOffset(offset, byteLength, this.length);
-
-    var i = byteLength;
-    var mul = 1;
-    var val = this[offset + --i];
-    while (i > 0 && (mul *= 0x100)) {
-      val += this[offset + --i] * mul;
-    }
-    mul *= 0x80;
-
-    if (val >= mul) val -= Math.pow(2, 8 * byteLength);
-
-    return val
-  };
-
-  Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 1, this.length);
-    if (!(this[offset] & 0x80)) return (this[offset])
-    return ((0xff - this[offset] + 1) * -1)
-  };
-
-  Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    var val = this[offset] | (this[offset + 1] << 8);
-    return (val & 0x8000) ? val | 0xFFFF0000 : val
-  };
-
-  Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    var val = this[offset + 1] | (this[offset] << 8);
-    return (val & 0x8000) ? val | 0xFFFF0000 : val
-  };
-
-  Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 4, this.length);
-
-    return (this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16) |
-      (this[offset + 3] << 24)
-  };
-
-  Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 4, this.length);
-
-    return (this[offset] << 24) |
-      (this[offset + 1] << 16) |
-      (this[offset + 2] << 8) |
-      (this[offset + 3])
-  };
-
-  Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return ieee754.read(this, offset, true, 23, 4)
-  };
-
-  Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return ieee754.read(this, offset, false, 23, 4)
-  };
-
-  Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 8, this.length);
-    return ieee754.read(this, offset, true, 52, 8)
-  };
-
-  Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-    if (!noAssert) checkOffset(offset, 8, this.length);
-    return ieee754.read(this, offset, false, 52, 8)
-  };
-
-  function checkInt (buf, value, offset, ext, max, min) {
-    if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-    if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-    if (offset + ext > buf.length) throw new RangeError('Index out of range')
-  }
-
-  Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    byteLength = byteLength | 0;
-    if (!noAssert) {
-      var maxBytes = Math.pow(2, 8 * byteLength) - 1;
-      checkInt(this, value, offset, byteLength, maxBytes, 0);
-    }
-
-    var mul = 1;
-    var i = 0;
-    this[offset] = value & 0xFF;
-    while (++i < byteLength && (mul *= 0x100)) {
-      this[offset + i] = (value / mul) & 0xFF;
-    }
-
-    return offset + byteLength
-  };
-
-  Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    byteLength = byteLength | 0;
-    if (!noAssert) {
-      var maxBytes = Math.pow(2, 8 * byteLength) - 1;
-      checkInt(this, value, offset, byteLength, maxBytes, 0);
-    }
-
-    var i = byteLength - 1;
-    var mul = 1;
-    this[offset + i] = value & 0xFF;
-    while (--i >= 0 && (mul *= 0x100)) {
-      this[offset + i] = (value / mul) & 0xFF;
-    }
-
-    return offset + byteLength
-  };
-
-  Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
-    if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
-    this[offset] = (value & 0xff);
-    return offset + 1
-  };
-
-  function objectWriteUInt16 (buf, value, offset, littleEndian) {
-    if (value < 0) value = 0xffff + value + 1;
-    for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
-      buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
-        (littleEndian ? i : 1 - i) * 8;
-    }
-  }
-
-  Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value & 0xff);
-      this[offset + 1] = (value >>> 8);
-    } else {
-      objectWriteUInt16(this, value, offset, true);
-    }
-    return offset + 2
-  };
-
-  Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value >>> 8);
-      this[offset + 1] = (value & 0xff);
-    } else {
-      objectWriteUInt16(this, value, offset, false);
-    }
-    return offset + 2
-  };
-
-  function objectWriteUInt32 (buf, value, offset, littleEndian) {
-    if (value < 0) value = 0xffffffff + value + 1;
-    for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
-      buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff;
-    }
-  }
-
-  Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset + 3] = (value >>> 24);
-      this[offset + 2] = (value >>> 16);
-      this[offset + 1] = (value >>> 8);
-      this[offset] = (value & 0xff);
-    } else {
-      objectWriteUInt32(this, value, offset, true);
-    }
-    return offset + 4
-  };
-
-  Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value >>> 24);
-      this[offset + 1] = (value >>> 16);
-      this[offset + 2] = (value >>> 8);
-      this[offset + 3] = (value & 0xff);
-    } else {
-      objectWriteUInt32(this, value, offset, false);
-    }
-    return offset + 4
-  };
-
-  Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) {
-      var limit = Math.pow(2, 8 * byteLength - 1);
-
-      checkInt(this, value, offset, byteLength, limit - 1, -limit);
-    }
-
-    var i = 0;
-    var mul = 1;
-    var sub = 0;
-    this[offset] = value & 0xFF;
-    while (++i < byteLength && (mul *= 0x100)) {
-      if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-        sub = 1;
-      }
-      this[offset + i] = ((value / mul) >> 0) - sub & 0xFF;
-    }
-
-    return offset + byteLength
-  };
-
-  Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) {
-      var limit = Math.pow(2, 8 * byteLength - 1);
-
-      checkInt(this, value, offset, byteLength, limit - 1, -limit);
-    }
-
-    var i = byteLength - 1;
-    var mul = 1;
-    var sub = 0;
-    this[offset + i] = value & 0xFF;
-    while (--i >= 0 && (mul *= 0x100)) {
-      if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-        sub = 1;
-      }
-      this[offset + i] = ((value / mul) >> 0) - sub & 0xFF;
-    }
-
-    return offset + byteLength
-  };
-
-  Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
-    if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
-    if (value < 0) value = 0xff + value + 1;
-    this[offset] = (value & 0xff);
-    return offset + 1
-  };
-
-  Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value & 0xff);
-      this[offset + 1] = (value >>> 8);
-    } else {
-      objectWriteUInt16(this, value, offset, true);
-    }
-    return offset + 2
-  };
-
-  Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value >>> 8);
-      this[offset + 1] = (value & 0xff);
-    } else {
-      objectWriteUInt16(this, value, offset, false);
-    }
-    return offset + 2
-  };
-
-  Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value & 0xff);
-      this[offset + 1] = (value >>> 8);
-      this[offset + 2] = (value >>> 16);
-      this[offset + 3] = (value >>> 24);
-    } else {
-      objectWriteUInt32(this, value, offset, true);
-    }
-    return offset + 4
-  };
-
-  Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-    value = +value;
-    offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
-    if (value < 0) value = 0xffffffff + value + 1;
-    if (Buffer.TYPED_ARRAY_SUPPORT) {
-      this[offset] = (value >>> 24);
-      this[offset + 1] = (value >>> 16);
-      this[offset + 2] = (value >>> 8);
-      this[offset + 3] = (value & 0xff);
-    } else {
-      objectWriteUInt32(this, value, offset, false);
-    }
-    return offset + 4
-  };
-
-  function checkIEEE754 (buf, value, offset, ext, max, min) {
-    if (offset + ext > buf.length) throw new RangeError('Index out of range')
-    if (offset < 0) throw new RangeError('Index out of range')
-  }
-
-  function writeFloat (buf, value, offset, littleEndian, noAssert) {
-    if (!noAssert) {
-      checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38);
-    }
-    ieee754.write(buf, value, offset, littleEndian, 23, 4);
-    return offset + 4
-  }
-
-  Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-    return writeFloat(this, value, offset, true, noAssert)
-  };
-
-  Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-    return writeFloat(this, value, offset, false, noAssert)
-  };
-
-  function writeDouble (buf, value, offset, littleEndian, noAssert) {
-    if (!noAssert) {
-      checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308);
-    }
-    ieee754.write(buf, value, offset, littleEndian, 52, 8);
-    return offset + 8
-  }
-
-  Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-    return writeDouble(this, value, offset, true, noAssert)
-  };
-
-  Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-    return writeDouble(this, value, offset, false, noAssert)
-  };
-
-  // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-  Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-    if (!start) start = 0;
-    if (!end && end !== 0) end = this.length;
-    if (targetStart >= target.length) targetStart = target.length;
-    if (!targetStart) targetStart = 0;
-    if (end > 0 && end < start) end = start;
-
-    // Copy 0 bytes; we're done
-    if (end === start) return 0
-    if (target.length === 0 || this.length === 0) return 0
-
-    // Fatal error conditions
-    if (targetStart < 0) {
-      throw new RangeError('targetStart out of bounds')
-    }
-    if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
-    if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
-    // Are we oob?
-    if (end > this.length) end = this.length;
-    if (target.length - targetStart < end - start) {
-      end = target.length - targetStart + start;
-    }
-
-    var len = end - start;
-    var i;
-
-    if (this === target && start < targetStart && targetStart < end) {
-      // descending copy from end
-      for (i = len - 1; i >= 0; --i) {
-        target[i + targetStart] = this[i + start];
-      }
-    } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
-      // ascending copy from start
-      for (i = 0; i < len; ++i) {
-        target[i + targetStart] = this[i + start];
-      }
-    } else {
-      Uint8Array.prototype.set.call(
-        target,
-        this.subarray(start, start + len),
-        targetStart
-      );
-    }
-
-    return len
-  };
-
-  // Usage:
-  //    buffer.fill(number[, offset[, end]])
-  //    buffer.fill(buffer[, offset[, end]])
-  //    buffer.fill(string[, offset[, end]][, encoding])
-  Buffer.prototype.fill = function fill (val, start, end, encoding) {
-    // Handle string cases:
-    if (typeof val === 'string') {
-      if (typeof start === 'string') {
-        encoding = start;
-        start = 0;
-        end = this.length;
-      } else if (typeof end === 'string') {
-        encoding = end;
-        end = this.length;
-      }
-      if (val.length === 1) {
-        var code = val.charCodeAt(0);
-        if (code < 256) {
-          val = code;
-        }
-      }
-      if (encoding !== undefined && typeof encoding !== 'string') {
-        throw new TypeError('encoding must be a string')
-      }
-      if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-        throw new TypeError('Unknown encoding: ' + encoding)
-      }
-    } else if (typeof val === 'number') {
-      val = val & 255;
-    }
-
-    // Invalid ranges are not set to a default, so can range check early.
-    if (start < 0 || this.length < start || this.length < end) {
-      throw new RangeError('Out of range index')
-    }
-
-    if (end <= start) {
-      return this
-    }
-
-    start = start >>> 0;
-    end = end === undefined ? this.length : end >>> 0;
-
-    if (!val) val = 0;
-
-    var i;
-    if (typeof val === 'number') {
-      for (i = start; i < end; ++i) {
-        this[i] = val;
-      }
-    } else {
-      var bytes = Buffer.isBuffer(val)
-        ? val
-        : utf8ToBytes(new Buffer(val, encoding).toString());
-      var len = bytes.length;
-      for (i = 0; i < end - start; ++i) {
-        this[i + start] = bytes[i % len];
-      }
-    }
-
-    return this
-  };
-
-  // HELPER FUNCTIONS
-  // ================
-
-  var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g;
-
-  function base64clean (str) {
-    // Node strips out invalid characters like \n and \t from the string, base64-js does not
-    str = stringtrim(str).replace(INVALID_BASE64_RE, '');
-    // Node converts strings with length < 2 to ''
-    if (str.length < 2) return ''
-    // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
-    while (str.length % 4 !== 0) {
-      str = str + '=';
-    }
-    return str
-  }
-
-  function stringtrim (str) {
-    if (str.trim) return str.trim()
-    return str.replace(/^\s+|\s+$/g, '')
-  }
-
-  function toHex (n) {
-    if (n < 16) return '0' + n.toString(16)
-    return n.toString(16)
-  }
-
-  function utf8ToBytes (string, units) {
-    units = units || Infinity;
-    var codePoint;
-    var length = string.length;
-    var leadSurrogate = null;
-    var bytes = [];
-
-    for (var i = 0; i < length; ++i) {
-      codePoint = string.charCodeAt(i);
-
-      // is surrogate component
-      if (codePoint > 0xD7FF && codePoint < 0xE000) {
-        // last char was a lead
-        if (!leadSurrogate) {
-          // no lead yet
-          if (codePoint > 0xDBFF) {
-            // unexpected trail
-            if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-            continue
-          } else if (i + 1 === length) {
-            // unpaired lead
-            if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-            continue
-          }
-
-          // valid lead
-          leadSurrogate = codePoint;
-
-          continue
-        }
-
-        // 2 leads in a row
-        if (codePoint < 0xDC00) {
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-          leadSurrogate = codePoint;
-          continue
-        }
-
-        // valid surrogate pair
-        codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
-      } else if (leadSurrogate) {
-        // valid bmp char, but last char was a lead
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
-      }
-
-      leadSurrogate = null;
-
-      // encode utf8
-      if (codePoint < 0x80) {
-        if ((units -= 1) < 0) break
-        bytes.push(codePoint);
-      } else if (codePoint < 0x800) {
-        if ((units -= 2) < 0) break
-        bytes.push(
-          codePoint >> 0x6 | 0xC0,
-          codePoint & 0x3F | 0x80
-        );
-      } else if (codePoint < 0x10000) {
-        if ((units -= 3) < 0) break
-        bytes.push(
-          codePoint >> 0xC | 0xE0,
-          codePoint >> 0x6 & 0x3F | 0x80,
-          codePoint & 0x3F | 0x80
-        );
-      } else if (codePoint < 0x110000) {
-        if ((units -= 4) < 0) break
-        bytes.push(
-          codePoint >> 0x12 | 0xF0,
-          codePoint >> 0xC & 0x3F | 0x80,
-          codePoint >> 0x6 & 0x3F | 0x80,
-          codePoint & 0x3F | 0x80
-        );
-      } else {
-        throw new Error('Invalid code point')
-      }
-    }
-
-    return bytes
-  }
-
-  function asciiToBytes (str) {
-    var byteArray = [];
-    for (var i = 0; i < str.length; ++i) {
-      // Node's code seems to be doing this and not & 0x7F..
-      byteArray.push(str.charCodeAt(i) & 0xFF);
-    }
-    return byteArray
-  }
-
-  function utf16leToBytes (str, units) {
-    var c, hi, lo;
-    var byteArray = [];
-    for (var i = 0; i < str.length; ++i) {
-      if ((units -= 2) < 0) break
-
-      c = str.charCodeAt(i);
-      hi = c >> 8;
-      lo = c % 256;
-      byteArray.push(lo);
-      byteArray.push(hi);
-    }
-
-    return byteArray
-  }
-
-  function base64ToBytes (str) {
-    return base64Js.toByteArray(base64clean(str))
-  }
-
-  function blitBuffer (src, dst, offset, length) {
-    for (var i = 0; i < length; ++i) {
-      if ((i + offset >= dst.length) || (i >= src.length)) break
-      dst[i + offset] = src[i];
-    }
-    return i
-  }
-
-  function isnan (val) {
-    return val !== val // eslint-disable-line no-self-compare
-  }
-  });
-  var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_1 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.Buffer;
-  var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_2 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.SlowBuffer;
-  var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_3 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.INSPECT_MAX_BYTES;
-  var F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer_4 = F__zilliqa_monorepo_ZilliqaJavaScriptLibrary_node_modules_buffer.kMaxLength;
-
   var buffer = createCommonjsModule(function (module, exports) {
 
 
@@ -83374,13 +79456,13 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 84 */
+/* 103 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 85 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83389,7 +79471,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Buffer = __webpack_require__(1).Buffer;
-var util = __webpack_require__(86);
+var util = __webpack_require__(105);
 
 function copyBuffer(src, target, offset) {
   src.copy(target, offset);
@@ -83465,13 +79547,13 @@ if (util && util.inspect && util.inspect.custom) {
 }
 
 /***/ }),
-/* 86 */
+/* 105 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 87 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -83527,7 +79609,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(88);
+__webpack_require__(107);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -83541,7 +79623,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)))
 
 /***/ }),
-/* 88 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -83734,7 +79816,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(8)))
 
 /***/ }),
-/* 89 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {
@@ -83808,7 +79890,7 @@ function config (name) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)))
 
 /***/ }),
-/* 90 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83841,10 +79923,10 @@ function config (name) {
 
 module.exports = PassThrough;
 
-var Transform = __webpack_require__(44);
+var Transform = __webpack_require__(47);
 
 /*<replacement>*/
-var util = __webpack_require__(15);
+var util = __webpack_require__(16);
 util.inherits = __webpack_require__(0);
 /*</replacement>*/
 
@@ -83861,35 +79943,35 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 };
 
 /***/ }),
-/* 91 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(30);
+module.exports = __webpack_require__(31);
 
 
 /***/ }),
-/* 92 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(10);
+module.exports = __webpack_require__(11);
 
 
 /***/ }),
-/* 93 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(29).Transform
+module.exports = __webpack_require__(30).Transform
 
 
 /***/ }),
-/* 94 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(29).PassThrough
+module.exports = __webpack_require__(30).PassThrough
 
 
 /***/ }),
-/* 95 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -83901,7 +79983,7 @@ module.exports = __webpack_require__(29).PassThrough
  */
 
 var inherits = __webpack_require__(0)
-var Hash = __webpack_require__(12)
+var Hash = __webpack_require__(13)
 var Buffer = __webpack_require__(1).Buffer
 
 var K = [
@@ -83989,7 +80071,7 @@ module.exports = Sha
 
 
 /***/ }),
-/* 96 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -84002,7 +80084,7 @@ module.exports = Sha
  */
 
 var inherits = __webpack_require__(0)
-var Hash = __webpack_require__(12)
+var Hash = __webpack_require__(13)
 var Buffer = __webpack_require__(1).Buffer
 
 var K = [
@@ -84094,7 +80176,7 @@ module.exports = Sha1
 
 
 /***/ }),
-/* 97 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -84106,8 +80188,8 @@ module.exports = Sha1
  */
 
 var inherits = __webpack_require__(0)
-var Sha256 = __webpack_require__(47)
-var Hash = __webpack_require__(12)
+var Sha256 = __webpack_require__(50)
+var Hash = __webpack_require__(13)
 var Buffer = __webpack_require__(1).Buffer
 
 var W = new Array(64)
@@ -84153,12 +80235,12 @@ module.exports = Sha224
 
 
 /***/ }),
-/* 98 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0)
-var SHA512 = __webpack_require__(48)
-var Hash = __webpack_require__(12)
+var SHA512 = __webpack_require__(51)
+var Hash = __webpack_require__(13)
 var Buffer = __webpack_require__(1).Buffer
 
 var W = new Array(160)
@@ -84216,7 +80298,7 @@ module.exports = Sha384
 
 
 /***/ }),
-/* 99 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84269,19 +80351,19 @@ module.exports = Hmac
 
 
 /***/ }),
-/* 100 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(51)
+module.exports = __webpack_require__(54)
 
 
 /***/ }),
-/* 101 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global, process) {var checkParameters = __webpack_require__(53)
-var defaultEncoding = __webpack_require__(54)
-var sync = __webpack_require__(55)
+/* WEBPACK VAR INJECTION */(function(global, process) {var checkParameters = __webpack_require__(56)
+var defaultEncoding = __webpack_require__(57)
+var sync = __webpack_require__(58)
 var Buffer = __webpack_require__(1).Buffer
 
 var ZERO_BUF
@@ -84383,14 +80465,14 @@ module.exports = function (password, salt, iterations, keylen, digest, callback)
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(8)))
 
 /***/ }),
-/* 102 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var DES = __webpack_require__(103)
-var aes = __webpack_require__(36)
-var aesModes = __webpack_require__(37)
-var desModes = __webpack_require__(118)
-var ebtk = __webpack_require__(24)
+var DES = __webpack_require__(122)
+var aes = __webpack_require__(37)
+var aesModes = __webpack_require__(38)
+var desModes = __webpack_require__(137)
+var ebtk = __webpack_require__(26)
 
 function createCipher (suite, password) {
   suite = suite.toLowerCase()
@@ -84456,11 +80538,11 @@ exports.listCiphers = exports.getCiphers = getCiphers
 
 
 /***/ }),
-/* 103 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CipherBase = __webpack_require__(9)
-var des = __webpack_require__(35)
+var des = __webpack_require__(36)
 var inherits = __webpack_require__(0)
 var Buffer = __webpack_require__(1).Buffer
 
@@ -84512,7 +80594,7 @@ DES.prototype._final = function () {
 
 
 /***/ }),
-/* 104 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84775,7 +80857,7 @@ exports.padSplit = function padSplit(num, size, group) {
 
 
 /***/ }),
-/* 105 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84923,7 +81005,7 @@ Cipher.prototype._finalDecrypt = function _finalDecrypt() {
 
 
 /***/ }),
-/* 106 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84932,7 +81014,7 @@ Cipher.prototype._finalDecrypt = function _finalDecrypt() {
 var assert = __webpack_require__(6);
 var inherits = __webpack_require__(0);
 
-var des = __webpack_require__(35);
+var des = __webpack_require__(36);
 var utils = des.utils;
 var Cipher = des.Cipher;
 
@@ -85073,7 +81155,7 @@ DES.prototype._decrypt = function _decrypt(state, lStart, rStart, out, off) {
 
 
 /***/ }),
-/* 107 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85145,7 +81227,7 @@ proto._update = function _update(inp, inOff, out, outOff) {
 
 
 /***/ }),
-/* 108 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85154,7 +81236,7 @@ proto._update = function _update(inp, inOff, out, outOff) {
 var assert = __webpack_require__(6);
 var inherits = __webpack_require__(0);
 
-var des = __webpack_require__(35);
+var des = __webpack_require__(36);
 var Cipher = des.Cipher;
 var DES = des.DES;
 
@@ -85207,16 +81289,16 @@ EDE.prototype._unpad = DES.prototype._unpad;
 
 
 /***/ }),
-/* 109 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MODES = __webpack_require__(37)
-var AuthCipher = __webpack_require__(59)
+var MODES = __webpack_require__(38)
+var AuthCipher = __webpack_require__(62)
 var Buffer = __webpack_require__(1).Buffer
-var StreamCipher = __webpack_require__(60)
+var StreamCipher = __webpack_require__(63)
 var Transform = __webpack_require__(9)
-var aes = __webpack_require__(23)
-var ebtk = __webpack_require__(24)
+var aes = __webpack_require__(25)
+var ebtk = __webpack_require__(26)
 var inherits = __webpack_require__(0)
 
 function Cipher (mode, key, iv) {
@@ -85327,7 +81409,7 @@ exports.createCipher = createCipher
 
 
 /***/ }),
-/* 110 */
+/* 129 */
 /***/ (function(module, exports) {
 
 exports.encrypt = function (self, block) {
@@ -85340,10 +81422,10 @@ exports.decrypt = function (self, block) {
 
 
 /***/ }),
-/* 111 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var xor = __webpack_require__(17)
+var xor = __webpack_require__(18)
 
 exports.encrypt = function (self, block) {
   var data = xor(block, self._prev)
@@ -85363,11 +81445,11 @@ exports.decrypt = function (self, block) {
 
 
 /***/ }),
-/* 112 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(1).Buffer
-var xor = __webpack_require__(17)
+var xor = __webpack_require__(18)
 
 function encryptStart (self, data, decrypt) {
   var len = data.length
@@ -85402,7 +81484,7 @@ exports.encrypt = function (self, data, decrypt) {
 
 
 /***/ }),
-/* 113 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(1).Buffer
@@ -85433,7 +81515,7 @@ exports.encrypt = function (self, chunk, decrypt) {
 
 
 /***/ }),
-/* 114 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(1).Buffer
@@ -85481,10 +81563,10 @@ exports.encrypt = function (self, chunk, decrypt) {
 
 
 /***/ }),
-/* 115 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(Buffer) {var xor = __webpack_require__(17)
+/* WEBPACK VAR INJECTION */(function(Buffer) {var xor = __webpack_require__(18)
 
 function getBlock (self) {
   self._prev = self._cipher.encryptBlock(self._prev)
@@ -85504,7 +81586,7 @@ exports.encrypt = function (self, chunk) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 116 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(1).Buffer
@@ -85599,16 +81681,16 @@ module.exports = GHASH
 
 
 /***/ }),
-/* 117 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var AuthCipher = __webpack_require__(59)
+var AuthCipher = __webpack_require__(62)
 var Buffer = __webpack_require__(1).Buffer
-var MODES = __webpack_require__(37)
-var StreamCipher = __webpack_require__(60)
+var MODES = __webpack_require__(38)
+var StreamCipher = __webpack_require__(63)
 var Transform = __webpack_require__(9)
-var aes = __webpack_require__(23)
-var ebtk = __webpack_require__(24)
+var aes = __webpack_require__(25)
+var ebtk = __webpack_require__(26)
 var inherits = __webpack_require__(0)
 
 function Decipher (mode, key, iv) {
@@ -85729,7 +81811,7 @@ exports.createDecipheriv = createDecipheriv
 
 
 /***/ }),
-/* 118 */
+/* 137 */
 /***/ (function(module, exports) {
 
 exports['des-ecb'] = {
@@ -85759,13 +81841,13 @@ exports['des-ede'] = {
 
 
 /***/ }),
-/* 119 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(Buffer) {var generatePrime = __webpack_require__(61)
-var primes = __webpack_require__(123)
+/* WEBPACK VAR INJECTION */(function(Buffer) {var generatePrime = __webpack_require__(64)
+var primes = __webpack_require__(142)
 
-var DH = __webpack_require__(124)
+var DH = __webpack_require__(143)
 
 function getDiffieHellman (mod) {
   var prime = new Buffer(primes[mod].prime, 'hex')
@@ -85808,7 +81890,7 @@ exports.createDiffieHellman = exports.DiffieHellman = createDiffieHellman
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 120 */
+/* 139 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -85836,37 +81918,37 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 121 */
+/* 140 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 122 */
+/* 141 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 123 */
+/* 142 */
 /***/ (function(module) {
 
 module.exports = {"modp1":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a63a3620ffffffffffffffff"},"modp2":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece65381ffffffffffffffff"},"modp5":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca237327ffffffffffffffff"},"modp14":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aacaa68ffffffffffffffff"},"modp15":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a93ad2caffffffffffffffff"},"modp16":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a92108011a723c12a787e6d788719a10bdba5b2699c327186af4e23c1a946834b6150bda2583e9ca2ad44ce8dbbbc2db04de8ef92e8efc141fbecaa6287c59474e6bc05d99b2964fa090c3a2233ba186515be7ed1f612970cee2d7afb81bdd762170481cd0069127d5b05aa993b4ea988d8fddc186ffb7dc90a6c08f4df435c934063199ffffffffffffffff"},"modp17":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a92108011a723c12a787e6d788719a10bdba5b2699c327186af4e23c1a946834b6150bda2583e9ca2ad44ce8dbbbc2db04de8ef92e8efc141fbecaa6287c59474e6bc05d99b2964fa090c3a2233ba186515be7ed1f612970cee2d7afb81bdd762170481cd0069127d5b05aa993b4ea988d8fddc186ffb7dc90a6c08f4df435c93402849236c3fab4d27c7026c1d4dcb2602646dec9751e763dba37bdf8ff9406ad9e530ee5db382f413001aeb06a53ed9027d831179727b0865a8918da3edbebcf9b14ed44ce6cbaced4bb1bdb7f1447e6cc254b332051512bd7af426fb8f401378cd2bf5983ca01c64b92ecf032ea15d1721d03f482d7ce6e74fef6d55e702f46980c82b5a84031900b1c9e59e7c97fbec7e8f323a97a7e36cc88be0f1d45b7ff585ac54bd407b22b4154aacc8f6d7ebf48e1d814cc5ed20f8037e0a79715eef29be32806a1d58bb7c5da76f550aa3d8a1fbff0eb19ccb1a313d55cda56c9ec2ef29632387fe8d76e3c0468043e8f663f4860ee12bf2d5b0b7474d6e694f91e6dcc4024ffffffffffffffff"},"modp18":{"gen":"02","prime":"ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a92108011a723c12a787e6d788719a10bdba5b2699c327186af4e23c1a946834b6150bda2583e9ca2ad44ce8dbbbc2db04de8ef92e8efc141fbecaa6287c59474e6bc05d99b2964fa090c3a2233ba186515be7ed1f612970cee2d7afb81bdd762170481cd0069127d5b05aa993b4ea988d8fddc186ffb7dc90a6c08f4df435c93402849236c3fab4d27c7026c1d4dcb2602646dec9751e763dba37bdf8ff9406ad9e530ee5db382f413001aeb06a53ed9027d831179727b0865a8918da3edbebcf9b14ed44ce6cbaced4bb1bdb7f1447e6cc254b332051512bd7af426fb8f401378cd2bf5983ca01c64b92ecf032ea15d1721d03f482d7ce6e74fef6d55e702f46980c82b5a84031900b1c9e59e7c97fbec7e8f323a97a7e36cc88be0f1d45b7ff585ac54bd407b22b4154aacc8f6d7ebf48e1d814cc5ed20f8037e0a79715eef29be32806a1d58bb7c5da76f550aa3d8a1fbff0eb19ccb1a313d55cda56c9ec2ef29632387fe8d76e3c0468043e8f663f4860ee12bf2d5b0b7474d6e694f91e6dbe115974a3926f12fee5e438777cb6a932df8cd8bec4d073b931ba3bc832b68d9dd300741fa7bf8afc47ed2576f6936ba424663aab639c5ae4f5683423b4742bf1c978238f16cbe39d652de3fdb8befc848ad922222e04a4037c0713eb57a81a23f0c73473fc646cea306b4bcbc8862f8385ddfa9d4b7fa2c087e879683303ed5bdd3a062b3cf5b3a278a66d2a13f83f44f82ddf310ee074ab6a364597e899a0255dc164f31cc50846851df9ab48195ded7ea1b1d510bd7ee74d73faf36bc31ecfa268359046f4eb879f924009438b481c6cd7889a002ed5ee382bc9190da6fc026e479558e4475677e9aa9e3050e2765694dfc81f56e880b96e7160c980dd98edd3dfffffffffffffffff"}};
 
 /***/ }),
-/* 124 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var BN = __webpack_require__(3);
-var MillerRabin = __webpack_require__(62);
+var MillerRabin = __webpack_require__(65);
 var millerRabin = new MillerRabin();
 var TWENTYFOUR = new BN(24);
 var ELEVEN = new BN(11);
 var TEN = new BN(10);
 var THREE = new BN(3);
 var SEVEN = new BN(7);
-var primes = __webpack_require__(61);
-var randomBytes = __webpack_require__(11);
+var primes = __webpack_require__(64);
+var randomBytes = __webpack_require__(12);
 module.exports = DH;
 
 function setPublicKey(pub, enc) {
@@ -86025,16 +82107,16 @@ function formatReturnValue(bn, enc) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 125 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(16)
-var stream = __webpack_require__(14)
+/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(17)
+var stream = __webpack_require__(15)
 var inherits = __webpack_require__(0)
-var sign = __webpack_require__(126)
-var verify = __webpack_require__(162)
+var sign = __webpack_require__(145)
+var verify = __webpack_require__(181)
 
-var algorithms = __webpack_require__(51)
+var algorithms = __webpack_require__(54)
 Object.keys(algorithms).forEach(function (key) {
   algorithms[key].id = new Buffer(algorithms[key].id, 'hex')
   algorithms[key.toLowerCase()] = algorithms[key]
@@ -86123,16 +82205,16 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 126 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {// much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var createHmac = __webpack_require__(49)
-var crt = __webpack_require__(38)
+var createHmac = __webpack_require__(52)
+var crt = __webpack_require__(39)
 var EC = __webpack_require__(4).ec
 var BN = __webpack_require__(3)
-var parseKeys = __webpack_require__(26)
-var curves = __webpack_require__(72)
+var parseKeys = __webpack_require__(28)
+var curves = __webpack_require__(75)
 
 function sign (hash, key, hashType, signType, tag) {
   var priv = parseKeys(key)
@@ -86275,13 +82357,13 @@ module.exports.makeKey = makeKey
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 127 */
+/* 146 */
 /***/ (function(module) {
 
 module.exports = {"name":"elliptic","version":"6.4.1","description":"EC cryptography","main":"lib/elliptic.js","files":["lib"],"scripts":{"jscs":"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js","jshint":"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js","lint":"npm run jscs && npm run jshint","unit":"istanbul test _mocha --reporter=spec test/index.js","test":"npm run lint && npm run unit","version":"grunt dist && git add dist/"},"repository":{"type":"git","url":"git@github.com:indutny/elliptic"},"keywords":["EC","Elliptic","curve","Cryptography"],"author":"Fedor Indutny <fedor@indutny.com>","license":"MIT","bugs":{"url":"https://github.com/indutny/elliptic/issues"},"homepage":"https://github.com/indutny/elliptic","devDependencies":{"brfs":"^1.4.3","coveralls":"^2.11.3","grunt":"^0.4.5","grunt-browserify":"^5.0.0","grunt-cli":"^1.2.0","grunt-contrib-connect":"^1.0.0","grunt-contrib-copy":"^1.0.0","grunt-contrib-uglify":"^1.0.1","grunt-mocha-istanbul":"^3.0.1","grunt-saucelabs":"^8.6.2","istanbul":"^0.4.2","jscs":"^2.9.0","jshint":"^2.6.0","mocha":"^2.1.0"},"dependencies":{"bn.js":"^4.4.0","brorand":"^1.0.1","hash.js":"^1.0.0","hmac-drbg":"^1.0.0","inherits":"^2.0.1","minimalistic-assert":"^1.0.0","minimalistic-crypto-utils":"^1.0.0"}};
 
 /***/ }),
-/* 128 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86290,7 +82372,7 @@ module.exports = {"name":"elliptic","version":"6.4.1","description":"EC cryptogr
 var utils = exports;
 var BN = __webpack_require__(3);
 var minAssert = __webpack_require__(6);
-var minUtils = __webpack_require__(64);
+var minUtils = __webpack_require__(67);
 
 utils.assert = minAssert;
 utils.toArray = minUtils.toArray;
@@ -86408,7 +82490,7 @@ utils.intFromLE = intFromLE;
 
 
 /***/ }),
-/* 129 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -86790,13 +82872,13 @@ BasePoint.prototype.dblp = function dblp(k) {
 
 
 /***/ }),
-/* 130 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var curve = __webpack_require__(25);
+var curve = __webpack_require__(27);
 var elliptic = __webpack_require__(4);
 var BN = __webpack_require__(3);
 var inherits = __webpack_require__(0);
@@ -87734,13 +83816,13 @@ JPoint.prototype.isInfinity = function isInfinity() {
 
 
 /***/ }),
-/* 131 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var curve = __webpack_require__(25);
+var curve = __webpack_require__(27);
 var BN = __webpack_require__(3);
 var inherits = __webpack_require__(0);
 var Base = curve.base;
@@ -87921,13 +84003,13 @@ Point.prototype.getX = function getX() {
 
 
 /***/ }),
-/* 132 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var curve = __webpack_require__(25);
+var curve = __webpack_require__(27);
 var elliptic = __webpack_require__(4);
 var BN = __webpack_require__(3);
 var inherits = __webpack_require__(0);
@@ -88361,7 +84443,7 @@ Point.prototype.mixedAdd = Point.prototype.add;
 
 
 /***/ }),
-/* 133 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88369,7 +84451,7 @@ Point.prototype.mixedAdd = Point.prototype.add;
 
 var curves = exports;
 
-var hash = __webpack_require__(39);
+var hash = __webpack_require__(40);
 var elliptic = __webpack_require__(4);
 
 var assert = elliptic.utils.assert;
@@ -88534,7 +84616,7 @@ defineCurve('ed25519', {
 
 var pre;
 try {
-  pre = __webpack_require__(140);
+  pre = __webpack_require__(159);
 } catch (e) {
   pre = undefined;
 }
@@ -88573,29 +84655,29 @@ defineCurve('secp256k1', {
 
 
 /***/ }),
-/* 134 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.sha1 = __webpack_require__(135);
-exports.sha224 = __webpack_require__(136);
-exports.sha256 = __webpack_require__(66);
-exports.sha384 = __webpack_require__(137);
-exports.sha512 = __webpack_require__(67);
+exports.sha1 = __webpack_require__(154);
+exports.sha224 = __webpack_require__(155);
+exports.sha256 = __webpack_require__(69);
+exports.sha384 = __webpack_require__(156);
+exports.sha512 = __webpack_require__(70);
 
 
 /***/ }),
-/* 135 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(7);
-var common = __webpack_require__(18);
-var shaCommon = __webpack_require__(65);
+var common = __webpack_require__(19);
+var shaCommon = __webpack_require__(68);
 
 var rotl32 = utils.rotl32;
 var sum32 = utils.sum32;
@@ -88668,14 +84750,14 @@ SHA1.prototype._digest = function digest(enc) {
 
 
 /***/ }),
-/* 136 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(7);
-var SHA256 = __webpack_require__(66);
+var SHA256 = __webpack_require__(69);
 
 function SHA224() {
   if (!(this instanceof SHA224))
@@ -88705,7 +84787,7 @@ SHA224.prototype._digest = function digest(enc) {
 
 
 /***/ }),
-/* 137 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88713,7 +84795,7 @@ SHA224.prototype._digest = function digest(enc) {
 
 var utils = __webpack_require__(7);
 
-var SHA512 = __webpack_require__(67);
+var SHA512 = __webpack_require__(70);
 
 function SHA384() {
   if (!(this instanceof SHA384))
@@ -88747,14 +84829,14 @@ SHA384.prototype._digest = function digest(enc) {
 
 
 /***/ }),
-/* 138 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(7);
-var common = __webpack_require__(18);
+var common = __webpack_require__(19);
 
 var rotl32 = utils.rotl32;
 var sum32 = utils.sum32;
@@ -88900,7 +84982,7 @@ var sh = [
 
 
 /***/ }),
-/* 139 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88954,7 +85036,7 @@ Hmac.prototype.digest = function digest(enc) {
 
 
 /***/ }),
-/* 140 */
+/* 159 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -89740,20 +85822,20 @@ module.exports = {
 
 
 /***/ }),
-/* 141 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var BN = __webpack_require__(3);
-var HmacDRBG = __webpack_require__(142);
+var HmacDRBG = __webpack_require__(161);
 var elliptic = __webpack_require__(4);
 var utils = elliptic.utils;
 var assert = utils.assert;
 
-var KeyPair = __webpack_require__(143);
-var Signature = __webpack_require__(144);
+var KeyPair = __webpack_require__(162);
+var Signature = __webpack_require__(163);
 
 function EC(options) {
   if (!(this instanceof EC))
@@ -89987,14 +86069,14 @@ EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
 
 
 /***/ }),
-/* 142 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var hash = __webpack_require__(39);
-var utils = __webpack_require__(64);
+var hash = __webpack_require__(40);
+var utils = __webpack_require__(67);
 var assert = __webpack_require__(6);
 
 function HmacDRBG(options) {
@@ -90107,7 +86189,7 @@ HmacDRBG.prototype.generate = function generate(len, enc, add, addEnc) {
 
 
 /***/ }),
-/* 143 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90233,7 +86315,7 @@ KeyPair.prototype.inspect = function inspect() {
 
 
 /***/ }),
-/* 144 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90375,19 +86457,19 @@ Signature.prototype.toDER = function toDER(enc) {
 
 
 /***/ }),
-/* 145 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var hash = __webpack_require__(39);
+var hash = __webpack_require__(40);
 var elliptic = __webpack_require__(4);
 var utils = elliptic.utils;
 var assert = utils.assert;
 var parseBytes = utils.parseBytes;
-var KeyPair = __webpack_require__(146);
-var Signature = __webpack_require__(147);
+var KeyPair = __webpack_require__(165);
+var Signature = __webpack_require__(166);
 
 function EDDSA(curve) {
   assert(curve === 'ed25519', 'only tested with ed25519 so far');
@@ -90500,7 +86582,7 @@ EDDSA.prototype.isPoint = function isPoint(val) {
 
 
 /***/ }),
-/* 146 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90603,7 +86685,7 @@ module.exports = KeyPair;
 
 
 /***/ }),
-/* 147 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90676,7 +86758,7 @@ module.exports = Signature;
 
 
 /***/ }),
-/* 148 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90684,9 +86766,9 @@ module.exports = Signature;
 // Fedor, you are amazing.
 
 
-var asn1 = __webpack_require__(19)
+var asn1 = __webpack_require__(20)
 
-exports.certificate = __webpack_require__(159)
+exports.certificate = __webpack_require__(178)
 
 var RSAPrivateKey = asn1.define('RSAPrivateKey', function () {
   this.seq().obj(
@@ -90805,10 +86887,10 @@ exports.signature = asn1.define('signature', function () {
 
 
 /***/ }),
-/* 149 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var asn1 = __webpack_require__(19);
+var asn1 = __webpack_require__(20);
 var inherits = __webpack_require__(0);
 
 var api = exports;
@@ -90828,7 +86910,7 @@ function Entity(name, body) {
 Entity.prototype._createNamed = function createNamed(base) {
   var named;
   try {
-    named = __webpack_require__(150).runInThisContext(
+    named = __webpack_require__(169).runInThisContext(
       '(function ' + this.name + '(entity) {\n' +
       '  this._initNamed(entity);\n' +
       '})'
@@ -90872,10 +86954,10 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
 
 
 /***/ }),
-/* 150 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var indexOf = __webpack_require__(151);
+var indexOf = __webpack_require__(170);
 
 var Object_keys = function (obj) {
     if (Object.keys) return Object.keys(obj)
@@ -91016,7 +87098,7 @@ exports.createContext = Script.createContext = function (context) {
 
 
 /***/ }),
-/* 151 */
+/* 170 */
 /***/ (function(module, exports) {
 
 
@@ -91031,7 +87113,7 @@ module.exports = function(arr, obj){
 };
 
 /***/ }),
-/* 152 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0);
@@ -91158,12 +87240,12 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
 
 
 /***/ }),
-/* 153 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Reporter = __webpack_require__(20).Reporter;
-var EncoderBuffer = __webpack_require__(20).EncoderBuffer;
-var DecoderBuffer = __webpack_require__(20).DecoderBuffer;
+var Reporter = __webpack_require__(21).Reporter;
+var EncoderBuffer = __webpack_require__(21).EncoderBuffer;
+var DecoderBuffer = __webpack_require__(21).DecoderBuffer;
 var assert = __webpack_require__(6);
 
 // Supported tags
@@ -91798,10 +87880,10 @@ Node.prototype._isPrintstr = function isPrintstr(str) {
 
 
 /***/ }),
-/* 154 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var constants = __webpack_require__(69);
+var constants = __webpack_require__(72);
 
 exports.tagClass = {
   0: 'universal',
@@ -91846,23 +87928,23 @@ exports.tagByName = constants._reverse(exports.tag);
 
 
 /***/ }),
-/* 155 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var decoders = exports;
 
-decoders.der = __webpack_require__(70);
-decoders.pem = __webpack_require__(156);
+decoders.der = __webpack_require__(73);
+decoders.pem = __webpack_require__(175);
 
 
 /***/ }),
-/* 156 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0);
 var Buffer = __webpack_require__(2).Buffer;
 
-var DERDecoder = __webpack_require__(70);
+var DERDecoder = __webpack_require__(73);
 
 function PEMDecoder(entity) {
   DERDecoder.call(this, entity);
@@ -91911,22 +87993,22 @@ PEMDecoder.prototype.decode = function decode(data, options) {
 
 
 /***/ }),
-/* 157 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var encoders = exports;
 
-encoders.der = __webpack_require__(71);
-encoders.pem = __webpack_require__(158);
+encoders.der = __webpack_require__(74);
+encoders.pem = __webpack_require__(177);
 
 
 /***/ }),
-/* 158 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var inherits = __webpack_require__(0);
 
-var DEREncoder = __webpack_require__(71);
+var DEREncoder = __webpack_require__(74);
 
 function PEMEncoder(entity) {
   DEREncoder.call(this, entity);
@@ -91948,7 +88030,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
 
 
 /***/ }),
-/* 159 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91957,7 +88039,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
 
 
 
-var asn = __webpack_require__(19)
+var asn = __webpack_require__(20)
 
 var Time = asn.define('Time', function () {
   this.choice({
@@ -92043,21 +88125,21 @@ module.exports = X509Certificate
 
 
 /***/ }),
-/* 160 */
+/* 179 */
 /***/ (function(module) {
 
 module.exports = {"2.16.840.1.101.3.4.1.1":"aes-128-ecb","2.16.840.1.101.3.4.1.2":"aes-128-cbc","2.16.840.1.101.3.4.1.3":"aes-128-ofb","2.16.840.1.101.3.4.1.4":"aes-128-cfb","2.16.840.1.101.3.4.1.21":"aes-192-ecb","2.16.840.1.101.3.4.1.22":"aes-192-cbc","2.16.840.1.101.3.4.1.23":"aes-192-ofb","2.16.840.1.101.3.4.1.24":"aes-192-cfb","2.16.840.1.101.3.4.1.41":"aes-256-ecb","2.16.840.1.101.3.4.1.42":"aes-256-cbc","2.16.840.1.101.3.4.1.43":"aes-256-ofb","2.16.840.1.101.3.4.1.44":"aes-256-cfb"};
 
 /***/ }),
-/* 161 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {// adapted from https://github.com/apatil/pemstrip
 var findProc = /Proc-Type: 4,ENCRYPTED[\n\r]+DEK-Info: AES-((?:128)|(?:192)|(?:256))-CBC,([0-9A-H]+)[\n\r]+([0-9A-z\n\r\+\/\=]+)[\n\r]+/m
 var startRegex = /^-----BEGIN ((?:.* KEY)|CERTIFICATE)-----/m
 var fullRegex = /^-----BEGIN ((?:.* KEY)|CERTIFICATE)-----([0-9A-z\n\r\+\/\=]+)-----END \1-----$/m
-var evp = __webpack_require__(24)
-var ciphers = __webpack_require__(36)
+var evp = __webpack_require__(26)
+var ciphers = __webpack_require__(37)
 module.exports = function (okey, password) {
   var key = okey.toString()
   var match = key.match(findProc)
@@ -92086,14 +88168,14 @@ module.exports = function (okey, password) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 162 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {// much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var BN = __webpack_require__(3)
 var EC = __webpack_require__(4).ec
-var parseKeys = __webpack_require__(26)
-var curves = __webpack_require__(72)
+var parseKeys = __webpack_require__(28)
+var curves = __webpack_require__(75)
 
 function verify (sig, hash, key, signType, tag) {
   var pub = parseKeys(key)
@@ -92176,7 +88258,7 @@ module.exports = verify
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 163 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var elliptic = __webpack_require__(4)
@@ -92307,11 +88389,11 @@ function formatReturnValue (bn, enc, len) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2).Buffer))
 
 /***/ }),
-/* 164 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.publicEncrypt = __webpack_require__(165)
-exports.privateDecrypt = __webpack_require__(166)
+exports.publicEncrypt = __webpack_require__(184)
+exports.privateDecrypt = __webpack_require__(185)
 
 exports.privateEncrypt = function privateEncrypt (key, buf) {
   return exports.publicEncrypt(key, buf, true)
@@ -92323,17 +88405,17 @@ exports.publicDecrypt = function publicDecrypt (key, buf) {
 
 
 /***/ }),
-/* 165 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parseKeys = __webpack_require__(26)
-var randomBytes = __webpack_require__(11)
-var createHash = __webpack_require__(16)
-var mgf = __webpack_require__(73)
-var xor = __webpack_require__(74)
+var parseKeys = __webpack_require__(28)
+var randomBytes = __webpack_require__(12)
+var createHash = __webpack_require__(17)
+var mgf = __webpack_require__(76)
+var xor = __webpack_require__(77)
 var BN = __webpack_require__(3)
-var withPublic = __webpack_require__(75)
-var crt = __webpack_require__(38)
+var withPublic = __webpack_require__(78)
+var crt = __webpack_require__(39)
 var Buffer = __webpack_require__(1).Buffer
 
 module.exports = function publicEncrypt (publicKey, msg, reverse) {
@@ -92417,16 +88499,16 @@ function nonZero (len) {
 
 
 /***/ }),
-/* 166 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parseKeys = __webpack_require__(26)
-var mgf = __webpack_require__(73)
-var xor = __webpack_require__(74)
+var parseKeys = __webpack_require__(28)
+var mgf = __webpack_require__(76)
+var xor = __webpack_require__(77)
 var BN = __webpack_require__(3)
-var crt = __webpack_require__(38)
-var createHash = __webpack_require__(16)
-var withPublic = __webpack_require__(75)
+var crt = __webpack_require__(39)
+var createHash = __webpack_require__(17)
+var withPublic = __webpack_require__(78)
 var Buffer = __webpack_require__(1).Buffer
 
 module.exports = function privateDecrypt (privateKey, enc, reverse) {
@@ -92528,7 +88610,7 @@ function compare (a, b) {
 
 
 /***/ }),
-/* 167 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -92538,7 +88620,7 @@ function oldBrowser () {
   throw new Error('secure random number generation not supported by this browser\nuse chrome, FireFox or Internet Explorer 11')
 }
 var safeBuffer = __webpack_require__(1)
-var randombytes = __webpack_require__(11)
+var randombytes = __webpack_require__(12)
 var Buffer = safeBuffer.Buffer
 var kBufferMaxLength = safeBuffer.kMaxLength
 var crypto = global.crypto || global.msCrypto
@@ -92644,11 +88726,11 @@ function randomFillSync (buf, offset, size) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5), __webpack_require__(8)))
 
 /***/ }),
-/* 168 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-	 true ? factory(exports, __webpack_require__(27), __webpack_require__(21), __webpack_require__(13)) :
+	 true ? factory(exports, __webpack_require__(23), __webpack_require__(22), __webpack_require__(14)) :
 	undefined;
 }(this, (function (exports,account,core,util) { 'use strict';
 
@@ -94182,11 +90264,11 @@ function randomFillSync (buf, offset, size) {
 
 
 /***/ }),
-/* 169 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(13), __webpack_require__(27), __webpack_require__(21)) :
+     true ? factory(exports, __webpack_require__(14), __webpack_require__(23), __webpack_require__(22)) :
     undefined;
 }(this, (function (exports,util,account,core) { 'use strict';
 
