@@ -13,7 +13,7 @@ const {ccclass, property} = cc._decorator;
 import ZilliqaNetwork from './ZilliqaNetwork';
 import ErrorPopup from './ErrorPopup';
 import AuthenticationPopup from './AuthenticationPopup';
-
+import ContractsPopup from './ContractsPopup'
 
 @ccclass
 export default class ZilliqaPopup extends cc.Component {
@@ -27,11 +27,17 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Node)
     onChainNode: cc.Node = null;
 
+    @property(ContractsPopup)
+    contractsPopup: ContractsPopup = null;
+
     @property(cc.Node)
     connectingNode: cc.Node = null;
 
     @property(ErrorPopup)
     errorPopup: ErrorPopup = null;
+
+    @property(ErrorPopup)
+    messagePopup: ErrorPopup = null;
 
     
     @property(cc.Label)
@@ -45,8 +51,11 @@ export default class ZilliqaPopup extends cc.Component {
         this.offChainNode.active = true;
         this.authenticationPopup.node.active = false;
         this.onChainNode.active = false;
+        this.contractsPopup.node.active = false;
         this.connectingNode.active = false;
         this.errorPopup.node.active = false;
+        this.messagePopup.node.active = false;
+        
 
         var that = this;
         this.authenticationPopup.node.on('error', (msg:string) => {
@@ -58,22 +67,41 @@ export default class ZilliqaPopup extends cc.Component {
             that.onChainNode.active = true;
         });
         
+        this.contractsPopup.node.on('hide', () => {
+            that.contractsPopup.node.active = false;
+            that.onChainNode.active = true;
+        });
+
+        this.contractsPopup.node.on('showPopup', (msg:string) => {
+            that.showPopup(msg);
+        });
+
+        this.contractsPopup.node.on('getContractInit', this.getContractInit, this);
+        this.contractsPopup.node.on('getContractState', this.getContractState, this);
+        this.contractsPopup.node.on('getContractCode', this.getContractCode, this);
     }
 
     handleError(err, data){        
         if (err) {
             this.errorPopup.show(err);
-            this.responseText.string = err;
+            this.errorPopup.responseText.string = err;
         } else if (data.error) {
-            this.errorPopup.show(data.error);
+            this.show(data.error);
             this.responseText.string = data.error;
         }
+    }
+
+    showPopup(msg:string) {
+        this.messagePopup.show(msg);
     }
 
     onConnect(){
         var that = this;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().connect(function(err, data) {
+
+        //let URL = 'https://dev-test-api.aws.z7a.xyz'
+        let URL = 'https://api-scilla.zilliqa.com';
+        ZilliqaNetwork.getInstance().connect(URL, function(err, data) {
             if (err || data.error) {                         
                 that.handleError(err, data);
             } else {
@@ -140,7 +168,8 @@ export default class ZilliqaPopup extends cc.Component {
             if (err || data.error) {                
                 that.handleError(err, data);
             } else {               
-                that.responseText.string = JSON.stringify(data.result);
+                //that.responseText.string = JSON.stringify(data.result);
+                that.contractsPopup.show(data.result);
             }
             that.connectingNode.active = false;
         });
@@ -159,42 +188,44 @@ export default class ZilliqaPopup extends cc.Component {
         });
     }
 
-    getSmartContractState(){
-        var that = this;
+    
+    getContractInit(contractAddress: string) {
+        console.log('getInit c');
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().getSmartContractState('BB031E2B60330C4181F22CCFDACFB107B1AD2A3F80DDEFFB8C88B90A537224F2', function(err, data) {
+        var that = this;
+        ZilliqaNetwork.getInstance().getSmartContractInit(contractAddress, function(err, data) {
             if (err || data.error) {                
                 that.handleError(err, data);
-            } else {               
-                that.responseText.string = 'success = ' + data.receipt.success;
+            } else {                            
+                that.showPopup(JSON.stringify(data.result));
             }
-            that.connectingNode.active = false;
+            that.connectingNode.active = false; 
         });
     }
 
-    getSmartContractCode(){
-        var that = this;
+    getContractState(contractAddress: string) {
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().getSmartContractCode('83c425e960d54b0ae393c0395703c4489cda2e97', function(err, data) {
+        var that = this;
+        ZilliqaNetwork.getInstance().getSmartContractState(contractAddress, function(err, data) {
             if (err || data.error) {                
                 that.handleError(err, data);
-            } else {               
-                that.responseText.string = JSON.stringify(data.result);
+            } else {                            
+                that.showPopup(JSON.stringify(data.result));
             }
-            that.connectingNode.active = false;
+            that.connectingNode.active = false;             
         });
     }
 
-    getSmartContractInit(){
-        var that = this;
+    getContractCode(contractAddress: string) {
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().getSmartContractInit('83c425e960d54b0ae393c0395703c4489cda2e97', function(err, data) {
+        var that = this;
+        ZilliqaNetwork.getInstance().getSmartContractCode(contractAddress, function(err, data) {
             if (err || data.error) {                
                 that.handleError(err, data);
-            } else {               
-                that.responseText.string = JSON.stringify(data.result);
+            } else {                            
+                that.showPopup(data.result.code);
             }
-            that.connectingNode.active = false;
+            that.connectingNode.active = false; 
         });
     }
 
