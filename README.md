@@ -18,5 +18,5 @@ yarn build
 ## Sample
 
 there have two Sample project:
-* `zilliqanetwork simplely use zilliqa sdk
-* `tic-tak-toe use zilliqa sdk in a real game
+* zilliqanetwork(https://github.com/paladinlll/zilliqa-cocos-sdk/tree/master/sample/zilliqanetwork) simplely use zilliqa sdk. Demo(https://cdn.rawgit.com/paladinlll/zilliqa-cocos-sdk/master/sample/build/web-mobile/index.html)
+* tic-tak-toe use zilliqa sdk in a real game (to do)

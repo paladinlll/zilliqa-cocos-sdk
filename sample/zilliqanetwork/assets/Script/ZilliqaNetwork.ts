@@ -263,52 +263,59 @@ export default class ZilliqaNetwork{
             cb('Please login first!', null);		
         } else{
             var that = this;
-            var url = cc.url.raw('resources/HelloWorld.scilla');                
-            cc.loader.load(url, function(err, code){
+            var url = cc.url.raw('resources/HelloWorld.scilla');
+            this.getBalance(this.address, function(err, data){
                 if(err){                    
                     cb(err, null);
                     return;                
                 }
-                                                
-                const init = [
-                    {
-                        vname: 'owner',
-                        type: 'ByStr20',
-                        value: '0x' + that.address.toLowerCase()
-                    },
-                ];
-
-                const contract = that.zilliqaClient.contracts.new(code, init);                
-                // if you are in a function, you can also use async/await
-                contract.deploy(new BN(1), new BN(2500))
-                .then((hello) => {                    
-                    console.log('hello.address', hello.address);
-                    if (hello.isDeployed()) {
-                        // do something with your contract
-                        hello.call('setHello', [
-                            {
-                                vname: 'msg',
-                                type: 'String',
-                                value: 'Hello World',
-                            }
-                        ]).then((_) => {                            
-                            hello.getState().then((state) => {                                                                
-                                cb(null, state);
-                            }).catch((err) => {                                
-                                cb(err, null);
-                            });
-                        }).catch((err) => {                                                  
-                            cb(err, null);
-                        });
-                        return;                             
+                if(data.result.balance < 2500){
+                    cb('Require 2500 ZILs or more!', null);
+                    return; 
+                }
+                cc.loader.load(url, function(err, code){
+                    if(err){                    
+                        cb(err, null);
+                        return;                
                     }
-                    cb('Rejected', null);                    
-                })                       
-                .catch((err) => {                                  
-                    cb(err, null);
+                                                    
+                    const init = [
+                        {
+                            vname: 'owner',
+                            type: 'ByStr20',
+                            value: '0x' + that.address.toLowerCase()
+                        },
+                    ];
+
+                    const contract = that.zilliqaClient.contracts.new(code, init);                
+                    // if you are in a function, you can also use async/await
+                    contract.deploy(new BN(1), new BN(2500))
+                    .then((hello) => {                                            
+                        if (hello.isDeployed()) {
+                            return cb(null, hello);
+                        }
+                        cb('Rejected', null);                    
+                    })                       
+                    .catch((err) => {                                  
+                        cb(err, null);
+                    });
                 });
-            });   
+            });
         }  
+    }
+
+    callSetHello(hello: any, cb: any){
+        hello.call('setHello', [
+            {
+                vname: 'msg',
+                type: 'String',
+                value: 'Hello World',
+            }
+        ]).then((_) => {                            
+            cb(null, 'Done');
+        }).catch((err) => {                                                  
+            cb(err, null);
+        });
     }
 
     

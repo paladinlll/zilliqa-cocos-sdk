@@ -5,17 +5,14 @@ const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
 module.exports = {
   entry: {
     zilliqa: [
-      'whatwg-fetch',
-	  //'buffer',
+      'whatwg-fetch',	  
       './index.js'
     ],
   },    
   externals: {
     dcodeIO: 'dcodeIO',
     protobufjs: 'dcodeIO.ProtoBuf',
-    bytebuffer: 'dcodeIO.ByteBuffer',
-	//buffer : 'commonjs buffer',
-	//'bn.js': 'commonjs bn.js'
+    bytebuffer: 'dcodeIO.ByteBuffer'
   },
   mode: 'production',
   module: {

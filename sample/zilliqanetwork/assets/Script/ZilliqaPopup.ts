@@ -84,9 +84,9 @@ export default class ZilliqaPopup extends cc.Component {
     handleError(err, data){        
         if (err) {
             this.errorPopup.show(err);
-            this.errorPopup.responseText.string = err;
+            this.responseText.string = err;
         } else if (data.error) {
-            this.show(data.error);
+            this.errorPopup.show(data.error);
             this.responseText.string = data.error;
         }
     }
@@ -178,13 +178,21 @@ export default class ZilliqaPopup extends cc.Component {
     deployHelloWorld(){
         var that = this;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().deployHelloWorld(function(err) {
+        ZilliqaNetwork.getInstance().deployHelloWorld(function(err, hello) {
             if (err) {                
                 that.handleError(err, {});
-            } else {            
-                that.responseText.string = 'Done';
-            }
-            that.connectingNode.active = false;
+                that.connectingNode.active = false;
+            } else {
+                that.responseText.string = 'Deployed to ' + hello.address + '. Calling setHello';
+                ZilliqaNetwork.getInstance().callSetHello(hello, function(err, _) {
+                    if (err) {                
+                        that.handleError(err, {});
+                    } else {                       
+                        that.responseText.string = 'Done';
+                    }
+                    that.connectingNode.active = false;
+                });                
+            }            
         });
     }
 
