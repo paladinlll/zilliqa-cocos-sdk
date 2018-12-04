@@ -1,0 +1,313 @@
+(* TicTacToe contract *)
+
+import ListUtils
+
+(***************************************************)
+(*               Associated library                *)
+(***************************************************)
+library TicTacToe
+
+let one_msg = 
+  fun (msg : Message) => 
+  let nil_msg = Nil {Message} in
+  Cons {Message} msg nil_msg
+
+let not_owner_code = Int32 1
+let not_open_code = Int32 2
+let full_slot_code = Int32 3
+let same_owner_code = Int32 4
+let busing_code = Int32 5
+let set_joined_code = Int32 6
+let no_challenger_code = Int32 7
+let set_accepted_code = Int32 8
+let set_hello_code = Int32 9
+let set_closed_code = Int32 10
+let wrong_turn_code = Int32 11
+let move_code = Int32 12
+let invalid_move_code = Int32 13
+
+
+let none_challenger = None {ByStr20}
+
+
+
+let cell_empty = Uint32 0
+let cell_x = Uint32 1
+let cell_o = Uint32 2
+
+let zero = Uint32 0
+let one = Uint32 1
+let two = Uint32 2
+let three = Uint32 3
+let four = Uint32 4
+let five = Uint32 5
+let six = Uint32 6
+let seven = Uint32 7
+let eight = Uint32 8
+let nine = Uint32 9
+
+let check_valid_move = 
+  fun (bs : Map Uint32 Uint32) =>
+  fun (slot : Uint32) =>
+    let valid_right = builtin lt slot nine in
+    let c = builtin get bs slot in
+    match valid_right with
+    | True =>
+      match c with 
+      | Some v =>
+        match v with 
+        | cell_empty => True
+        | _ => False
+        end
+      | None => False
+      end
+    | False => False
+    end
+    
+let cell_at =
+  fun (bs : Map Uint32 Uint32) =>
+  fun (i : Uint32) =>
+    let c = builtin get bs i in
+    match c with 
+    | Some v => v
+    | None => cell_empty
+    end
+    
+let get_winner_code = 
+  fun (bs : Map Uint32 Uint32) =>
+  fun (t : Uint32) =>
+    let is_last_turn = builtin lt eight t in
+    let at_0 = cell_at bs zero in
+    let at_1 = cell_at bs one in
+    let at_2 = cell_at bs two in
+    let at_3 = cell_at bs three in
+    let at_4 = cell_at bs four in
+    let at_5 = cell_at bs five in
+    let at_6 = cell_at bs six in
+    let at_7 = cell_at bs seven in
+    let at_8 = cell_at bs eight in
+      False
+    
+let new_board = 
+    let bs : Map Uint32 Uint32 = Emp Uint32 Uint32 in
+    let b0 = builtin put bs zero cell_empty in
+    let b1 = builtin put b0 one cell_empty in
+    let b2 = builtin put b1 three cell_empty in
+    let b3 = builtin put b2 four cell_empty in
+    let b4 = builtin put b3 five cell_empty in
+    let b5 = builtin put b4 six cell_empty in
+    let b6 = builtin put b5 seven cell_empty in
+    let b7 = builtin put b6 eight cell_empty in
+    let b8 = builtin put b7 nine cell_empty in
+    b8
+      
+let get_turn_addr =
+  fun (t : Uint32) =>
+  fun (h : ByStr20) =>
+  fun (cl : Option ByStr20) =>
+    let m = builtin rem t two in
+    match m with
+    | one =>
+      match cl with
+      | Some v => v
+      | None => h
+      end
+    | _ => h
+    end
+
+let next_turn =
+  fun (t : Uint32) =>
+    builtin add t one 
+    
+let turn_cell =
+  fun (t : Uint32) =>
+    let m = builtin rem t two in
+    match m with
+    | one => cell_x
+    | _ => cell_o
+    end    
+    
+(***************************************************)
+(*             The contract definition             *)
+(***************************************************)
+
+contract TicTacToe
+(owner: ByStr20)
+
+field opening : Bool = True
+field accepted : Bool = False
+field challenger : Option ByStr20  = None {ByStr20}
+field welcome_msg : String = ""
+
+field board : Map Uint32 Uint32 = Emp Uint32 Uint32
+
+field turn : Uint32  = zero
+
+field winner_code : Uint32  = zero
+
+transition join (mess: String)
+  is_owner = builtin eq owner _sender;
+  is_opening <- opening;
+  is_accepted <- accepted;
+  cl <- challenger;
+  match is_opening with
+  | False =>
+    msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_open_code};
+    msgs = one_msg msg;
+    send msgs
+  | True =>
+    match is_accepted with
+    | True =>
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : busing_code};
+      msgs = one_msg msg;
+      send msgs
+    | False =>
+      match is_owner with
+      | True =>
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : same_owner_code};
+        msgs = one_msg msg;
+        send msgs
+      | False =>
+        match cl with
+        | Some v =>
+          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : full_slot_code};
+          msgs = one_msg msg;
+          send msgs
+        | None =>
+          sc = Some {ByStr20} _sender;
+          challenger := sc;
+          welcome_msg := mess;
+          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_joined_code};
+          msgs = one_msg msg;
+          send msgs
+        end
+      end	      
+    end	    
+  end
+end
+
+transition acceptChallenge ()
+  is_owner = builtin eq owner _sender;
+  is_opening <- opening;
+  is_accepted <- accepted;
+  cl <- challenger;
+  match is_opening with
+  | False =>
+    msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_open_code};
+    msgs = one_msg msg;
+    send msgs
+  | True =>
+    match is_accepted with
+    | True =>
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : busing_code};
+      msgs = one_msg msg;
+      send msgs
+    | False =>
+      match is_owner with
+      | True =>
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : same_owner_code};
+        msgs = one_msg msg;
+        send msgs
+      | False =>
+        match cl with
+        | None =>
+          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};
+          msgs = one_msg msg;
+          send msgs
+        | Some v =>
+          tt = True;    
+          accepted := tt;
+                    
+          turn := zero;
+          winner_code := zero;
+          
+          nb = new_board;
+          board := nb;
+
+          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_accepted_code};
+          msgs = one_msg msg;
+          send msgs
+        end
+      end	      
+    end	    
+  end
+end
+
+
+transition close ()
+  is_owner = builtin eq owner _sender;
+  is_opening <- opening;
+  is_accepted <- accepted;
+  cl <- challenger;
+  match is_opening with
+  | False =>
+    msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_open_code};
+    msgs = one_msg msg;
+    send msgs
+  | True =>
+    match cl with
+    | None =>
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};
+      msgs = one_msg msg;
+      send msgs
+    | Some v =>
+      tt = False;
+      accepted := tt;
+      nc = None {ByStr20};
+      challenger := nc;
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
+      msgs = one_msg msg;
+      send msgs
+    end
+  end
+end
+
+
+transition move (slot : Uint32)
+  is_owner = builtin eq owner _sender;
+  
+  t <- turn;
+  cl <- challenger;
+  turn_addr = get_turn_addr t owner cl;
+  is_correct_turn = builtin eq turn_addr _sender;
+  is_opening <- opening;
+  is_accepted <- accepted;
+  
+  bs <- board;
+  is_valid_move = check_valid_move bs slot;
+  
+  
+  
+  tc = turn_cell t;
+  
+  match is_opening with
+  | False =>
+    msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_open_code};
+    msgs = one_msg msg;
+    send msgs
+  | True =>
+    match cl with
+    | None =>
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};
+      msgs = one_msg msg;
+      send msgs
+    | Some v =>
+      match is_valid_move with
+      | False =>
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : invalid_move_code};
+        msgs = one_msg msg;
+        send msgs
+      | True =>
+        bs1 = builtin remove bs slot;
+        bs2 = builtin put bs slot tc;
+        board := bs2;
+        
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
+        msgs = one_msg msg;
+        send msgs
+      end
+    end
+  end
+
+  
+end
