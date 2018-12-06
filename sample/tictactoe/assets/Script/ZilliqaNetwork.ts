@@ -11,7 +11,7 @@
 //const {ccclass, property} = cc._decorator;
 //import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
 //import Zilliqa from './zilliqa-sdk/zilliqa';
-import {Zilliqa, BN} from './zilliqa-sdk/zilliqa.cocos'
+import {Zilliqa, BN, Long} from './zilliqa-sdk/zilliqa.cocos'
 
 
 declare type callback = (error: any, data: any) => any;
@@ -130,7 +130,7 @@ export default class ZilliqaNetwork{
                     cb(err, null);
                     return;                
                 }                  
-                if(data.result.balance < 5000){
+                if(data.result.balance < 1000000){
                     that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');                    
                     cb('Master account has not enough balance', null);
                     return;                
@@ -142,9 +142,9 @@ export default class ZilliqaNetwork{
                 const tx = that.zilliqaClient.transactions.new({
                     version: 1,
                     toAddr: that.address,
-                    amount: new BN(5000),
-                    gasPrice: new BN(1),
-                    gasLimit: new BN(10),
+                    amount: new BN(1000000),
+                    gasPrice: new BN(100),
+                    gasLimit: Long.fromNumber(10),
                 });  
                 console.log('createTransaction');
                 console.log(JSON.stringify(tx));
@@ -194,6 +194,7 @@ export default class ZilliqaNetwork{
 
     authorizeAccount(addr:string, password:string, cb: callback){
         var encryptedData = null;
+        var that = this;
 
         if(this.accounts[addr] != null){
             encryptedData = this.accounts[addr];
@@ -202,12 +203,16 @@ export default class ZilliqaNetwork{
             return;
         }
 
-        var that = this;
+        // this.zilliqaClient.wallet.addByPrivateKey('3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8');
+        // this.address = this.zilliqaClient.wallet.defaultAccount.address;
+        // cb(null, this.address);
+        // return;
+        
         this.zilliqaClient.wallet.addByKeystore(encryptedData, password)
         .then((retAddr) => {
             that.address = addr;
             cb(null, that.address);
-            this.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
+            that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
         })
         .catch((err) => {                                                       
             cb(err, null);
@@ -270,14 +275,14 @@ export default class ZilliqaNetwork{
             cb('Please login first!', null);		
         } else{
             var that = this;
-            var url = cc.url.raw('resources/contracts/tictactoe.scilla');
+            var url = cc.url.raw('resources/contracts/HelloWorld.scilla');
             this.getBalance(this.address, function(err, data){
                 if(err){                    
                     cb(err, null);
                     return;                
                 }
-                if(data.result.balance < 2500){
-                    cb('Require 2500 ZILs or more!', null);
+                if(data.result.balance < 1000000){
+                    cb('Require 1000000 ZILs or more!', null);
                     return; 
                 }
                 cc.loader.load(url, function(err, code){
@@ -296,7 +301,7 @@ export default class ZilliqaNetwork{
 
                     const contract = that.zilliqaClient.contracts.new(code, init);                
                     // if you are in a function, you can also use async/await
-                    contract.deploy(new BN(1), new BN(2500))
+                    contract.deploy(new BN(100), Long.fromNumber(10000))
                     .then((hello) => {                                            
                         if (hello.isDeployed()) {
                             return cb(null, hello);
@@ -325,7 +330,40 @@ export default class ZilliqaNetwork{
         });
     }
 
-    
+    deployContract(code: any, init: any, cb: callback){
+        //return this.deployHelloWorldb(cb);
+        if(this.zilliqaClient == null){            	
+            cb('Please connect to network first!', null);		
+        } else if(this.zilliqaClient.wallet.defaultAccount == null){            	
+            cb('Please login first!', null);		
+        } else{
+            var that = this;            
+            this.getBalance(this.address, function(err, data){
+                if(err){                    
+                    cb(err, null);
+                    return;                
+                }
+                if(data.result.balance < 1000000){
+                    cb('Require 1000000 ZILs or more!', null);
+                    return; 
+                }                
+
+                const contract = that.zilliqaClient.contracts.new(code, init);                
+                // if you are in a function, you can also use async/await
+                contract.deploy(new BN(100), Long.fromNumber(10000))
+                .then((hello) => {                                            
+                    if (hello.isDeployed()) {
+                        return cb(null, hello);
+                    }
+                    cb('Rejected', null);                    
+                })                       
+                .catch((err) => {                                  
+                    cb(err, null);
+                });                
+            });
+        }  
+    }
+
     getSmartContractState(contractAddress: string, cb: callback){
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		

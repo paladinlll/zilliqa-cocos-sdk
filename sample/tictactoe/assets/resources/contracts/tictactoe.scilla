@@ -55,9 +55,10 @@ let check_valid_move =
     | True =>
       match c with 
       | Some v =>
-        match v with 
-        | cell_empty => True
-        | _ => False
+        let compare = builtin eq v cell_empty in
+        match compare with
+        | True => True
+        | False => False
         end
       | None => False
       end
@@ -86,7 +87,7 @@ let get_winner_code =
     let at_6 = cell_at bs six in
     let at_7 = cell_at bs seven in
     let at_8 = cell_at bs eight in
-      False
+      zero
     
 let new_board = 
     let bs : Map Uint32 Uint32 = Emp Uint32 Uint32 in
@@ -106,13 +107,14 @@ let get_turn_addr =
   fun (h : ByStr20) =>
   fun (cl : Option ByStr20) =>
     let m = builtin rem t two in
-    match m with
-    | one =>
+	let compare = builtin eq m one in
+    match compare with 
+    | True =>
       match cl with
       | Some v => v
       | None => h
       end
-    | _ => h
+    | False => h
     end
 
 let next_turn =
@@ -122,10 +124,11 @@ let next_turn =
 let turn_cell =
   fun (t : Uint32) =>
     let m = builtin rem t two in
-    match m with
-    | one => cell_x
-    | _ => cell_o
-    end    
+    let compare = builtin eq m one in
+    match compare with 
+    | True => cell_x      
+    | False => cell_o
+    end     
     
 (***************************************************)
 (*             The contract definition             *)

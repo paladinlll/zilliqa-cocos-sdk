@@ -15,6 +15,8 @@ import ErrorPopup from './ErrorPopup';
 import AuthenticationPopup from './AuthenticationPopup';
 import ContractsPopup from './ContractsPopup'
 
+import TicTacToeBinding from './contracts/TicTacToeBinding'
+
 @ccclass
 export default class ZilliqaPopup extends cc.Component {
 
@@ -194,6 +196,33 @@ export default class ZilliqaPopup extends cc.Component {
                 });                
             }            
         });
+    }
+
+    deployTicTacToe(){
+        var that = this;
+        this.connectingNode.active = true;
+
+        var url = cc.url.raw('resources/contracts/tictactoe.scilla');
+        cc.loader.load(url, function(err, code){
+            if(err){                    
+                that.handleError(err, {});
+                that.connectingNode.active = false;
+                return;                
+            }
+            var binding = new TicTacToeBinding();
+            //binding.setContractCode(code);
+            var init = binding.getContractInit(ZilliqaNetwork.getInstance().getUserAddress());
+
+            ZilliqaNetwork.getInstance().deployContract(code, init, function(err, hello) {
+                if (err) {                
+                    that.handleError(err, {});
+                    that.connectingNode.active = false;
+                } else {
+                    that.responseText.string = 'Deployed to ' + hello.address + '. Calling setHello';
+                    that.connectingNode.active = false;
+                }            
+            });
+        });        
     }
 
     

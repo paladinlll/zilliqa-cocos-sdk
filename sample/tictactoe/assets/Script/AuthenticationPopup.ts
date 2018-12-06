@@ -91,8 +91,7 @@ export default class AuthenticationPopup extends cc.Component {
         var accounts = ZilliqaNetwork.getInstance().getAllAccounts();
 
         var size = 0, addr;
-        for (addr in accounts) {
-            console.log('fillAccounts:', addr);
+        for (addr in accounts) {            
             var entry = null;
             if(size < this.accountEntries.length){
                 entry = this.accountEntries[size];
