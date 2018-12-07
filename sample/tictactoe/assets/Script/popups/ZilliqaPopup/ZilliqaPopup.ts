@@ -14,7 +14,7 @@ import {
     ZilliqaNetwork, 
     TicTacToeBinding,
     GameProfile
-} from './index';
+} from '../..';
 
 import ErrorPopup from './ErrorPopup';
 import AuthenticationPopup from './AuthenticationPopup';

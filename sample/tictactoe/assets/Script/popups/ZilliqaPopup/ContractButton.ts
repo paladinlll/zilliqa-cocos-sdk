@@ -11,7 +11,7 @@
 const {ccclass, property} = cc._decorator;
 import {
     GameProfile
-} from './index';
+} from '../..';
 
 @ccclass
 export default class ContractButton extends cc.Component {
@@ -50,7 +50,7 @@ export default class ContractButton extends cc.Component {
     }
 
     refresh(){
-        if(this.contractAddress == GameProfile.getInstance().activeTicTacToeAddress){
+        if(this.contractAddress == GameProfile.getInstance().getActiveTicTacToeAddress()){
             this.activeStatusLabel.string = 'Activating';    
             this.activeStatusLabel.node.color = new cc.Color(255, 0, 0);
         } else {
