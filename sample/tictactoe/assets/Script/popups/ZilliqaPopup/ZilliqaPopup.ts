@@ -10,12 +10,13 @@
 
 const {ccclass, property} = cc._decorator;
 
-import ZilliqaNetwork from './ZilliqaNetwork';
-import ErrorPopup from './ErrorPopup';
-import AuthenticationPopup from './AuthenticationPopup';
-import ContractsPopup from './ContractsPopup'
-
-import TicTacToeBinding from './contracts/TicTacToeBinding'
+import { 
+    ZilliqaNetwork, 
+    ErrorPopup, 
+    AuthenticationPopup, 
+    ContractsPopup,
+    TicTacToeBinding
+} from './index';
 
 @ccclass
 export default class ZilliqaPopup extends cc.Component {
@@ -45,6 +46,15 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Label)
     responseText: cc.Label = null;
 
+    @property(cc.Node)
+    minimizeLayer: cc.Node = null;
+
+    @property(cc.Node)
+    maximizeLayer: cc.Node = null;
+
+    @property(cc.Label)
+    networkLabel: cc.Label = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
@@ -67,6 +77,9 @@ export default class ZilliqaPopup extends cc.Component {
         this.authenticationPopup.node.on('authorized', (msg:string) => {
             that.authenticationPopup.node.active = false;
             that.onChainNode.active = true;
+
+            that.onMinimize();
+            that.node.emit('loggedin');
         });
         
         this.contractsPopup.node.on('hide', () => {
@@ -81,6 +94,18 @@ export default class ZilliqaPopup extends cc.Component {
         this.contractsPopup.node.on('getContractInit', this.getContractInit, this);
         this.contractsPopup.node.on('getContractState', this.getContractState, this);
         this.contractsPopup.node.on('getContractCode', this.getContractCode, this);
+
+        this.onMaximize();
+    }
+
+    onMaximize(){
+        this.maximizeLayer.active = true;
+        this.minimizeLayer.active = false;
+    }
+
+    onMinimize(){
+        this.maximizeLayer.active = false;
+        this.minimizeLayer.active = true;
     }
 
     handleError(err, data){        
@@ -111,6 +136,7 @@ export default class ZilliqaPopup extends cc.Component {
                 that.authenticationPopup.show();
                 //that.onChainNode.active = true;
                 that.responseText.string = data.result;
+                that.networkLabel.string = data.result;
             }
             that.connectingNode.active = false;
         });
@@ -121,6 +147,7 @@ export default class ZilliqaPopup extends cc.Component {
             ZilliqaNetwork.getInstance().logOut();
             this.authenticationPopup.show();
             this.onChainNode.active = false;
+            this.node.emit('loggedout');
         }
     }
 

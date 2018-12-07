@@ -9,8 +9,10 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const {ccclass, property} = cc._decorator;
-import ZilliqaNetwork from './ZilliqaNetwork';
 import AccountEntry from './AccountEntry';
+import { 
+    ZilliqaNetwork
+} from './index';
 
 @ccclass
 export default class AuthenticationPopup extends cc.Component {
