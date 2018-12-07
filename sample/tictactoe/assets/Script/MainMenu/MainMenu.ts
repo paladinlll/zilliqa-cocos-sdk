@@ -23,7 +23,9 @@ export default class MainMenu extends cc.Component {
     lobbyPopup: LobbyPopup = null;
 
     // LIFE-CYCLE CALLBACKS:
+    onActiveTictactoeContract(address:string) {
 
+    }
     // onLoad () {}
 
     start () {
@@ -39,6 +41,12 @@ export default class MainMenu extends cc.Component {
         this.zilliqaPopup.node.on('loggedout', () => {            
             that.lobbyPopup.node.active = false;
         });
+
+        this.zilliqaPopup.node.on('minimize', () => {            
+            that.lobbyPopup.refresh();
+        });
+
+        this.zilliqaPopup.node.on('activecontract', this.onActiveTictactoeContract, this);
     }
 
     // update (dt) {}

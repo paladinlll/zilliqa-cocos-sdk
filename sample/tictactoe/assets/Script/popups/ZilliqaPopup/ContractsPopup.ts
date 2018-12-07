@@ -45,6 +45,10 @@ export default class ContractsPopup extends cc.Component {
             this.contractEntries[i].node.on('getCode', (contractAddress) => {
                 that.node.emit('getContractCode', contractAddress);
             }, this);            
+
+            this.contractEntries[i].node.on('verify', (contractAddress) => {
+                that.node.emit('verifyContract', contractAddress);
+            }, this);            
         }
     }
 
@@ -66,6 +70,14 @@ export default class ContractsPopup extends cc.Component {
         }
         for(let i=0;i<this.contractEntries.length;i++){
             this.contractEntries[i].node.active = (i < count);
+        }
+    }
+
+    refresh(){
+        for(let i=0;i<this.contractEntries.length;i++){
+            if(this.contractEntries[i].node.active){
+                this.contractEntries[i].refresh();
+            }
         }
     }
 

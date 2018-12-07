@@ -12,7 +12,8 @@
 export default class TicTacToeBinding{
 
     isEmpty:boolean = true;
-    contractCode:String = '';    
+    contractCode:String = '';
+    address: String = '';
 
     setContractCode(code){
         this.contractCode = code;

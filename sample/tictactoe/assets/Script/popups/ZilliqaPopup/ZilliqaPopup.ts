@@ -12,11 +12,13 @@ const {ccclass, property} = cc._decorator;
 
 import { 
     ZilliqaNetwork, 
-    ErrorPopup, 
-    AuthenticationPopup, 
-    ContractsPopup,
-    TicTacToeBinding
+    TicTacToeBinding,
+    GameProfile
 } from './index';
+
+import ErrorPopup from './ErrorPopup';
+import AuthenticationPopup from './AuthenticationPopup';
+import ContractsPopup from './ContractsPopup'
 
 @ccclass
 export default class ZilliqaPopup extends cc.Component {
@@ -94,6 +96,7 @@ export default class ZilliqaPopup extends cc.Component {
         this.contractsPopup.node.on('getContractInit', this.getContractInit, this);
         this.contractsPopup.node.on('getContractState', this.getContractState, this);
         this.contractsPopup.node.on('getContractCode', this.getContractCode, this);
+        this.contractsPopup.node.on('verifyContract', this.activeTictactoeContract, this);
 
         this.onMaximize();
     }
@@ -106,6 +109,7 @@ export default class ZilliqaPopup extends cc.Component {
     onMinimize(){
         this.maximizeLayer.active = false;
         this.minimizeLayer.active = true;
+        this.node.emit('minimize');
     }
 
     handleError(err, data){        
@@ -229,10 +233,9 @@ export default class ZilliqaPopup extends cc.Component {
         var that = this;
         this.connectingNode.active = true;
 
-        var url = cc.url.raw('resources/contracts/tictactoe.scilla');
-        cc.loader.load(url, function(err, code){
-            if(err){                    
-                that.handleError(err, {});
+        GameProfile.getInstance().getTictactoeCode((code) => {        
+            if(code == ''){                    
+                that.handleError('Code not found!', {});
                 that.connectingNode.active = false;
                 return;                
             }
@@ -283,16 +286,41 @@ export default class ZilliqaPopup extends cc.Component {
     getContractCode(contractAddress: string) {
         this.connectingNode.active = true;
         var that = this;
+
         ZilliqaNetwork.getInstance().getSmartContractCode(contractAddress, function(err, data) {
             if (err || data.error) {                
                 that.handleError(err, data);
             } else {                            
-                that.showPopup(data.result.code);
+                that.showPopup(data.result.code);                
             }
             that.connectingNode.active = false; 
         });
     }
 
+    activeTictactoeContract(contractAddress: string) {
+        this.connectingNode.active = true;
+        var that = this;
+        
+        GameProfile.getInstance().getTictactoeCode((code) => {        
+            if(code == ''){                    
+                that.handleError('Code not found!', {});
+                that.connectingNode.active = false;
+                return;                
+            }
+            ZilliqaNetwork.getInstance().getSmartContractCode(contractAddress, function(err, data) {
+                if (err || data.error) {                
+                    that.handleError(err, data);
+                } else if(code != data.result.code){
+                    that.handleError('Code not matched!', {});                    
+                } else{
+                    //that.showPopup(data.result.code);
+                }
+                that.connectingNode.active = false;
+                GameProfile.getInstance().setActiveTicTacToeAddress(contractAddress);
+                that.contractsPopup.refresh();
+            });
+        });
+    }
 
     // update (dt) {}
 }

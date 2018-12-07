@@ -9,22 +9,26 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const {ccclass, property} = cc._decorator;
-
+import GameProfile from '../../GameProfile'
 @ccclass
 export default class LobbyPopup extends cc.Component {
 
     @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
+    hostAddressLabel: cc.Label = null;
 
     // LIFE-CYCLE CALLBACKS:
-
+    refresh(){
+        var activeTicTacToeAddress = GameProfile.getInstance().activeTicTacToeAddress || '';
+        if(activeTicTacToeAddress == ''){
+            this.hostAddressLabel.string = 'Host New Contract';                
+        } else {
+            this.hostAddressLabel.string = activeTicTacToeAddress;            
+        }
+    }
     // onLoad () {}
 
     start () {
-
+        this.refresh();
     }
 
     // update (dt) {}
