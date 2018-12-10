@@ -12,8 +12,10 @@ const {ccclass, property} = cc._decorator;
 import { 
     ZilliqaNetwork, 
     GameProfile,
-    TicTacToeBinding
+    TicTacToeBinding,    
+    ZilliqaParser
 } from '../..';
+
 @ccclass
 export default class TictactoeStatePopup extends cc.Component {
 
@@ -66,8 +68,9 @@ export default class TictactoeStatePopup extends cc.Component {
         var that = this;
         ZilliqaNetwork.getInstance().getSmartContractState(contractAddress, function(err, data) {
             if (err || data.error) {                                
-            } else {
-                that.stateLabel.string = JSON.stringify(data.result, null, 2);
+            } else {                                
+                var stateData = ZilliqaParser.convertToSimpleJson(data.result);            
+                that.stateLabel.string = JSON.stringify(stateData, null, 2);
                 var binding = new TicTacToeBinding();
                 GameProfile.getInstance().activeTicTacToeBinding = binding;                
                 binding.bindFromAddress(contractAddress);

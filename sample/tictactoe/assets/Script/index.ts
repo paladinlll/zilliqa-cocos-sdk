@@ -6,6 +6,8 @@ import TicTacToeBinding from './contracts/TicTacToeBinding'
 // import AccountEntry from './AccountEntry';
 // import ContractButton from './ContractButton'
 import GameProfile from './GameProfile'
+import * as ZilliqaParser from './zilliqa-sdk/ZilliqaData/importer'
+
 export { 
   ZilliqaNetwork, 
   // ErrorPopup, 
@@ -14,5 +16,6 @@ export {
   TicTacToeBinding,
   // AccountEntry,
   // ContractButton,
-  GameProfile
+  GameProfile,
+  ZilliqaParser
  };
