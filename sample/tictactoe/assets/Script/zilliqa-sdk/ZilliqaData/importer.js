@@ -74,7 +74,7 @@ function toSimpleData(node){
 	switch (typeTree.type)
 	{
 		case 'Bool':
-			ret[vname] = value['constructor'].toLocaleString() == 'true';
+			ret[vname] = value['constructor'].toLowerCase() == 'true';
 			break;
 		case 'String':
 		case 'ByStr20':
