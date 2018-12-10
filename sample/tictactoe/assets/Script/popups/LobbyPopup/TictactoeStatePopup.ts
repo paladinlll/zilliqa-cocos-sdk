@@ -11,7 +11,8 @@
 const {ccclass, property} = cc._decorator;
 import { 
     ZilliqaNetwork, 
-    GameProfile
+    GameProfile,
+    TicTacToeBinding
 } from '../..';
 @ccclass
 export default class TictactoeStatePopup extends cc.Component {
@@ -37,15 +38,20 @@ export default class TictactoeStatePopup extends cc.Component {
         this.addressText = address;
         this.addressEditBox.string = this.addressText;
         this.getContractState(this.addressText);
-
-        var activeTicTacToeAddress = GameProfile.getInstance().getActiveTicTacToeAddress();
-        if(activeTicTacToeAddress == this.addressText){
+        
+        if(this.isHosting()){
             this.joinOrAcceptLabel.string = "Accept";
             this.titleLabel.string = "Hosting";            
         } else{
             this.joinOrAcceptLabel.string = "Join";
             this.titleLabel.string = "Challenge";
         }
+    }
+
+    isHosting(){
+        ///Todo: need to check import seft contract.
+        var activeTicTacToeAddress = GameProfile.getInstance().getActiveTicTacToeAddress();
+        return (activeTicTacToeAddress == this.addressText)
     }
 
     hide(){
@@ -60,10 +66,41 @@ export default class TictactoeStatePopup extends cc.Component {
         var that = this;
         ZilliqaNetwork.getInstance().getSmartContractState(contractAddress, function(err, data) {
             if (err || data.error) {                                
-            } else {                            
+            } else {
                 that.stateLabel.string = JSON.stringify(data.result, null, 2);
+                var binding = new TicTacToeBinding();
+                GameProfile.getInstance().activeTicTacToeBinding = binding;                
+                binding.bindFromAddress(contractAddress);
             }
         });
+    }
+
+    onJoin(){
+        console.log('onJoin', this.isHosting());
+        if(this.isHosting()) return;
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        
+        if(binding == null) return;
+        var that = this;
+        binding.callJoin(function(err, data) {
+            if (err) {                
+                console.log(err);
+            } else {
+                console.log(data);
+            }  
+        })
+    }
+
+    onDelete(){
+        if(this.isHosting()) return;
+    }
+
+    onAccept(){
+        if(!this.isHosting()) return;
+    }
+
+    onChangeState(){
+        if(!this.isHosting()) return;
     }
     // onLoad () {}
 

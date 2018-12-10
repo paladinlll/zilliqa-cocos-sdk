@@ -144,7 +144,7 @@ export default class ZilliqaNetwork{
                     toAddr: that.address,
                     amount: new BN(1000000),
                     gasPrice: new BN(100),
-                    gasLimit: Long.fromNumber(10),
+                    gasLimit: Long.fromNumber(100),
                 });  
                 console.log('createTransaction');
                 console.log(JSON.stringify(tx));
@@ -362,6 +362,10 @@ export default class ZilliqaNetwork{
                 });                
             });
         }  
+    }
+
+    loadContractFromAddress(address:string){
+        return this.zilliqaClient.contracts.at(address);
     }
 
     getSmartContractState(contractAddress: string, cb: callback){
