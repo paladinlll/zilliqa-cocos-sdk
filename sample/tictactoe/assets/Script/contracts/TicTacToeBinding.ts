@@ -7,7 +7,11 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-import ZilliqaNetwork from '../ZilliqaNetwork';
+//import ZilliqaNetwork from '../ZilliqaNetwork';
+import { 
+    ZilliqaNetwork,     
+    ZilliqaParser
+} from '..';
 
 export default class TicTacToeBinding{
 
@@ -42,9 +46,25 @@ export default class TicTacToeBinding{
         this.bindContract = contract;        
     }
     
+    fetchState(cb: any){
+        if(this.bindContract == null) return cb('null contract', null);
+
+        var that = this;
+        ZilliqaNetwork.getInstance().getSmartContractState(this.address, function(err, data) {
+            if (err) {
+                cb(err, null);
+            } else if (data.error) {
+                cb(data.error, null);
+            } else {                                
+                var stateData = ZilliqaParser.convertToSimpleJson(data.result);            
+                that.contractState = stateData;
+                cb(null, stateData);
+            }            
+        });
+    }
 
     callJoin(cb: any){
-        if(this.bindContract == null) return;
+        if(this.bindContract == null) return cb('null contract', null);
         console.log('callJoin');
         this.bindContract.call('join', [
             {
@@ -60,7 +80,7 @@ export default class TicTacToeBinding{
     }
 
     callAcceptChallenge(cb: any){
-        if(this.bindContract == null) return;
+        if(this.bindContract == null) return cb('null contract', null);
         console.log('callAcceptChallenge');
         this.bindContract.call('acceptChallenge', []).then((_) => {
             cb(null, 'Done');
@@ -70,7 +90,7 @@ export default class TicTacToeBinding{
     }
 
     callChangeOpenStatus(b:boolean, cb: any){
-        if(this.bindContract == null) return;
+        if(this.bindContract == null) return cb('null contract', null);
         console.log('callChangeOpenStatus to ', b);
         this.bindContract.call('changeOpenStatus', [{
             "vname": "b", 
@@ -80,6 +100,20 @@ export default class TicTacToeBinding{
                 "arguments": [],
                 "constructor": b ? "True" : "False"
             }            
+        }]).then((_) => {
+            cb(null, 'Done');
+        }).catch((err) => {                                                  
+            cb(err, null);
+        });
+    }
+
+    callMove(slot:number, cb: any){
+        if(this.bindContract == null) return cb('null contract', null);
+        console.log('callMove');
+        this.bindContract.call('move', [{
+            "vname": "slot", 
+            "type": "Uint32",
+            "value": slot.toString()
         }]).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  

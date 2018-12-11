@@ -12,8 +12,7 @@ const {ccclass, property} = cc._decorator;
 import { 
     ZilliqaNetwork, 
     GameProfile,
-    TicTacToeBinding,    
-    ZilliqaParser
+    TicTacToeBinding
 } from '../..';
 
 @ccclass
@@ -69,7 +68,12 @@ export default class TictactoeStatePopup extends cc.Component {
 
         this.addressText = address;
         this.addressEditBox.string = this.addressText;
-        this.getContractState(this.addressText);
+
+        var binding = new TicTacToeBinding();
+        GameProfile.getInstance().activeTicTacToeBinding = binding;                
+        binding.bindFromAddress(address);
+
+        this.getContractState();
         
         if(this.isHosting()){
             this.joinOrAcceptLabel.string = "Accept";
@@ -88,31 +92,28 @@ export default class TictactoeStatePopup extends cc.Component {
 
     hide(){
         this.node.active = false;
+        GameProfile.getInstance().activeTicTacToeBinding = null;
     }
 
     restoreAddressEditBox(){
         this.addressEditBox.string = this.addressText;
     }
 
-    getContractState(contractAddress: string) {        
+    getContractState() {        
         var that = this;
+
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;        
+        if(binding == null) return;
+
         this.hostingUILayer.active = false;
         this.joiningUILayer.active = false;
         this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().getSmartContractState(contractAddress, function(err, data) {
-            if (err || data.error) {
-                that.fillContractState(null)
-            } else {                                
-                var stateData = ZilliqaParser.convertToSimpleJson(data.result);            
-                that.stateLabel.string = JSON.stringify(stateData, null, 2);
-                var binding = new TicTacToeBinding();
-                GameProfile.getInstance().activeTicTacToeBinding = binding;                
-                binding.bindFromAddress(contractAddress);
 
-                that.fillContractState(stateData)
-            }
+        
+        binding.fetchState(function(_, data) {
+            that.fillContractState(data)
             that.connectingNode.active = false;
-        });
+        })
     }
 
     fillContractState(stateData){
@@ -124,7 +125,8 @@ export default class TictactoeStatePopup extends cc.Component {
             this.hostingCloseButton.interactable = true;
             this.hostingChangeStateLabel.string = 'Close';
             if(stateData == null){
-                this.stateLabel.string = "Contract wasn't exits";            
+                this.stateLabel.string = "Contract wasn't exits";
+                this.hostingChangeStateLabel.string = 'Remove';
             } else if(!stateData.opening){
                 this.handleError("You closed this game.");
                 this.hostingChangeStateLabel.string = 'Open Now';
@@ -194,7 +196,7 @@ export default class TictactoeStatePopup extends cc.Component {
                 that.handleError(data.error);
             } else {
                 console.log(data);
-                that.getContractState(that.addressText);
+                that.getContractState();
             }  
             
         })
@@ -224,7 +226,7 @@ export default class TictactoeStatePopup extends cc.Component {
                 that.handleError(data.error);
             } else {
                 console.log(data);
-                that.getContractState(that.addressText);
+                that.getContractState();
             }  
         })
     }
@@ -233,7 +235,13 @@ export default class TictactoeStatePopup extends cc.Component {
         if(!this.isHosting()) return;
 
         var binding = GameProfile.getInstance().activeTicTacToeBinding;
-        
+        if(binding.contractState == null){
+            GameProfile.getInstance().userData.activeTicTacToeAddress = '';
+            GameProfile.getInstance().activeTicTacToeBinding = null;
+            this.node.emit('hide');
+            this.hide();            
+        }
+
         if(binding == null) return;
         var that = this;
         this.connectingNode.active = true;
@@ -246,7 +254,7 @@ export default class TictactoeStatePopup extends cc.Component {
                 that.handleError(data.error);
             } else {
                 console.log(data);
-                that.getContractState(that.addressText);
+                that.getContractState();
             }              
         })
     }

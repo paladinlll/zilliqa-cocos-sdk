@@ -111,6 +111,8 @@ export default class GameProfile{
                 challengedAddresses: {}
             };
         }
+
+        this.activeTicTacToeBinding = null;
     }
 
     saveProfile() {

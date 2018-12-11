@@ -12,16 +12,21 @@ const {ccclass, property} = cc._decorator;
 import { 
     ZilliqaNetwork, 
     GameProfile,
-    TicTacToeBinding,    
-    ZilliqaParser
+    TicTacToeBinding
 } from '..';
 
 import CellState from './CellState'
+import ErrorPopup from '../popups/ErrorPopup';
 @ccclass
 export default class Gameplay extends cc.Component {
+    @property(cc.Label)
+    statusLabel: cc.Label = null;
 
     @property(cc.Node)
     connectingNode: cc.Node = null;
+
+    @property(ErrorPopup)
+    errorPopup: ErrorPopup = null;
 
     @property(cc.EditBox)
     addressEditBox: cc.EditBox = null;
@@ -92,6 +97,35 @@ export default class Gameplay extends cc.Component {
             var cellType = stateData.board[i.toString()];
             this.cellEntries[i].setInfo(cellType);
         }
+
+        if(stateData.winner_code == 0){
+            if(this.isMyTurn()){
+                this.statusLabel.string = "Your Turn";
+            } else{
+                this.statusLabel.string = "Opponent Turn";
+            }
+            
+        } else{
+            this.statusLabel.string = "Game Over";
+        }        
+    }
+
+    isMyTurn(){
+        var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
+        if(this.isHosting()){
+            return (stateData.turn % 2) == 0;
+        } else{
+            return (stateData.turn % 2) == 1;
+        }
+    }
+
+    isHosting(){
+        var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
+        var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
+        if(stateData.challenger.replace('0x', '').toLowerCase() == userAddress.toLowerCase()){
+            return false;
+        }
+        return true;
     }
 
     restoreAddressEditBox(){
@@ -118,13 +152,15 @@ export default class Gameplay extends cc.Component {
     }
 
     onCellPressed(cellId:number){
-        console.log('onCellPressed', cellId);
+        if(!this.isMyTurn()){
+            return;
+        }        
+        
         var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
         if(stateData.board[cellId.toString()] != 0){
             console.log('Unvalid cell');
             return;
-        }
-        console.log('onCellClicked', cellId);
+        }        
 
         for (var i=0;i<9;i++) {
             var cellType = stateData.board[i.toString()];
@@ -132,10 +168,46 @@ export default class Gameplay extends cc.Component {
                 this.cellEntries[i].setHighlight(0);                
             }            
         }
+
+        var nextType = 1 + (stateData.turn % 2);
+        this.cellEntries[cellId].setInfo(nextType);
+
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        
+        if(binding == null) return;
+        var that = this;
+        this.connectingNode.active = true;
+        binding.callMove(cellId, function(err, data) {
+            that.connectingNode.active = false;
+            if (err) {
+                that.handleError(err);
+                that.refresh();
+            } else if (data.error) {
+                that.handleError(data.error);
+                that.refresh();
+            } else {                
+                that.getContractState();
+            }            
+        })
+    }
+
+    getContractState() {        
+        var that = this;
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;        
+        if(binding == null) return;
+        this.connectingNode.active = true;
+        binding.fetchState(function(_, data) {
+            that.refresh();
+            that.connectingNode.active = false;
+        })
+    }
+
+    handleError(err){                        
+        this.errorPopup.show(err);
     }
 
     start () {
-
+        this.errorPopup.node.active = false;
     }
 
     // update (dt) {}

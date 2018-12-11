@@ -16,7 +16,7 @@ import {
     GameProfile
 } from '../..';
 
-import ErrorPopup from './ErrorPopup';
+import ErrorPopup from '../ErrorPopup';
 import AuthenticationPopup from './AuthenticationPopup';
 import ContractsPopup from './ContractsPopup'
 
