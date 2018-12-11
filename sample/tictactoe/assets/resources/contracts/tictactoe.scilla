@@ -207,11 +207,11 @@ transition acceptChallenge ()
       send msgs
     | False =>
       match is_owner with
-      | True =>
-        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : same_owner_code};
+      | False =>
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_owner_code};
         msgs = one_msg msg;
         send msgs
-      | False =>
+      | True =>
         match cl with
         | None =>
           msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};

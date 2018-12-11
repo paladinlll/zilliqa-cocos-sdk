@@ -57,4 +57,14 @@ export default class TicTacToeBinding{
             cb(err, null);
         });
     }
+
+    callAcceptChallenge(cb: any){
+        if(this.bindContract == null) return;
+        console.log('callAcceptChallenge');
+        this.bindContract.call('acceptChallenge', []).then((_) => {
+            cb(null, 'Done');
+        }).catch((err) => {                                                  
+            cb(err, null);
+        });
+    }
 }

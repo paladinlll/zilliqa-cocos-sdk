@@ -19,6 +19,9 @@ import {
 @ccclass
 export default class TictactoeStatePopup extends cc.Component {
 
+    @property(cc.Node)
+    connectingNode: cc.Node = null;
+
     @property(cc.Label)
     titleLabel: cc.Label = null;
 
@@ -34,9 +37,33 @@ export default class TictactoeStatePopup extends cc.Component {
     @property(cc.Label)
     joinOrAcceptLabel: cc.Label = null;
 
+    @property(cc.Node)
+    hostingUILayer: cc.Node = null;
+
+    @property(cc.Button)
+    hostingCloseButton: cc.Button = null;
+
+    @property(cc.Button)
+    hostingAcceptButton: cc.Button = null;
+
+    @property(cc.Node)
+    joiningUILayer: cc.Node = null;
+
+    @property(cc.Button)
+    joinningJoinButton: cc.Button = null;
+
+    @property(cc.Button)
+    joinningDeleteButton: cc.Button = null;
+    
+
     // LIFE-CYCLE CALLBACKS:
     show(address:string){
         this.node.active = true;
+
+        this.connectingNode.active = false;
+        
+        this.stateLabel.string = "";
+
         this.addressText = address;
         this.addressEditBox.string = this.addressText;
         this.getContractState(this.addressText);
@@ -66,31 +93,102 @@ export default class TictactoeStatePopup extends cc.Component {
 
     getContractState(contractAddress: string) {        
         var that = this;
+        this.hostingUILayer.active = false;
+        this.joiningUILayer.active = false;
+        this.connectingNode.active = true;
         ZilliqaNetwork.getInstance().getSmartContractState(contractAddress, function(err, data) {
-            if (err || data.error) {                                
+            if (err || data.error) {
+                that.fillContractState(null)
             } else {                                
                 var stateData = ZilliqaParser.convertToSimpleJson(data.result);            
                 that.stateLabel.string = JSON.stringify(stateData, null, 2);
                 var binding = new TicTacToeBinding();
                 GameProfile.getInstance().activeTicTacToeBinding = binding;                
                 binding.bindFromAddress(contractAddress);
+
+                that.fillContractState(stateData)
             }
+            that.connectingNode.active = false;
         });
     }
 
-    onJoin(){
-        console.log('onJoin', this.isHosting());
+    fillContractState(stateData){
+        var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
+        if(this.isHosting()){
+            this.hostingUILayer.active = true;
+            this.hostingAcceptButton.interactable = false;
+            this.hostingCloseButton.interactable = true;
+            if(stateData == null){
+                this.stateLabel.string = "Contract wasn't exits";            
+            } else if(!stateData.opening){
+                this.handleError("You closed this game.");
+            } else if(stateData.challenger != ''){
+                if(stateData.accepted){
+                    if(stateData.winner_code == 0){
+                        this.stateLabel.string = "Playing turn " + stateData.turn.toString();;
+                    } else{
+                        this.stateLabel.string = "Game end with winner_code " + stateData.winner_code.toString();
+                    }
+                } else{
+                    this.stateLabel.string = "You have a challenge from " + stateData.challenger + "\n" + stateData.welcome_msg;
+                    this.hostingAcceptButton.interactable = true;
+                }
+            } else{
+                this.stateLabel.string = "Waiting for a challenge...";
+            }
+        } else{
+            this.joiningUILayer.active = true;
+            this.joinningJoinButton.interactable = false;
+            this.joinningDeleteButton.interactable = true;
+            if(stateData == null){
+                this.stateLabel.string = "Contract wasn't exits";            
+            } else if(!stateData.opening){
+                this.handleError("Disable by host.");
+            } else if(stateData.challenger != ''){
+                if(stateData.challenger.replace('0x', '').toLowerCase() == userAddress.toLowerCase()){
+                    if(stateData.accepted){
+                        if(stateData.winner_code == 0){
+                            this.stateLabel.string = "Playing turn " + stateData.turn.toString();;
+                        } else{
+                            this.stateLabel.string = "Game end with winner_code " + stateData.winner_code.toString();
+                        }
+                    } else{
+                        this.stateLabel.string = "Waiting for host accept your challenge";
+                    }
+                } else{
+                    this.handleError("Host was busing");
+                }
+            } else{
+                this.stateLabel.string = "Challenge Now!";
+                this.joinningJoinButton.interactable = true;
+            }
+        }
+    }
+
+    handleError(err){        
+        ///Todo show popup
+        console.log(err);
+        this.stateLabel.string = err;
+    }
+
+    onJoin(){        
         if(this.isHosting()) return;
         var binding = GameProfile.getInstance().activeTicTacToeBinding;
         
         if(binding == null) return;
         var that = this;
+        this.connectingNode.active = true;
         binding.callJoin(function(err, data) {
-            if (err) {                
-                console.log(err);
+            that.connectingNode.active = false;
+            if (err) {
+                that.handleError(err);                
+            } else if (data.error) {
+                that.handleError(data.error);
             } else {
                 console.log(data);
+                that.getContractState(that.addressText);
             }  
+            
         })
     }
 
@@ -100,6 +198,22 @@ export default class TictactoeStatePopup extends cc.Component {
 
     onAccept(){
         if(!this.isHosting()) return;
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        
+        if(binding == null) return;
+        var that = this;
+        this.connectingNode.active = true;
+        binding.callAcceptChallenge(function(err, data) {
+            that.connectingNode.active = false;
+            if (err) {
+                that.handleError(err);                
+            } else if (data.error) {
+                that.handleError(data.error);
+            } else {
+                console.log(data);
+                that.getContractState(that.addressText);
+            }  
+        })
     }
 
     onChangeState(){

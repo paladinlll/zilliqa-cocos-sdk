@@ -81,7 +81,11 @@ function toSimpleData(node){
 			ret[vname] = value;
 			break;
 		case 'Option':
-			ret[vname] = value.arguments[0];
+			if(value['constructor'] == 'Some'){
+				ret[vname] = value.arguments[0];
+			} else{
+				ret[vname] = '';
+			}
 			break;
 		case 'Uint32':
 		case 'Uint64':
@@ -107,8 +111,7 @@ function getEmptyData(node){
 	return '';
 }
 
-function convertToSimpleJson(input){
-	console.log(input);
+function convertToSimpleJson(input){	
 	var stackIns = [];
 	var stackParents = [];
 	var stackOuts = [];
