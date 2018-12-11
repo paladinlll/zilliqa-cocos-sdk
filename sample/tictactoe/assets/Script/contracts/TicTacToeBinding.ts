@@ -13,8 +13,9 @@ export default class TicTacToeBinding{
 
     //isEmpty:boolean = true;
     //contractCode:String = '';
-    address: String = '';
+    address: string = '';
     bindContract = null; 
+    contractState = null;
 
     // setContractCode(code){
     //     this.contractCode = code;
@@ -31,14 +32,14 @@ export default class TicTacToeBinding{
         ]
     }
 
-    bindFromAddress(address:string){
-        this.bindContract = ZilliqaNetwork.getInstance().loadContractFromAddress(address);
-        //const contract = that.zilliqaClient.contracts.new(code, init);
+    bindFromAddress(addr:string){
+        this.address = addr;
+        this.bindContract = ZilliqaNetwork.getInstance().loadContractFromAddress(addr);
+        this.contractState = null;        
     }
 
     bindFromContract(contract){
-        this.bindContract = contract;
-        //const contract = that.zilliqaClient.contracts.new(code, init);
+        this.bindContract = contract;        
     }
     
 
@@ -62,6 +63,24 @@ export default class TicTacToeBinding{
         if(this.bindContract == null) return;
         console.log('callAcceptChallenge');
         this.bindContract.call('acceptChallenge', []).then((_) => {
+            cb(null, 'Done');
+        }).catch((err) => {                                                  
+            cb(err, null);
+        });
+    }
+
+    callChangeOpenStatus(b:boolean, cb: any){
+        if(this.bindContract == null) return;
+        console.log('callChangeOpenStatus to ', b);
+        this.bindContract.call('changeOpenStatus', [{
+            "vname": "b", 
+            "type": "Bool",
+            "value": {
+                "argtypes": [],
+                "arguments": [],
+                "constructor": b ? "True" : "False"
+            }            
+        }]).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);

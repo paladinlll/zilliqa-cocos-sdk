@@ -24,15 +24,21 @@ export default class MainMenu extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
     onActiveTictactoeContract(address:string) {
-
+        this.lobbyPopup.refresh();
     }
     // onLoad () {}
 
     start () {
         var that = this;
 
-        this.zilliqaPopup.node.active = true;
-        this.lobbyPopup.node.active = false;
+        if(ZilliqaNetwork.getInstance().wasAuthenticated()){
+            this.zilliqaPopup.node.active = false;
+            this.lobbyPopup.node.active = true;
+        } else{
+            this.zilliqaPopup.node.active = true;
+            this.lobbyPopup.node.active = false;
+        }
+        
 
         this.zilliqaPopup.node.on('loggedin', () => {            
             that.lobbyPopup.node.active = true;

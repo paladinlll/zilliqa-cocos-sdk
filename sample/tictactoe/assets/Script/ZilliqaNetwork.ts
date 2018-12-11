@@ -48,6 +48,7 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient.wallet.defaultAccount != null){
             this.zilliqaClient.wallet.remove(this.zilliqaClient.wallet.defaultAccount.address);
             this.zilliqaClient.wallet.defaultAccount = null;
+            this.address = null;
         }        
     }
 
@@ -142,7 +143,7 @@ export default class ZilliqaNetwork{
                 const tx = that.zilliqaClient.transactions.new({
                     version: 1,
                     toAddr: that.address,
-                    amount: new BN(1000000),
+                    amount: new BN(2000000),
                     gasPrice: new BN(100),
                     gasLimit: Long.fromNumber(100),
                 });  
@@ -343,14 +344,14 @@ export default class ZilliqaNetwork{
                     cb(err, null);
                     return;                
                 }
-                if(data.result.balance < 1000000){
-                    cb('Require 1000000 ZILs or more!', null);
+                if(data.result.balance < 2000000){
+                    cb('Require 2000000 ZILs or more!', null);
                     return; 
                 }                
 
                 const contract = that.zilliqaClient.contracts.new(code, init);                
                 // if you are in a function, you can also use async/await
-                contract.deploy(new BN(100), Long.fromNumber(10000))
+                contract.deploy(new BN(100), Long.fromNumber(20000))
                 .then((hello) => {                                            
                     if (hello.isDeployed()) {
                         return cb(null, hello);

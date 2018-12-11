@@ -41,7 +41,9 @@ export default class ImportContractPopup extends cc.Component {
             return;
         }
 
+        var that = this;
         if(GameProfile.getInstance().addchallengedAddresses(this.tagEditBox.string, this.addressEditBox.string)){
+            that.node.emit('hide');
             this.hide();
         } else{
             this.node.emit('error', 'Address was exist!');

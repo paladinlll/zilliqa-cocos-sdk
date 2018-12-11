@@ -43,6 +43,9 @@ export default class TictactoeStatePopup extends cc.Component {
     @property(cc.Button)
     hostingCloseButton: cc.Button = null;
 
+    @property(cc.Label)
+    hostingChangeStateLabel: cc.Label = null;
+
     @property(cc.Button)
     hostingAcceptButton: cc.Button = null;
 
@@ -114,18 +117,22 @@ export default class TictactoeStatePopup extends cc.Component {
 
     fillContractState(stateData){
         var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
+        GameProfile.getInstance().activeTicTacToeBinding.contractState = stateData;
         if(this.isHosting()){
             this.hostingUILayer.active = true;
             this.hostingAcceptButton.interactable = false;
             this.hostingCloseButton.interactable = true;
+            this.hostingChangeStateLabel.string = 'Close';
             if(stateData == null){
                 this.stateLabel.string = "Contract wasn't exits";            
             } else if(!stateData.opening){
                 this.handleError("You closed this game.");
+                this.hostingChangeStateLabel.string = 'Open Now';
             } else if(stateData.challenger != ''){
                 if(stateData.accepted){
                     if(stateData.winner_code == 0){
                         this.stateLabel.string = "Playing turn " + stateData.turn.toString();;
+                        cc.director.loadScene('gameplay');
                     } else{
                         this.stateLabel.string = "Game end with winner_code " + stateData.winner_code.toString();
                     }
@@ -149,6 +156,7 @@ export default class TictactoeStatePopup extends cc.Component {
                     if(stateData.accepted){
                         if(stateData.winner_code == 0){
                             this.stateLabel.string = "Playing turn " + stateData.turn.toString();;
+                            cc.director.loadScene('gameplay');
                         } else{
                             this.stateLabel.string = "Game end with winner_code " + stateData.winner_code.toString();
                         }
@@ -194,6 +202,11 @@ export default class TictactoeStatePopup extends cc.Component {
 
     onDelete(){
         if(this.isHosting()) return;
+        var that = this;
+        if(GameProfile.getInstance().removeChallengedAddresses(this.addressText)){
+            that.node.emit('hide');
+            this.hide();
+        }                
     }
 
     onAccept(){
@@ -218,6 +231,24 @@ export default class TictactoeStatePopup extends cc.Component {
 
     onChangeState(){
         if(!this.isHosting()) return;
+
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        
+        if(binding == null) return;
+        var that = this;
+        this.connectingNode.active = true;
+        var new_state = !binding.contractState.opening;
+        binding.callChangeOpenStatus(new_state, function(err, data) {
+            that.connectingNode.active = false;
+            if (err) {
+                that.handleError(err);                
+            } else if (data.error) {
+                that.handleError(data.error);
+            } else {
+                console.log(data);
+                that.getContractState(that.addressText);
+            }              
+        })
     }
     // onLoad () {}
 

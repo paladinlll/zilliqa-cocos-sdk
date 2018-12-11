@@ -25,6 +25,8 @@ let set_closed_code = Int32 10
 let wrong_turn_code = Int32 11
 let move_code = Int32 12
 let invalid_move_code = Int32 13
+let same_status_code = Int32 14
+let changed_status_code = Int32 15
 
 
 let none_challenger = None {ByStr20}
@@ -46,6 +48,22 @@ let seven = Uint32 7
 let eight = Uint32 8
 let nine = Uint32 9
 
+let is_same_bool =
+  fun (a: Bool) =>
+  fun (b: Bool) =>    
+    match a with 
+    | True => 
+      match b with 
+      | True => True
+      | False => False
+      end
+    | False =>
+      match b with 
+      | True => False
+      | False => True
+      end
+    end
+  
 let check_valid_move = 
   fun (bs : Map Uint32 Uint32) =>
   fun (slot : Uint32) =>
@@ -93,13 +111,13 @@ let new_board =
     let bs : Map Uint32 Uint32 = Emp Uint32 Uint32 in
     let b0 = builtin put bs zero cell_empty in
     let b1 = builtin put b0 one cell_empty in
-    let b2 = builtin put b1 three cell_empty in
-    let b3 = builtin put b2 four cell_empty in
-    let b4 = builtin put b3 five cell_empty in
-    let b5 = builtin put b4 six cell_empty in
-    let b6 = builtin put b5 seven cell_empty in
-    let b7 = builtin put b6 eight cell_empty in
-    let b8 = builtin put b7 nine cell_empty in
+    let b2 = builtin put b1 two cell_empty in
+    let b3 = builtin put b2 three cell_empty in
+    let b4 = builtin put b3 four cell_empty in
+    let b5 = builtin put b4 five cell_empty in
+    let b6 = builtin put b5 six cell_empty in
+    let b7 = builtin put b6 seven cell_empty in
+    let b8 = builtin put b7 eight cell_empty in
     b8
       
 let get_turn_addr =
@@ -107,7 +125,7 @@ let get_turn_addr =
   fun (h : ByStr20) =>
   fun (cl : Option ByStr20) =>
     let m = builtin rem t two in
-	let compare = builtin eq m one in
+  let compare = builtin eq m one in
     match compare with 
     | True =>
       match cl with
@@ -137,7 +155,7 @@ let turn_cell =
 contract TicTacToe
 (owner: ByStr20)
 
-field opening : Bool = True
+field opening : Bool = False
 field accepted : Bool = False
 field challenger : Option ByStr20  = None {ByStr20}
 field welcome_msg : String = ""
@@ -184,8 +202,8 @@ transition join (mess: String)
           msgs = one_msg msg;
           send msgs
         end
-      end	      
-    end	    
+      end        
+    end      
   end
 end
 
@@ -231,16 +249,14 @@ transition acceptChallenge ()
           msgs = one_msg msg;
           send msgs
         end
-      end	      
-    end	    
+      end        
+    end      
   end
 end
 
-
-transition close ()
+transition refuseChallenge ()
   is_owner = builtin eq owner _sender;
-  is_opening <- opening;
-  is_accepted <- accepted;
+  is_opening <- opening;  
   cl <- challenger;
   match is_opening with
   | False =>
@@ -248,17 +264,52 @@ transition close ()
     msgs = one_msg msg;
     send msgs
   | True =>
-    match cl with
-    | None =>
-      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};
+    match is_owner with
+    | False =>
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_owner_code};
       msgs = one_msg msg;
       send msgs
-    | Some v =>
+    | True =>
+      match cl with
+      | None =>
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};
+        msgs = one_msg msg;
+        send msgs
+      | Some v =>
+        tt = False;
+        accepted := tt;
+        nc = None {ByStr20};
+        challenger := nc;
+        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
+        msgs = one_msg msg;
+        send msgs
+      end
+    end
+  end
+end
+
+transition changeOpenStatus (b: Bool)
+  is_owner = builtin eq owner _sender;
+  is_opening <- opening;  
+  is_same_status = is_same_bool is_opening b;
+  match is_same_status with
+  | True =>
+    msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : same_status_code};
+    msgs = one_msg msg;
+    send msgs
+  | False =>
+    match is_owner with
+    | False =>
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_owner_code};
+      msgs = one_msg msg;
+      send msgs
+    | True =>
+      opening := b;
       tt = False;
       accepted := tt;
       nc = None {ByStr20};
       challenger := nc;
-      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
+      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : changed_status_code};
       msgs = one_msg msg;
       send msgs
     end
@@ -310,7 +361,5 @@ transition move (slot : Uint32)
         send msgs
       end
     end
-  end
-
-  
+  end  
 end

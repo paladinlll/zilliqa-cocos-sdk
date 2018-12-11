@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.2587666068288321,
-      "y": 0.2587666068288321,
+      "x": 0.3609130859375,
+      "y": 0.3609130859375,
       "z": 1
     },
     "_quat": {
@@ -23987,6 +23987,9 @@
     },
     "hostingCloseButton": {
       "__id__": 528
+    },
+    "hostingChangeStateLabel": {
+      "__id__": 526
     },
     "hostingAcceptButton": {
       "__id__": 522

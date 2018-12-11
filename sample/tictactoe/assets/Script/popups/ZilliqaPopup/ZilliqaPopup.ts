@@ -62,9 +62,15 @@ export default class ZilliqaPopup extends cc.Component {
     // onLoad () {}
 
     start () {
-        this.offChainNode.active = true;
+        if(ZilliqaNetwork.getInstance().wasAuthenticated()){
+            this.offChainNode.active = false;
+            this.onChainNode.active = true;
+        } else{
+            this.offChainNode.active = true;
+            this.onChainNode.active = false;
+        }
         this.authenticationPopup.node.active = false;
-        this.onChainNode.active = false;
+        
         this.contractsPopup.node.active = false;
         this.connectingNode.active = false;
         this.errorPopup.node.active = false;
@@ -82,6 +88,7 @@ export default class ZilliqaPopup extends cc.Component {
 
             that.onMinimize();
             that.node.emit('loggedin');
+            GameProfile.getInstance().loadProfile(ZilliqaNetwork.getInstance().getUserAddress());
         });
         
         this.contractsPopup.node.on('hide', () => {
@@ -318,6 +325,7 @@ export default class ZilliqaPopup extends cc.Component {
                 that.connectingNode.active = false;
                 GameProfile.getInstance().setActiveTicTacToeAddress(contractAddress);
                 that.contractsPopup.refresh();
+                that.node.emit('activecontract', contractAddress);
             });
         });
     }

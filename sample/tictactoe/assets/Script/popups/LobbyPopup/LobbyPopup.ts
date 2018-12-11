@@ -95,6 +95,15 @@ export default class LobbyPopup extends cc.Component {
         this.tictactoeStatePopup.node.active = false;
         this.importContractPopup.node.active = false;
         this.refresh();
+
+        var that = this;
+        this.tictactoeStatePopup.node.on('hide', () => {            
+            that.refresh();
+        });
+
+        this.importContractPopup.node.on('hide', () => {            
+            that.refresh();
+        });
     }
 
     // update (dt) {}
