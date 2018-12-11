@@ -87,6 +87,33 @@ function toSimpleData(node){
 				ret[vname] = '';
 			}
 			break;
+		case 'Map':
+		{
+			ret[vname] = {};
+			
+			var childs = value;
+			if(Array.isArray(childs)){
+				for (var c of childs) {
+					var key = toSimpleData({
+						vname: 'key',
+						type: typeTree.childTypes[0].type,
+						value: c.key
+					});
+
+					var val = toSimpleData({
+						vname: 'val',
+						type: typeTree.childTypes[1].type,
+						value: c.val
+					});
+					
+					ret[vname][key.key] = val.val;					
+				}
+				
+			} else{
+				throw new TypeError("Map item must is an array");
+			}
+			break;
+		}
 		case 'Uint32':
 		case 'Uint64':
 		case 'Uint128':
