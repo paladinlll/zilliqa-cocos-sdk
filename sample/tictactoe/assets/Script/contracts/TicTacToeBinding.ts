@@ -13,6 +13,7 @@ import {
     ZilliqaParser
 } from '..';
 
+import {BN, Long} from '../zilliqa-sdk/zilliqa.cocos'
 export default class TicTacToeBinding{
 
     //isEmpty:boolean = true;
@@ -55,6 +56,8 @@ export default class TicTacToeBinding{
                 cb(err, null);
             } else if (data.error) {
                 cb(data.error, null);
+            } else if (data.result.Error) {
+                cb(data.result.Error, null);
             } else {                                
                 var stateData = ZilliqaParser.convertToSimpleJson(data.result);            
                 that.contractState = stateData;
@@ -114,7 +117,8 @@ export default class TicTacToeBinding{
             "vname": "slot", 
             "type": "Uint32",
             "value": slot.toString()
-        }]).then((_) => {
+        }], new BN(0), Long.fromNumber(5000), new BN(100)
+        ).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);

@@ -9,10 +9,15 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const {ccclass, property} = cc._decorator;
-import GameProfile from '../../GameProfile'
+
 import TictactoeStatePopup from './TictactoeStatePopup'
 import LobbyEntry from './LobbyEntry'
 import ImportContractPopup from './ImportContractPopup'
+
+import {     
+    GameProfile,    
+} from '../..';
+
 @ccclass
 export default class LobbyPopup extends cc.Component {
 
@@ -76,7 +81,7 @@ export default class LobbyPopup extends cc.Component {
     onHostButtonClicked(){
         var activeTicTacToeAddress = GameProfile.getInstance().getActiveTicTacToeAddress();
         if(activeTicTacToeAddress == ''){
-         
+            this.tictactoeStatePopup.show(activeTicTacToeAddress);
         } else {
             this.tictactoeStatePopup.show(activeTicTacToeAddress);
         }
@@ -89,6 +94,8 @@ export default class LobbyPopup extends cc.Component {
     onImportContractButtonClicked(){
         this.importContractPopup.show();
     }
+
+    
     // onLoad () {}
 
     start () {

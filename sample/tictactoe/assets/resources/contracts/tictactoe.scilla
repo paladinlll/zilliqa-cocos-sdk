@@ -37,6 +37,11 @@ let cell_empty = Uint32 0
 let cell_x = Uint32 1
 let cell_o = Uint32 2
 
+let result_none = Uint32 0
+let result_x = Uint32 1
+let result_o = Uint32 2
+let result_draw = Uint32 3
+
 let zero = Uint32 0
 let one = Uint32 1
 let two = Uint32 2
@@ -91,11 +96,42 @@ let cell_at =
     | Some v => v
     | None => cell_empty
     end
+
+let check_three_cell =
+  fun (l : Uint32) =>
+  fun (a : Uint32) =>
+  fun (b : Uint32) =>
+  fun (c : Uint32) =>
+    let comparel = builtin eq l result_none in
+    match comparel with
+    | False => l
+    | True =>
+      let compareab = builtin eq a b in
+      let comparebc = builtin eq b c in
+      let compareax = builtin eq a cell_x in
+      let compareao = builtin eq a cell_o in
+      match compareab with
+      | True =>
+        match comparebc with
+        | True =>
+          match compareax with
+          | True => result_x
+          | False =>
+            match compareao with
+            | True => result_o
+            | False => result_none
+            end
+          end
+        | False => result_none
+        end
+      | False => result_none
+      end
+    end
     
 let get_winner_code = 
   fun (bs : Map Uint32 Uint32) =>
   fun (t : Uint32) =>
-    let is_last_turn = builtin lt eight t in
+    let is_last_turn = builtin lt seven t in
     let at_0 = cell_at bs zero in
     let at_1 = cell_at bs one in
     let at_2 = cell_at bs two in
@@ -105,7 +141,25 @@ let get_winner_code =
     let at_6 = cell_at bs six in
     let at_7 = cell_at bs seven in
     let at_8 = cell_at bs eight in
-      zero
+    let ret0 = result_none in
+    let ret1 = check_three_cell ret0 at_0 at_1 at_2 in
+    let ret2 = check_three_cell ret1 at_3 at_4 at_5 in
+    let ret3 = check_three_cell ret2 at_6 at_7 at_8 in
+    let ret4 = check_three_cell ret3 at_0 at_3 at_6 in
+    let ret5 = check_three_cell ret4 at_1 at_4 at_7 in
+    let ret6 = check_three_cell ret5 at_2 at_5 at_8 in
+    let ret7 = check_three_cell ret6 at_0 at_4 at_8 in
+    let ret8 = check_three_cell ret7 at_2 at_4 at_6 in
+    let comparel = builtin eq ret8 result_none in
+    match comparel with
+    | False => ret8
+    | True =>
+      match is_last_turn with
+      | False => result_none
+      | True => result_draw
+      end
+    end      
+    
     
 let new_board = 
     let bs : Map Uint32 Uint32 = Emp Uint32 Uint32 in
@@ -125,7 +179,7 @@ let get_turn_addr =
   fun (h : ByStr20) =>
   fun (cl : Option ByStr20) =>
     let m = builtin rem t two in
-  let compare = builtin eq m one in
+    let compare = builtin eq m one in
     match compare with 
     | True =>
       match cl with
@@ -144,8 +198,8 @@ let turn_cell =
     let m = builtin rem t two in
     let compare = builtin eq m one in
     match compare with 
-    | True => cell_x      
-    | False => cell_o
+    | False => cell_x      
+    | True => cell_o
     end     
     
 (***************************************************)
@@ -164,7 +218,7 @@ field board : Map Uint32 Uint32 = Emp Uint32 Uint32
 
 field turn : Uint32  = zero
 
-field winner_code : Uint32  = zero
+field winner_code : Uint32  = result_none
 
 transition join (mess: String)
   is_owner = builtin eq owner _sender;
@@ -330,8 +384,6 @@ transition move (slot : Uint32)
   bs <- board;
   is_valid_move = check_valid_move bs slot;
   
-  
-  
   tc = turn_cell t;
   
   match is_opening with
@@ -346,19 +398,29 @@ transition move (slot : Uint32)
       msgs = one_msg msg;
       send msgs
     | Some v =>
-      match is_valid_move with
+      match is_correct_turn with
       | False =>
         msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : invalid_move_code};
         msgs = one_msg msg;
         send msgs
       | True =>
-        bs1 = builtin remove bs slot;
-        bs2 = builtin put bs slot tc;
-        board := bs2;
-        
-        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
-        msgs = one_msg msg;
-        send msgs
+        match is_valid_move with
+        | False =>
+          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : invalid_move_code};
+          msgs = one_msg msg;
+          send msgs
+        | True =>
+          bs1 = builtin remove bs slot;
+          bs2 = builtin put bs slot tc;
+          board := bs2;
+          nt = next_turn t;
+          turn := nt;
+          wc = get_winner_code bs2 t;
+          winner_code := wc;
+          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : move_code};
+          msgs = one_msg msg;
+          send msgs
+        end
       end
     end
   end  

@@ -66,22 +66,63 @@ export default class TictactoeStatePopup extends cc.Component {
         
         this.stateLabel.string = "";
 
-        this.addressText = address;
-        this.addressEditBox.string = this.addressText;
-
-        var binding = new TicTacToeBinding();
-        GameProfile.getInstance().activeTicTacToeBinding = binding;                
-        binding.bindFromAddress(address);
-
-        this.getContractState();
-        
-        if(this.isHosting()){
-            this.joinOrAcceptLabel.string = "Accept";
-            this.titleLabel.string = "Hosting";            
+        console.log('TictactoeStatePopup address[', address, ']');
+        if(address != ''){
+            this.addressText = address;
+            this.addressEditBox.string = this.addressText;
+    
+            var binding = new TicTacToeBinding();
+            GameProfile.getInstance().activeTicTacToeBinding = binding;
+            binding.bindFromAddress(address);
+    
+            this.getContractState();
+            if(this.isHosting()){
+                this.joinOrAcceptLabel.string = "Accept";
+                this.titleLabel.string = "Hosting";            
+            } else{
+                this.joinOrAcceptLabel.string = "Join";
+                this.titleLabel.string = "Challenge";
+            }
         } else{
-            this.joinOrAcceptLabel.string = "Join";
-            this.titleLabel.string = "Challenge";
-        }
+            this.addressText = '';
+            this.addressEditBox.string = this.addressText;
+            this.joinOrAcceptLabel.string = "Accept";
+            this.titleLabel.string = "Hosting";
+            this.deployTicTacToe();          
+        }                        
+    }
+
+    
+    deployTicTacToe(){
+        this.stateLabel.string = "deploying TicTacToe...";
+        console.log('deployTicTacToe');
+        var that = this;
+        this.connectingNode.active = true;
+
+        GameProfile.getInstance().getTictactoeCode((code) => {        
+            if(code == ''){                    
+                //that.handleError('Code not found!', {});
+                that.connectingNode.active = false;
+                return;                
+            }
+            var binding = new TicTacToeBinding();
+            var init = binding.getContractInit(ZilliqaNetwork.getInstance().getUserAddress());
+
+            ZilliqaNetwork.getInstance().deployContract(code, init, function(err, hello) {
+                if (err) {                    
+                    that.connectingNode.active = false;
+                } else {
+                    GameProfile.getInstance().setActiveTicTacToeAddress(hello.address);
+                    GameProfile.getInstance().activeTicTacToeBinding = binding; 
+                    binding.bindFromContract(hello);      
+                    that.connectingNode.active = false;
+
+                    that.addressText = hello.address;
+                    that.addressEditBox.string = that.addressText;
+                    that.getContractState();
+                }
+            });
+        });        
     }
 
     isHosting(){
@@ -110,15 +151,20 @@ export default class TictactoeStatePopup extends cc.Component {
         this.connectingNode.active = true;
 
         
-        binding.fetchState(function(_, data) {
-            that.fillContractState(data)
+        binding.fetchState(function(err, data) {
+            if(err){
+                that.fillContractState(null)
+            } else{
+                that.fillContractState(data)
+            }
+            
             that.connectingNode.active = false;
         })
     }
 
     fillContractState(stateData){
         var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
-        GameProfile.getInstance().activeTicTacToeBinding.contractState = stateData;
+        
         if(this.isHosting()){
             this.hostingUILayer.active = true;
             this.hostingAcceptButton.interactable = false;
@@ -258,6 +304,7 @@ export default class TictactoeStatePopup extends cc.Component {
             }              
         })
     }
+
     // onLoad () {}
 
     start () {
