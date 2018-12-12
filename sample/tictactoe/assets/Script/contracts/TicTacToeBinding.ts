@@ -106,6 +106,16 @@ export default class TicTacToeBinding{
         });
     }
 
+    isMyContract(userAddress:string){
+        if(this.contractInit == null){
+            return false;
+        }
+        if(this.contractInit.owner.replace('0x', '').toLowerCase() == userAddress.toLowerCase()){
+            return true;
+        }
+        return false;
+    }
+
     callJoin(cb: any){
         if(this.bindContract == null) return cb('null contract', null);
         console.log('callJoin');

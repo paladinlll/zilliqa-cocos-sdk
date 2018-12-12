@@ -56,6 +56,12 @@ export default class TictactoeStatePopup extends cc.Component {
 
     @property(cc.Button)
     joinningDeleteButton: cc.Button = null;
+
+    @property(cc.Button)
+    viewButton: cc.Button = null;
+
+    @property(cc.Button)
+    refreshButton: cc.Button = null;
     
 
     contractChecksum: string = '';
@@ -71,6 +77,8 @@ export default class TictactoeStatePopup extends cc.Component {
         this.hostingUILayer.active = false;
         this.joiningUILayer.active = false;
         this.connectingNode.active = true;
+        this.viewButton.interactable = false;
+        this.refreshButton.interactable = false;
 
         console.log('TictactoeStatePopup address[', address, ']');
         GameProfile.getInstance().getTictactoeCode((data) => {     
@@ -147,14 +155,17 @@ export default class TictactoeStatePopup extends cc.Component {
     }
 
     isHosting(){
-        ///Todo: need to check import seft contract.
+        // var binding = GameProfile.getInstance().activeTicTacToeBinding;        
+        // if(binding == null) return false;
+        // return binding.isMyContract(ZilliqaNetwork.getInstance().getUserAddress())
         var activeTicTacToeAddress = GameProfile.getInstance().getActiveTicTacToeAddress();
-        return (activeTicTacToeAddress == this.addressText)
+        return (activeTicTacToeAddress == this.addressText);
     }
 
     hide(){
         this.node.active = false;
         GameProfile.getInstance().activeTicTacToeBinding = null;
+        this.node.emit('hide');
     }
 
     restoreAddressEditBox(){
@@ -180,13 +191,16 @@ export default class TictactoeStatePopup extends cc.Component {
     }
 
     fillContractState(){        
-        var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
+        var userAddressLowerCase = ZilliqaNetwork.getInstance().getUserAddress().toLowerCase();
         var binding = GameProfile.getInstance().activeTicTacToeBinding;
         if(binding == null){            
             return;
         }
         var stateData = binding.contractState;
-        var stateInit = binding.contractInit;        
+        var stateInit = binding.contractInit;
+        this.viewButton.interactable = false;
+        this.refreshButton.interactable = false;
+
         if(this.isHosting()){
             this.hostingUILayer.active = true;
             this.hostingAcceptButton.interactable = false;
@@ -203,6 +217,7 @@ export default class TictactoeStatePopup extends cc.Component {
                     this.stateLabel.string = "Your host be closed.";
                 } else{                    
                     this.stateLabel.string = "Lastest game was end with winner_code " + stateData.winner_code.toString();
+                    this.viewButton.interactable = true;
                 }                
                 this.hostingChangeStateLabel.string = 'Open Now';                
             } else if(stateData.challenger != ''){
@@ -219,19 +234,28 @@ export default class TictactoeStatePopup extends cc.Component {
                 }
             } else{
                 this.stateLabel.string = "Waiting for a challenge...";
+                this.refreshButton.interactable = true;
             }
         } else{
             this.joiningUILayer.active = true;
             this.joinningJoinButton.interactable = false;
             this.joinningDeleteButton.interactable = true;
+
             if(stateData == null){
                 this.stateLabel.string = "Contract wasn't exits";            
             } else if(stateInit.checksum != this.contractChecksum){
                 this.stateLabel.string = "Contract was outdate";                
+            } else if(binding.isMyContract(userAddressLowerCase)){
+                this.stateLabel.string = "Can't join your contract.";
             } else if(!stateData.opening){
-                this.handleError("Disable by host.");
+                if(stateData.winner_code == 0 || stateData.winner_code == null){                    
+                    this.stateLabel.string = "Closest by host.";
+                } else{                    
+                    this.stateLabel.string = "Lastest game was end with winner_code " + stateData.winner_code.toString();
+                    this.viewButton.interactable = true;
+                }                
             } else if(stateData.challenger != ''){
-                if(stateData.challenger.replace('0x', '').toLowerCase() == userAddress.toLowerCase()){
+                if(stateData.challenger.replace('0x', '').toLowerCase() == userAddressLowerCase){
                     if(stateData.accepted){
                         if(stateData.winner_code == 0){
                             this.stateLabel.string = "Playing turn " + stateData.turn.toString();;
@@ -242,9 +266,13 @@ export default class TictactoeStatePopup extends cc.Component {
                         }
                     } else{
                         this.stateLabel.string = "Waiting for host accept your challenge";
+                        this.refreshButton.interactable = true;
                     }
                 } else{
                     this.handleError("Host was busing");
+                    if(stateData.accepted){
+                        this.viewButton.interactable = true;
+                    }
                 }
             } else{
                 this.stateLabel.string = "Challenge Now!";
@@ -281,8 +309,7 @@ export default class TictactoeStatePopup extends cc.Component {
     onDelete(){
         if(this.isHosting()) return;
         var that = this;
-        if(GameProfile.getInstance().removeChallengedAddresses(this.addressText)){
-            that.node.emit('hide');
+        if(GameProfile.getInstance().removeChallengedAddresses(this.addressText)){            
             this.hide();
         }                
     }
@@ -314,8 +341,7 @@ export default class TictactoeStatePopup extends cc.Component {
         var stateInit = binding.contractInit;
         if(binding.contractState == null || stateInit.checksum != this.contractChecksum){
             GameProfile.getInstance().userData.activeTicTacToeAddress = '';
-            GameProfile.getInstance().activeTicTacToeBinding = null;
-            this.node.emit('hide');
+            GameProfile.getInstance().activeTicTacToeBinding = null;            
             this.hide();
             return;
         }
@@ -335,6 +361,14 @@ export default class TictactoeStatePopup extends cc.Component {
                 that.getContractState();
             }              
         })
+    }
+
+    onRefreshButtonClicked(){
+        this.getContractState();
+    }
+
+    onViewButtonClicked(){
+        cc.director.loadScene('gameplay');
     }
 
     // onLoad () {}

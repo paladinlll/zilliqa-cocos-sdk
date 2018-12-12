@@ -32,6 +32,9 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Node)
     onChainNode: cc.Node = null;
 
+    @property(cc.EditBox)
+    addressEditBox: cc.EditBox = null;
+
     @property(ContractsPopup)
     contractsPopup: ContractsPopup = null;
 
@@ -57,6 +60,9 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Label)
     networkLabel: cc.Label = null;
 
+    @property(cc.Label)
+    balanceLabel: cc.Label = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     //onLoad () {}
@@ -66,11 +72,15 @@ export default class ZilliqaPopup extends cc.Component {
             this.offChainNode.active = false;
             this.onChainNode.active = true;
             this.onMinimize();
+            this.addressEditBox.string = ZilliqaNetwork.getInstance().getUserAddress();
+            this.getBalance();
         } else{
             this.offChainNode.active = true;
             this.onChainNode.active = false;
             this.onMaximize();
+            this.addressEditBox.string = "";
         }
+        console.log('ZilliqaPopup start');   
         this.authenticationPopup.node.active = false;
         
         this.contractsPopup.node.active = false;
@@ -87,10 +97,12 @@ export default class ZilliqaPopup extends cc.Component {
         this.authenticationPopup.node.on('authorized', (msg:string) => {
             that.authenticationPopup.node.active = false;
             that.onChainNode.active = true;
-                        
+            console.log('authorized');   
             GameProfile.getInstance().loadProfile(ZilliqaNetwork.getInstance().getUserAddress());
             that.onMinimize();
             that.node.emit('loggedin');
+            that.restoreAddressEditBox();
+            that.getBalance();
         });
         
         this.contractsPopup.node.on('hide', () => {
@@ -106,6 +118,14 @@ export default class ZilliqaPopup extends cc.Component {
         this.contractsPopup.node.on('getContractState', this.getContractState, this);
         this.contractsPopup.node.on('getContractCode', this.getContractCode, this);
         this.contractsPopup.node.on('verifyContract', this.activeTictactoeContract, this);        
+    }
+
+    restoreAddressEditBox(){
+        this.addressEditBox.string = ZilliqaNetwork.getInstance().getUserAddress();
+    }
+
+    updateBalance(data){
+        this.balanceLabel.string = "" + (data.balance || 0);
     }
 
     onMaximize(){
@@ -156,6 +176,7 @@ export default class ZilliqaPopup extends cc.Component {
     onLogout() {
         if(ZilliqaNetwork.getInstance().wasAuthenticated()){
             ZilliqaNetwork.getInstance().logOut();
+            this.restoreAddressEditBox();
             this.authenticationPopup.show();
             this.onChainNode.active = false;
             this.node.emit('loggedout');
@@ -170,6 +191,7 @@ export default class ZilliqaPopup extends cc.Component {
                 that.handleError(err, data);
             } else {               
                 that.responseText.string = JSON.stringify(data.result);
+                that.updateBalance(data.result);
             }
             that.connectingNode.active = false;
         });
@@ -196,6 +218,7 @@ export default class ZilliqaPopup extends cc.Component {
                 that.handleError(err, {});
             } else {            
                 that.responseText.string = 'Done';
+                that.getBalance();
             }
             that.connectingNode.active = false;
         });
@@ -230,6 +253,7 @@ export default class ZilliqaPopup extends cc.Component {
                     } else {                       
                         that.responseText.string = 'Done';
                     }
+                    that.getBalance();
                     that.connectingNode.active = false;
                 });                
             }            
@@ -257,7 +281,8 @@ export default class ZilliqaPopup extends cc.Component {
                 } else {
                     that.responseText.string = 'Deployed to ' + hello.address + '. Calling setHello';
                     that.connectingNode.active = false;
-                }            
+                }      
+                that.getBalance();      
             });
         });        
     }

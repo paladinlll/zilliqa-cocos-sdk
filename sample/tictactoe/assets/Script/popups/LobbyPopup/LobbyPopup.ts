@@ -22,6 +22,12 @@ import {
 export default class LobbyPopup extends cc.Component {
 
     @property(cc.Label)
+    hostTitleLabel: cc.Label = null;
+
+    @property(cc.Node)
+    hostAddressNode: cc.Node = null;
+
+    @property(cc.Label)
     hostAddressLabel: cc.Label = null;
 
     @property(TictactoeStatePopup)
@@ -43,8 +49,11 @@ export default class LobbyPopup extends cc.Component {
         var activeTicTacToeAddress = GameProfile.getInstance().getActiveTicTacToeAddress();
         
         if(activeTicTacToeAddress == ''){
-            this.hostAddressLabel.string = 'Host New Contract';                
+            this.hostAddressNode.active = false;
+            this.hostTitleLabel.string = 'Host New Contract';
         } else {
+            this.hostTitleLabel.string = 'Your Hosting Contract';
+            this.hostAddressNode.active = true;
             this.hostAddressLabel.string = activeTicTacToeAddress;            
         }
 

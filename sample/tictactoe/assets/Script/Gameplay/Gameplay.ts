@@ -37,6 +37,7 @@ export default class Gameplay extends cc.Component {
     @property([CellState])
     cellEntries: CellState[] = [];
 
+    delayRefreshState:number = 6;
     // LIFE-CYCLE CALLBACKS:
     onQuit(){
         cc.director.loadScene('main');
@@ -98,47 +99,83 @@ export default class Gameplay extends cc.Component {
             this.cellEntries[i].setInfo(cellType);
         }
 
-        if(stateData.winner_code == 0){
-            if(this.isMyTurn()){
-                this.statusLabel.string = "Your Turn";
+        if(this.isViewMode()){
+            if(stateData.winner_code == 0){
+                this.statusLabel.string = "View mode";
             } else{
-                this.statusLabel.string = "Opponent Turn";
+                this.statusLabel.string = "winner_code " + stateData.winner_code.toString();
             }
-            
-        } else if(stateData.winner_code == 3){
-            this.statusLabel.string = "Draw";
-        } else if(this.isMyTurn()){
-            this.statusLabel.string = "Your Lose";
         } else{
-            this.statusLabel.string = "Your Win";
+            if(stateData.winner_code == 0){
+                if(this.isMyTurn()){
+                    this.statusLabel.string = "Your Turn";
+                } else{
+                    this.statusLabel.string = "Opponent Turn";
+                }
+                
+            } else if(stateData.winner_code == 3){
+                this.statusLabel.string = "Draw";
+            } else if(this.isMyTurn()){
+                this.statusLabel.string = "Your Lose";
+            } else{
+                this.statusLabel.string = "Your Win";
+            }
         }
     }
 
-    isMyTurn(){
-        var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
-      
-        if(this.isHosting()){
-            return (stateData.turn % 2) == 0;
-        } else{
-            return (stateData.turn % 2) == 1;
+    isViewMode(){
+        var userAddressLowerCase = ZilliqaNetwork.getInstance().getUserAddress();
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        var stateData = binding.contractState;
+        var stateInit = binding.contractInit;
+        if(stateData == null){
+            return false;
         }
-    }
-
-    isHosting(){
-        var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
-        var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
-        if(stateData.challenger.replace('0x', '').toLowerCase() == userAddress.toLowerCase()){
+        if(stateInit.owner.replace('0x', '').toLowerCase() == userAddressLowerCase){
+            return false;
+        }
+        if(stateData.challenger.replace('0x', '').toLowerCase() == userAddressLowerCase){
             return false;
         }
         return true;
     }
 
+    isMyTurn(){
+        var userAddressLowerCase = ZilliqaNetwork.getInstance().getUserAddress();
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        var stateData = binding.contractState;
+        var stateInit = binding.contractInit;
+        if(stateData == null){
+            return false;
+        }
+        if(stateInit.owner.replace('0x', '').toLowerCase() == userAddressLowerCase){
+            return (stateData.turn % 2) == 0;
+        }
+        if(stateData.challenger.replace('0x', '').toLowerCase() == userAddressLowerCase){
+            return (stateData.turn % 2) == 1;
+        }
+        return false;
+        // if(this.isHosting()){
+        //     return (stateData.turn % 2) == 0;
+        // } else{
+        //     return (stateData.turn % 2) == 1;
+        // }
+    }
+
+    // isHosting(){
+    //     var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
+    //     var userAddress = ZilliqaNetwork.getInstance().getUserAddress();
+    //     if(stateData.challenger.replace('0x', '').toLowerCase() == userAddress.toLowerCase()){
+    //         return false;
+    //     }
+    //     return true;
+    // }
+
     restoreAddressEditBox(){
         this.addressEditBox.string = GameProfile.getInstance().activeTicTacToeBinding.address;
     }
 
-    onCellFocused(cellId:number){
-        console.log('onCellFocused', cellId);
+    onCellFocused(cellId:number){        
         var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
         
 
@@ -205,6 +242,7 @@ export default class Gameplay extends cc.Component {
             that.refresh();
             that.connectingNode.active = false;
         })
+        this.delayRefreshState = 6;
     }
 
     handleError(err){                        
@@ -215,5 +253,12 @@ export default class Gameplay extends cc.Component {
         this.errorPopup.node.active = false;
     }
 
-    // update (dt) {}
+    update (dt) {
+        if(!this.connectingNode.active && !this.isMyTurn()){
+            this.delayRefreshState -= dt;
+            if(this.delayRefreshState <= 0){
+                this.getContractState();
+            }            
+        }         
+    }
 }

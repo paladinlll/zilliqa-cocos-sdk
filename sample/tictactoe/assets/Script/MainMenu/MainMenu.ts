@@ -44,7 +44,7 @@ export default class MainMenu extends cc.Component {
             that.lobbyPopup.refresh();
         });
 
-        this.zilliqaPopup.node.on('loggedout', () => {            
+        this.zilliqaPopup.node.on('loggedout', () => {
             that.lobbyPopup.node.active = false;
         });
 
@@ -53,6 +53,8 @@ export default class MainMenu extends cc.Component {
         });
 
         this.zilliqaPopup.node.on('activecontract', this.onActiveTictactoeContract, this);
+
+        console.log('MainMenu start');   
     }
 
     // update (dt) {}
