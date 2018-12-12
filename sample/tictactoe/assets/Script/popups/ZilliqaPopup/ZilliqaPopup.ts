@@ -176,10 +176,10 @@ export default class ZilliqaPopup extends cc.Component {
     onLogout() {
         if(ZilliqaNetwork.getInstance().wasAuthenticated()){
             ZilliqaNetwork.getInstance().logOut();
-            this.restoreAddressEditBox();
-            this.authenticationPopup.show();
+            this.addressEditBox.string = '';
             this.onChainNode.active = false;
             this.node.emit('loggedout');
+            this.authenticationPopup.show();            
         }
     }
 
