@@ -105,13 +105,18 @@ export default class Gameplay extends cc.Component {
                 this.statusLabel.string = "Opponent Turn";
             }
             
+        } else if(stateData.winner_code == 3){
+            this.statusLabel.string = "Draw";
+        } else if(this.isMyTurn()){
+            this.statusLabel.string = "Your Lose";
         } else{
-            this.statusLabel.string = "Game Over";
-        }        
+            this.statusLabel.string = "Your Win";
+        }
     }
 
     isMyTurn(){
         var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
+      
         if(this.isHosting()){
             return (stateData.turn % 2) == 0;
         } else{
@@ -151,14 +156,9 @@ export default class Gameplay extends cc.Component {
         }
     }
 
-    onCellPressed(cellId:number){
-        if(!this.isMyTurn()){
-            return;
-        }        
-        
+    onCellPressed(cellId:number){                      
         var stateData = GameProfile.getInstance().activeTicTacToeBinding.contractState;
-        if(stateData.board[cellId.toString()] != 0){
-            console.log('Unvalid cell');
+        if(stateData.board[cellId.toString()] != 0){            
             return;
         }        
 
@@ -168,7 +168,12 @@ export default class Gameplay extends cc.Component {
                 this.cellEntries[i].setHighlight(0);                
             }            
         }
-
+        if(stateData.winner_code != 0){
+            return false;
+        }
+        if(!this.isMyTurn()){
+            return;
+        } 
         var nextType = 1 + (stateData.turn % 2);
         this.cellEntries[cellId].setInfo(nextType);
 

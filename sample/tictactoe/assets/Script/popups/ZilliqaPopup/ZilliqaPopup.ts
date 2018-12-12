@@ -59,15 +59,17 @@ export default class ZilliqaPopup extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
+    //onLoad () {}
 
-    start () {
+    start () {      
         if(ZilliqaNetwork.getInstance().wasAuthenticated()){
             this.offChainNode.active = false;
             this.onChainNode.active = true;
+            this.onMinimize();
         } else{
             this.offChainNode.active = true;
             this.onChainNode.active = false;
+            this.onMaximize();
         }
         this.authenticationPopup.node.active = false;
         
@@ -85,10 +87,10 @@ export default class ZilliqaPopup extends cc.Component {
         this.authenticationPopup.node.on('authorized', (msg:string) => {
             that.authenticationPopup.node.active = false;
             that.onChainNode.active = true;
-
+                        
+            GameProfile.getInstance().loadProfile(ZilliqaNetwork.getInstance().getUserAddress());
             that.onMinimize();
             that.node.emit('loggedin');
-            GameProfile.getInstance().loadProfile(ZilliqaNetwork.getInstance().getUserAddress());
         });
         
         this.contractsPopup.node.on('hide', () => {
@@ -103,9 +105,7 @@ export default class ZilliqaPopup extends cc.Component {
         this.contractsPopup.node.on('getContractInit', this.getContractInit, this);
         this.contractsPopup.node.on('getContractState', this.getContractState, this);
         this.contractsPopup.node.on('getContractCode', this.getContractCode, this);
-        this.contractsPopup.node.on('verifyContract', this.activeTictactoeContract, this);
-
-        this.onMaximize();
+        this.contractsPopup.node.on('verifyContract', this.activeTictactoeContract, this);        
     }
 
     onMaximize(){
@@ -240,17 +240,17 @@ export default class ZilliqaPopup extends cc.Component {
         var that = this;
         this.connectingNode.active = true;
 
-        GameProfile.getInstance().getTictactoeCode((code) => {        
-            if(code == ''){                    
+        GameProfile.getInstance().getTictactoeCode((data) => {        
+            if(data.code == ''){                    
                 that.handleError('Code not found!', {});
                 that.connectingNode.active = false;
                 return;                
             }
             var binding = new TicTacToeBinding();
             //binding.setContractCode(code);
-            var init = binding.getContractInit(ZilliqaNetwork.getInstance().getUserAddress());
+            var init = binding.getContractInit(ZilliqaNetwork.getInstance().getUserAddress(), data.checksum);
 
-            ZilliqaNetwork.getInstance().deployContract(code, init, function(err, hello) {
+            ZilliqaNetwork.getInstance().deployContract(data.code, init, function(err, hello) {
                 if (err) {                
                     that.handleError(err, {});
                     that.connectingNode.active = false;

@@ -1,5 +1,6 @@
 import TicTacToeBinding from './contracts/TicTacToeBinding'
 import ZilliqaNetwork from './ZilliqaNetwork'
+import * as crypto from 'crypto'
 
 export default class GameProfile{
     private static instance: GameProfile = null;
@@ -18,6 +19,7 @@ export default class GameProfile{
 
     activeTicTacToeBinding:TicTacToeBinding = null;    
     tictactoeCode:string = '';
+    tictactoeChecksum:string = ''
     userData = {
         activeTicTacToeAddress: '',
         challengedAddresses: {}
@@ -65,17 +67,31 @@ export default class GameProfile{
     getTictactoeCode(cb:any){
         var that = this;
         if(this.tictactoeCode != ''){
-            cb(this.tictactoeCode);
+            cb({
+                code: this.tictactoeCode,
+                checksum: this.tictactoeChecksum,
+            });
             return;
         }
         var url = cc.url.raw('resources/contracts/tictactoe.scilla');
         cc.loader.load(url, function(err, code){
             if(err){                    
-                cb('');
+                cb({
+                    code: '',
+                    checksum: '',
+                });
                 return;                
             }
             that.tictactoeCode = code;
-            cb(code);
+            that.tictactoeChecksum = crypto
+                .createHash('md5')
+                .update(that.tictactoeCode, 'utf8')
+                .digest('hex');
+                        
+            cb({
+                code: that.tictactoeCode,
+                checksum: that.tictactoeChecksum,
+            });
         });
     }
     loadProfile(userAddress: string) {

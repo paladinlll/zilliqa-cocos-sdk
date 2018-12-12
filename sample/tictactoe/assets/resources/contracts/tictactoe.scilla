@@ -207,7 +207,8 @@ let turn_cell =
 (***************************************************)
 
 contract TicTacToe
-(owner: ByStr20)
+(owner: ByStr20,
+checksum: String)
 
 field opening : Bool = False
 field accepted : Bool = False
@@ -416,10 +417,21 @@ transition move (slot : Uint32)
           nt = next_turn t;
           turn := nt;
           wc = get_winner_code bs2 t;
-          winner_code := wc;
-          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : move_code};
-          msgs = one_msg msg;
-          send msgs
+          is_not_end = builtin eq wc result_none;
+
+          match is_not_end with
+          | True =>
+            msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : move_code};
+            msgs = one_msg msg;
+            send msgs
+          | False =>
+            winner_code := wc;
+            tt = False;
+            opening := tt;
+            msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : move_code};
+            msgs = one_msg msg;
+            send msgs
+          end          
         end
       end
     end

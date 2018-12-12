@@ -26,22 +26,22 @@ export default class MainMenu extends cc.Component {
     onActiveTictactoeContract(address:string) {
         this.lobbyPopup.refresh();
     }
-    // onLoad () {}
+    //onLoad () { }
 
-    start () {
+    start () {        
         var that = this;
 
-        if(ZilliqaNetwork.getInstance().wasAuthenticated()){
-            this.zilliqaPopup.node.active = false;
+        this.zilliqaPopup.node.active = true;
+        if(ZilliqaNetwork.getInstance().wasAuthenticated()){                        
             this.lobbyPopup.node.active = true;
-        } else{
-            this.zilliqaPopup.node.active = true;
+        } else{            
             this.lobbyPopup.node.active = false;
         }
         
 
         this.zilliqaPopup.node.on('loggedin', () => {            
             that.lobbyPopup.node.active = true;
+            that.lobbyPopup.refresh();
         });
 
         this.zilliqaPopup.node.on('loggedout', () => {            

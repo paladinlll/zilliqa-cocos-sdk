@@ -15,39 +15,79 @@ import {
 
 import {BN, Long} from '../zilliqa-sdk/zilliqa.cocos'
 export default class TicTacToeBinding{
-
-    //isEmpty:boolean = true;
-    //contractCode:String = '';
     address: string = '';
     bindContract = null; 
+    contractInit = null;
     contractState = null;
 
-    // setContractCode(code){
-    //     this.contractCode = code;
-    //     this.isEmpty = false;
-    // }
-
-    getContractInit(owner:string){
+    getContractInit(owner:string, checksum:string){
         return [
             {
                 vname: 'owner',
                 type: 'ByStr20',
                 value: '0x' + owner.toLowerCase()
-            },
+            },{
+                vname: 'checksum',
+                type: 'String',
+                value: checksum
+            }
         ]
     }
 
-    bindFromAddress(addr:string){
-        this.address = addr;
-        this.bindContract = ZilliqaNetwork.getInstance().loadContractFromAddress(addr);
-        this.contractState = null;        
+    bindFromAddress(addr:string, cb: any){
+        this.address = addr
+        this.contractInit = null;
+        this.contractState = null;
+        var contract = ZilliqaNetwork.getInstance().loadContractFromAddress(addr);
+
+        var that = this;
+        this.fetchInit(contract, (err, data) => {
+            if(err){
+                cb(err, null);
+            } else{                
+                that.bindContract = contract;
+                that.contractInit = data;
+                cb(null, data);
+            }
+        });
     }
 
-    bindFromContract(contract){
-        this.bindContract = contract;        
+    bindFromContract(contract, cb: any){
+        this.address = contract.address;        
+        this.contractInit = null;
+        this.contractState = null;
+
+        var that = this;
+        this.fetchInit(contract, (err, data) => {
+            if(err){
+                cb(err, null);
+            } else{                
+                that.bindContract = contract;
+                that.contractInit = data;
+                cb(null, data);
+            }
+        });
+    }
+
+    fetchInit(contract, cb: any){       
+        var that = this;
+        ZilliqaNetwork.getInstance().getSmartContractInit(contract.address, function(err, data) {
+            if (err) {
+                cb(err, null);
+            } else if (data.error) {
+                cb(data.error, null);
+            } else if (data.result.Error) {
+                cb(data.result.Error, null);
+            } else {                                
+                var stateInit = ZilliqaParser.convertToSimpleJson(data.result);            
+                that.contractInit = stateInit;
+                cb(null, stateInit);
+            }            
+        });
     }
     
     fetchState(cb: any){
+        this.contractState = null;
         if(this.bindContract == null) return cb('null contract', null);
 
         var that = this;
@@ -59,7 +99,7 @@ export default class TicTacToeBinding{
             } else if (data.result.Error) {
                 cb(data.result.Error, null);
             } else {                                
-                var stateData = ZilliqaParser.convertToSimpleJson(data.result);            
+                var stateData = ZilliqaParser.convertToSimpleJson(data.result);                
                 that.contractState = stateData;
                 cb(null, stateData);
             }            
