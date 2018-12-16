@@ -119,13 +119,12 @@ export default class TicTacToeBinding{
     callJoin(cb: any){
         if(this.bindContract == null) return cb('null contract', null);
         console.log('callJoin');
-        this.bindContract.call('join', [
-            {
-                vname: 'mess',
-                type: 'String',
-                value: 'Hello There',
-            }
-        ]).then((_) => {
+        this.bindContract.call('join', [{
+            vname: 'mess',
+            type: 'String',
+            value: 'Hello There',            
+        }], new BN(0), Long.fromNumber(5000), new BN(100)
+        ).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);
@@ -135,7 +134,8 @@ export default class TicTacToeBinding{
     callAcceptChallenge(cb: any){
         if(this.bindContract == null) return cb('null contract', null);
         console.log('callAcceptChallenge');
-        this.bindContract.call('acceptChallenge', []).then((_) => {
+        this.bindContract.call('acceptChallenge', [], new BN(0), Long.fromNumber(5000), new BN(100))
+        .then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);
@@ -153,7 +153,8 @@ export default class TicTacToeBinding{
                 "arguments": [],
                 "constructor": b ? "True" : "False"
             }            
-        }]).then((_) => {
+        }], new BN(0), Long.fromNumber(5000), new BN(100)
+        ).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);

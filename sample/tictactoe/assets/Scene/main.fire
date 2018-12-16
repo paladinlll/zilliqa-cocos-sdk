@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.5533502147266505,
-      "y": 0.5533502147266505,
+      "x": 0.5533502147266506,
+      "y": 0.5533502147266506,
       "z": 1
     },
     "_quat": {
@@ -238,7 +238,7 @@
         "__id__": 591
       }
     ],
-    "_active": true,
+    "_active": false,
     "_level": 1,
     "_components": [
       {
@@ -799,7 +799,7 @@
         "__id__": 342
       }
     ],
-    "_active": false,
+    "_active": true,
     "_level": 2,
     "_components": [
       {
@@ -10232,7 +10232,7 @@
         "__id__": 233
       }
     ],
-    "_active": false,
+    "_active": true,
     "_level": 3,
     "_components": [
       {
@@ -12040,9 +12040,13 @@
       "__id__": 243
     },
     "_enabled": true,
-    "label": null,
+    "label": {
+      "__id__": 247
+    },
     "contractAddress": "",
-    "activeStatusLabel": null,
+    "activeStatusLabel": {
+      "__id__": 251
+    },
     "_id": "09GJWwZHBFhbPJLgrVQ+3Y"
   },
   {
