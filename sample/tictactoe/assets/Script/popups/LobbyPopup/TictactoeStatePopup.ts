@@ -70,8 +70,7 @@ export default class TictactoeStatePopup extends cc.Component {
         var that = this;
         this.node.active = true;
 
-        this.connectingNode.active = false;
-        
+       
         this.stateLabel.string = "";
 
         this.hostingUILayer.active = false;
@@ -92,6 +91,7 @@ export default class TictactoeStatePopup extends cc.Component {
                 binding.bindFromAddress(address, (err, init) => {
                     if(err){
                         that.fillContractState();
+                        that.connectingNode.active = false;
                     } else{
                         that.getContractState();
                     }
@@ -140,6 +140,7 @@ export default class TictactoeStatePopup extends cc.Component {
                     binding.bindFromContract(hello, (err, init) => {
                         if(err){
                             that.fillContractState();
+                            that.connectingNode.active = false;
                         } else{
                             that.getContractState();
                         }        
