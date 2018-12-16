@@ -2,6 +2,7 @@ var path = require('path');
 const webpack = require('webpack');
 const UglifyJs = require('uglifyjs-webpack-plugin');
 const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
+ 
 module.exports = {
   entry: {
     zilliqa: [
@@ -32,6 +33,16 @@ module.exports = {
   devtool: 'source-map',
   resolve: {
     extensions: ['.ts', '.js'],
+	alias: {      
+	  '@zilliqa-js/account': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/account/dist/index')),
+	  '@zilliqa-js/blockchain': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/blockchain/dist/index')),
+	  '@zilliqa-js/contract': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/contract/dist/index')),
+	  '@zilliqa-js/core': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/core/dist/index')),
+	  '@zilliqa-js/crypto': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/crypto/dist/index')),
+	  '@zilliqa-js/proto': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/proto/dist/index')),
+	  '@zilliqa-js/util': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/util/dist/index')),
+	  '@zilliqa-js/zilliqa': path.resolve(path.join(__dirname, 'node_modules', '@zilliqa-js/zilliqa/dist/index'))
+    },
   },
   optimization: {
     minimizer: [
@@ -51,7 +62,7 @@ module.exports = {
       }),
     ],
   },
-  plugins: [   
+  plugins: [	
 	new ReplaceInFileWebpackPlugin([{		
 		files: ['dist/zilliqa.cocos.js'],
 		rules: [{
@@ -67,6 +78,7 @@ module.exports = {
     filename: '[name].cocos.js',
     path: path.join(__dirname, 'dist'),
   }, 
+  target: 'web',
   node: {
     crypto: true,
     util: true,
