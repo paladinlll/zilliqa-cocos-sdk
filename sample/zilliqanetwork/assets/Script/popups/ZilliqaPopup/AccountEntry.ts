@@ -11,31 +11,22 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class ContractButton extends cc.Component {
+export default class AccountEntry extends cc.Component {
 
     @property(cc.Label)
-    label: cc.Label = null;
+    addressLabel: cc.Label = null;
 
     @property
-    contractAddress: string = '';
+    addressText: string = '';
 
     // LIFE-CYCLE CALLBACKS:
     setInfo(address:string){
-        this.contractAddress = address;        
-        this.label.string = address;
+        this.addressText = address;        
+        this.addressLabel.string = address;
     }
 
-    getInit() {
-        console.log('getInit a');
-        this.node.emit('getInit', this.contractAddress);
-    }
-
-    getState() {
-        this.node.emit('getState', this.contractAddress);
-    }
-
-    getCode() {
-        this.node.emit('getCode', this.contractAddress);
+    onSelect() {
+        this.node.emit('select', this.addressText);
     }
 
     // onLoad () {}

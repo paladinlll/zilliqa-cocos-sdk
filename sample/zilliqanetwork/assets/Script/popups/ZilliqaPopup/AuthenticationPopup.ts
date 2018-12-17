@@ -9,7 +9,10 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const {ccclass, property} = cc._decorator;
-import ZilliqaNetwork from './ZilliqaNetwork';
+import AccountEntry from './AccountEntry';
+import { 
+    ZilliqaNetwork
+} from '../..';
 
 @ccclass
 export default class AuthenticationPopup extends cc.Component {
@@ -32,17 +35,28 @@ export default class AuthenticationPopup extends cc.Component {
     @property(cc.Label)
     addressLabel: cc.Label = null;
 
+    @property(cc.Node)
+    accountHolder: cc.Node = null;
+
+    @property([AccountEntry])
+    accountEntries: AccountEntry[] = [];
+
+    @property(cc.Node)
+    inputPasswordNode: cc.Node = null;
+
     // LIFE-CYCLE CALLBACKS:
     show(){
         this.node.active = true;    
+        this.inputPasswordNode.active = false;
+        this.fillAccounts();
         
-        if(ZilliqaNetwork.getInstance().getUserAddress() == null){
+        if(!this.accountEntries[0].node.active){
+            
             this.tabButtons[1].node.active = false;
-
             this.onChangeTab(null, 0);
         } else{
             this.tabButtons[1].node.active = true;
-            this.addressLabel.string = ZilliqaNetwork.getInstance().getUserAddress();
+            //this.addressLabel.string = ZilliqaNetwork.getInstance().getUserAddress();
             this.onChangeTab(null, 1);
         }
         
@@ -73,6 +87,45 @@ export default class AuthenticationPopup extends cc.Component {
         });
     }
 
+    fillAccounts() {
+        let sampleAccount = this.accountEntries[0].node;
+
+        var accounts = ZilliqaNetwork.getInstance().getAllAccounts();
+
+        var size = 0, addr;
+        for (addr in accounts) {            
+            var entry = null;
+            if(size < this.accountEntries.length){
+                entry = this.accountEntries[size];
+            } else{
+                let acc = cc.instantiate(sampleAccount);                
+                this.accountHolder.addChild(acc);  
+                entry = acc.getComponent(AccountEntry);
+                this.accountEntries.push(entry);
+            }
+
+            entry.node.targetOff(this);
+            entry.node.on('select', this.onSelectAccount, this);
+
+            entry.setInfo(addr);
+            size++;
+        }
+
+        for(let i=0;i<this.accountEntries.length;i++){
+            this.accountEntries[i].node.active = (i < size);
+        }
+    }
+
+    onSelectAccount(addr: string){
+        this.inputPasswordNode.active = true;
+        this.addressLabel.string = addr;
+        this.importPasswordEditBox.string = "";
+    }
+
+    onCloseInputPassword(){
+        this.inputPasswordNode.active = false;
+    }
+
     onLogin(){
         if(this.importPasswordEditBox.string.length == 0){
             this.node.emit('error', 'Password was empty!');
@@ -80,7 +133,7 @@ export default class AuthenticationPopup extends cc.Component {
         }
 
         var that = this;
-        ZilliqaNetwork.getInstance().authorizeAccount(this.importPasswordEditBox.string, function(err, data) {
+        ZilliqaNetwork.getInstance().authorizeAccount(this.addressLabel.string, this.importPasswordEditBox.string, function(err, data) {
             if (err || data.error) {
                 that.node.emit('error', err || data.error);                
             } else {

@@ -11,7 +11,7 @@
 //const {ccclass, property} = cc._decorator;
 //import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
 //import Zilliqa from './zilliqa-sdk/zilliqa';
-import {Zilliqa, BN} from './zilliqa-sdk/zilliqa.cocos'
+import {Zilliqa, BN, Long} from './zilliqa-sdk/zilliqa.cocos'
 
 
 declare type callback = (error: any, data: any) => any;
@@ -35,9 +35,12 @@ export default class ZilliqaNetwork{
     //private privateKey: string = null;//'79A965ED6F516933838C4EC94D3B9512EB888DC02DC84115C40D274B7B76C99D';
     private address: string = null;//'8df0010571b2142329e13d80d530407e298fde8e';
     private encryptedData: string = null;
-    
-    private static s_dataFileName: string = 'UserKeyStore';
 
+    private accounts = {};
+    
+    private static s_dataFileName: string = 'UserKeyStores';
+
+    getAllAccounts() {return this.accounts;}
     getUserAddress() {return this.address;}
     wasAuthenticated() {return this.zilliqaClient && this.zilliqaClient.wallet.defaultAccount;}
 
@@ -45,6 +48,7 @@ export default class ZilliqaNetwork{
         if(this.zilliqaClient.wallet.defaultAccount != null){
             this.zilliqaClient.wallet.remove(this.zilliqaClient.wallet.defaultAccount.address);
             this.zilliqaClient.wallet.defaultAccount = null;
+            this.address = null;
         }        
     }
 
@@ -54,34 +58,35 @@ export default class ZilliqaNetwork{
             var path = jsb.fileUtils.getWritablePath();
             if (jsb.fileUtils.isFileExist(path + ZilliqaNetwork.s_dataFileName))
             {
-                var temp = jsb.fileUtils.getValueMapFromFile(path + ZilliqaNetwork.s_dataFileName);
+                var temp = jsb.fileUtils.getValueMapFromFile(path + ZilliqaNetwork.s_dataFileName);                
                 var file = JSON.parse(temp.data);
                 if (file) {                                        
-                    this.address = file.address;
-                    this.encryptedData = file.encryptedData;
+                    this.accounts = file.accounts;
                 }                
             }
         }
         else
         {            
             var data = cc.sys.localStorage.getItem(ZilliqaNetwork.s_dataFileName);
-            if (data != null) {
+            if (data != null) {                
                 var file = JSON.parse(data);
 
                 if(file){
-                    this.address = file.address;
-                    this.encryptedData = file.encryptedData;
+                    this.accounts = file.accounts;
                 }
             }
         }
+        console.log('loadKeyStore', JSON.stringify(this.accounts));
+        if(this.accounts == null){
+            this.accounts = {};
+        }
     }
 
-    saveKeyStore() {
+    saveKeyStore() {   
         var file = {
-            address: this.address,
-            encryptedData: this.encryptedData
-        };
-
+            accounts: this.accounts
+        }     
+        console.log('saveKeyStore', JSON.stringify(this.accounts));
         if (cc.sys.isNative)
         {
             var path = jsb.fileUtils.getWritablePath();
@@ -125,7 +130,7 @@ export default class ZilliqaNetwork{
                     cb(err, null);
                     return;                
                 }                  
-                if(data.result.balance < 5000){
+                if(data.result.balance < 1000000){
                     that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');                    
                     cb('Master account has not enough balance', null);
                     return;                
@@ -137,9 +142,9 @@ export default class ZilliqaNetwork{
                 const tx = that.zilliqaClient.transactions.new({
                     version: 1,
                     toAddr: that.address,
-                    amount: new BN(5000),
-                    gasPrice: new BN(1),
-                    gasLimit: new BN(10),
+                    amount: new BN(2000000),
+                    gasPrice: new BN(100),
+                    gasLimit: Long.fromNumber(100),
                 });  
                 console.log('createTransaction');
                 console.log(JSON.stringify(tx));
@@ -171,36 +176,41 @@ export default class ZilliqaNetwork{
         try {
             
             this.zilliqaClient.wallet.export(this.address.toLowerCase(), password, 'scrypt')
-            .then((encryptJson) => {                                        
-                console.log('encryptJson', encryptJson);
-                that.encryptedData = encryptJson;
+            .then((encryptJson) => {                                                        
+                that.accounts[this.address.toLowerCase()] = encryptJson;                
                 that.saveKeyStore();
                 cb(null, that.address);
             })
             .catch((err) => {                                   
                 console.log('encryptJson', err);
                 cb(err, null);
-            });
-          
+            });          
         } catch (exception) {
             return cb(exception.message, null);            
         }        
     }
 
-    authorizeAccount(password:string, cb: callback){
-        var isJson = false;
-        try {
-            JSON.parse(this.encryptedData);
-            isJson = true;
-        } catch (e) {
-            return cb('Keystore corrupted!', null); 
-        }   
-        
+    authorizeAccount(addr:string, password:string, cb: callback){
+        var encryptedData = null;
         var that = this;
-        this.zilliqaClient.wallet.addByKeystore(this.encryptedData, password)
-        .then((adr) => {                                                            
+
+        if(this.accounts[addr] != null){
+            encryptedData = this.accounts[addr];
+        } else{
+            cb('Invalid address', null);
+            return;
+        }
+
+        // this.zilliqaClient.wallet.addByPrivateKey('3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8');
+        // this.address = this.zilliqaClient.wallet.defaultAccount.address;
+        // cb(null, this.address);
+        // return;
+        
+        this.zilliqaClient.wallet.addByKeystore(encryptedData, password)
+        .then((retAddr) => {
+            that.address = addr;
             cb(null, that.address);
-            this.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
+            that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
         })
         .catch((err) => {                                                       
             cb(err, null);
@@ -243,8 +253,7 @@ export default class ZilliqaNetwork{
             cb('Please connect to network first!', null);		
         } else if(this.address == null){            	
             cb('Please login first!', null);		
-        } else{
-            //cb('Obsolete function', null);	
+        } else{            
             this.zilliqaClient.provider.send('GetSmartContracts', this.address).then(function(data) {                    
                 if(!data){                        
                     cb('unknown error', null);
@@ -252,55 +261,6 @@ export default class ZilliqaNetwork{
                 }                   
                 cb(null, data);
             }).catch((e) => cb(e, null));
-        }  
-    }
-
-    deployHelloWorld(cb: callback){
-        //return this.deployHelloWorldb(cb);
-        if(this.zilliqaClient == null){            	
-            cb('Please connect to network first!', null);		
-        } else if(this.zilliqaClient.wallet.defaultAccount == null){            	
-            cb('Please login first!', null);		
-        } else{
-            var that = this;
-            var url = cc.url.raw('resources/HelloWorld.scilla');
-            this.getBalance(this.address, function(err, data){
-                if(err){                    
-                    cb(err, null);
-                    return;                
-                }
-                if(data.result.balance < 2500){
-                    cb('Require 2500 ZILs or more!', null);
-                    return; 
-                }
-                cc.loader.load(url, function(err, code){
-                    if(err){                    
-                        cb(err, null);
-                        return;                
-                    }
-                                                    
-                    const init = [
-                        {
-                            vname: 'owner',
-                            type: 'ByStr20',
-                            value: '0x' + that.address.toLowerCase()
-                        },
-                    ];
-
-                    const contract = that.zilliqaClient.contracts.new(code, init);                
-                    // if you are in a function, you can also use async/await
-                    contract.deploy(new BN(1), new BN(2500))
-                    .then((hello) => {                                            
-                        if (hello.isDeployed()) {
-                            return cb(null, hello);
-                        }
-                        cb('Rejected', null);                    
-                    })                       
-                    .catch((err) => {                                  
-                        cb(err, null);
-                    });
-                });
-            });
         }  
     }
 
@@ -318,7 +278,44 @@ export default class ZilliqaNetwork{
         });
     }
 
-    
+    deployContract(code: any, init: any, cb: callback){
+        //return this.deployHelloWorldb(cb);
+        if(this.zilliqaClient == null){            	
+            cb('Please connect to network first!', null);		
+        } else if(this.zilliqaClient.wallet.defaultAccount == null){            	
+            cb('Please login first!', null);		
+        } else{
+            var that = this;            
+            this.getBalance(this.address, function(err, data){
+                if(err){                    
+                    cb(err, null);
+                    return;                
+                }
+                if(data.result.balance < 2000000){
+                    cb('Require 2000000 ZILs or more!', null);
+                    return; 
+                }                
+
+                const contract = that.zilliqaClient.contracts.new(code, init);                
+                // if you are in a function, you can also use async/await
+                contract.deploy(new BN(100), Long.fromNumber(20000))
+                .then((hello) => {                                            
+                    if (hello.isDeployed()) {
+                        return cb(null, hello);
+                    }
+                    cb('Rejected', null);                    
+                })                       
+                .catch((err) => {                                  
+                    cb(err, null);
+                });                
+            });
+        }  
+    }
+
+    loadContractFromAddress(address:string){
+        return this.zilliqaClient.contracts.at(address);
+    }
+
     getSmartContractState(contractAddress: string, cb: callback){
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
@@ -329,18 +326,7 @@ export default class ZilliqaNetwork{
                     return;                
                 }                   
                 cb(null, data);
-            }).catch((e) => cb(e, null));
-
-
-            // this.zilliqaClient.blockchain.getTransaction(contractAddress)
-            // .then((tx) => {      
-            //     console.log(JSON.stringify(tx));                      
-            //     cb(null, tx);
-            // })
-            // .catch((err) => {
-            //     console.log(JSON.stringify(err));                      
-            //     cb(err, null);
-            // });    
+            }).catch((e) => cb(e, null));   
         }  
     }
 
