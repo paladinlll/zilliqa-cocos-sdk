@@ -322,7 +322,27 @@ export default class TictactoeStatePopup extends cc.Component {
         if(binding == null) return;
         var that = this;
         this.connectingNode.active = true;
-        binding.callAcceptChallenge(function(err, data) {
+        binding.callAnswerChallenge(true, function(err, data) {
+            that.connectingNode.active = false;
+            if (err) {
+                that.handleError(err);                
+            } else if (data.error) {
+                that.handleError(data.error);
+            } else {
+                console.log(data);
+                that.getContractState();
+            }  
+        })
+    }
+
+    onRefuse(){
+        if(!this.isHosting()) return;
+        var binding = GameProfile.getInstance().activeTicTacToeBinding;
+        
+        if(binding == null) return;
+        var that = this;
+        this.connectingNode.active = true;
+        binding.callAnswerChallenge(false, function(err, data) {
             that.connectingNode.active = false;
             if (err) {
                 that.handleError(err);                

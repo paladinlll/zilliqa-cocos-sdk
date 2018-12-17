@@ -131,10 +131,18 @@ export default class TicTacToeBinding{
         });
     }
 
-    callAcceptChallenge(cb: any){
+    callAnswerChallenge(b:boolean, cb: any){
         if(this.bindContract == null) return cb('null contract', null);
-        console.log('callAcceptChallenge');
-        this.bindContract.call('acceptChallenge', [], new BN(0), Long.fromNumber(5000), new BN(100))
+        console.log('callAnswerChallenge');
+        this.bindContract.call('answerChallenge', [{
+            "vname": "b", 
+            "type": "Bool",
+            "value": {
+                "argtypes": [],
+                "arguments": [],
+                "constructor": b ? "True" : "False"
+            }            
+        }], new BN(0), Long.fromNumber(5000), new BN(100))
         .then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  

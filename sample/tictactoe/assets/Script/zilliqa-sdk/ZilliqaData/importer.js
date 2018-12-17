@@ -114,6 +114,23 @@ function toSimpleData(node){
 			}
 			break;
 		}
+		case 'List':
+			ret[vname] = [];
+			var childs = value;
+			if(Array.isArray(childs)){
+				for (var c of childs) {					
+					var c = toSimpleData({
+						vname: 'c',
+						type: typeTree.childTypes[0].type,
+						value: c
+					});
+					ret[vname].push(c.c);
+				}
+				
+			} else{
+				throw new TypeError("List item must is an array");
+			}			
+			break;
 		case 'Uint32':
 		case 'Uint64':
 		case 'Uint128':

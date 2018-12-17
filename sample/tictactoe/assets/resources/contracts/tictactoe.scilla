@@ -20,7 +20,7 @@ let busing_code = Int32 5
 let set_joined_code = Int32 6
 let no_challenger_code = Int32 7
 let set_accepted_code = Int32 8
-let set_hello_code = Int32 9
+let set_refused_code = Int32 9
 let set_closed_code = Int32 10
 let wrong_turn_code = Int32 11
 let move_code = Int32 12
@@ -216,6 +216,7 @@ field challenger : Option ByStr20  = None {ByStr20}
 field welcome_msg : String = ""
 
 field board : Map Uint32 Uint32 = Emp Uint32 Uint32
+field moves : List Uint32  = Nil {Uint32}
 
 field turn : Uint32  = zero
 
@@ -262,7 +263,7 @@ transition join (mess: String)
   end
 end
 
-transition acceptChallenge ()
+transition answerChallenge (b: Bool)
   is_owner = builtin eq owner _sender;
   is_opening <- opening;
   is_accepted <- accepted;
@@ -291,55 +292,35 @@ transition acceptChallenge ()
           msgs = one_msg msg;
           send msgs
         | Some v =>
-          tt = True;    
-          accepted := tt;
-                    
-          turn := zero;
-          winner_code := zero;
-          
-          nb = new_board;
-          board := nb;
+          match b with
+          | False =>
+            tt = False;
+            accepted := tt;
+            nc = None {ByStr20};
+            challenger := nc;
+            msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
+            msgs = one_msg msg;
+            send msgs
+          | True =>
+            tt = True;    
+            accepted := tt;
+                      
+            turn := zero;
+            winner_code := zero;
+            
+            nb = new_board;
+            board := nb;
 
-          msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_accepted_code};
-          msgs = one_msg msg;
-          send msgs
+            m = Nil {Uint32};
+            moves := m;
+
+            msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_accepted_code};
+            msgs = one_msg msg;
+            send msgs
+          end          
         end
       end        
     end      
-  end
-end
-
-transition refuseChallenge ()
-  is_owner = builtin eq owner _sender;
-  is_opening <- opening;  
-  cl <- challenger;
-  match is_opening with
-  | False =>
-    msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_open_code};
-    msgs = one_msg msg;
-    send msgs
-  | True =>
-    match is_owner with
-    | False =>
-      msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : not_owner_code};
-      msgs = one_msg msg;
-      send msgs
-    | True =>
-      match cl with
-      | None =>
-        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : no_challenger_code};
-        msgs = one_msg msg;
-        send msgs
-      | Some v =>
-        tt = False;
-        accepted := tt;
-        nc = None {ByStr20};
-        challenger := nc;
-        msg = {_tag : "Main"; _recipient : _sender; _amount : Uint128 0; code : set_closed_code};
-        msgs = one_msg msg;
-        send msgs
-      end
-    end
   end
 end
 
@@ -414,6 +395,11 @@ transition move (slot : Uint32)
           bs1 = builtin remove bs slot;
           bs2 = builtin put bs slot tc;
           board := bs2;
+
+          m <- moves;
+          mn = Cons {Uint32} slot m;
+          moves := mn;
+
           nt = next_turn t;
           turn := nt;
           wc = get_winner_code bs2 t;

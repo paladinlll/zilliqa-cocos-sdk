@@ -157,8 +157,8 @@ export default class ZilliqaPopup extends cc.Component {
         var that = this;
         this.connectingNode.active = true;
 
-        //let URL = 'https://dev-test-api.aws.z7a.xyz'
-        let URL = 'https://api-scilla.zilliqa.com';
+        let URL = 'https://api.zilliqa.com/';
+        //let URL = 'https://api-scilla.zilliqa.com';
         ZilliqaNetwork.getInstance().connect(URL, function(err, data) {
             if (err || data.error) {                         
                 that.handleError(err, data);
