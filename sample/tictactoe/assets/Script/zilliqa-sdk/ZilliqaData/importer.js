@@ -64,12 +64,29 @@ function parseTypeTree(strType){
 	}
 	return typeStack[0];
 }
+
+function getTypeString(typeCtx){
+	var ret = typeCtx.type;
+	if(typeCtx.childTypes == null){		
+		return ret;
+	}
+	ret += " ";
+	for(var i=0;i<typeCtx.childTypes.length;i++){
+		ret += "(";
+		ret += getTypeString(typeCtx.childTypes[i]);
+		ret += ")";
+		if(i<typeCtx.childTypes.length - 1){
+			ret += " ";
+		}
+	}
+	return ret;
+}
+
 function toSimpleData(node){
 	var vname = node.vname;
 	var type = node.type;
 	var value = node.value;
-	var ret = {};
-	
+	var ret = {};	
 	var typeTree = parseTypeTree(type);		
 	switch (typeTree.type)
 	{
@@ -82,7 +99,13 @@ function toSimpleData(node){
 			break;
 		case 'Option':
 			if(value['constructor'] == 'Some'){
-				ret[vname] = value.arguments[0];
+				var op = toSimpleData({
+					vname: 'op',
+					type: getTypeString(typeTree.childTypes[0]),
+					value: value.arguments[0]
+				});
+
+				ret[vname] = op.op;
 			} else{
 				ret[vname] = '';
 			}
@@ -96,13 +119,13 @@ function toSimpleData(node){
 				for (var c of childs) {
 					var key = toSimpleData({
 						vname: 'key',
-						type: typeTree.childTypes[0].type,
+						type: getTypeString(typeTree.childTypes[0]),
 						value: c.key
 					});
-
+					
 					var val = toSimpleData({
 						vname: 'val',
-						type: typeTree.childTypes[1].type,
+						type: getTypeString(typeTree.childTypes[1]),
 						value: c.val
 					});
 					
@@ -121,7 +144,7 @@ function toSimpleData(node){
 				for (var c of childs) {					
 					var c = toSimpleData({
 						vname: 'c',
-						type: typeTree.childTypes[0].type,
+						type: getTypeString(typeTree.childTypes[0]),
 						value: c
 					});
 					ret[vname].push(c.c);
@@ -131,6 +154,31 @@ function toSimpleData(node){
 				throw new TypeError("List item must is an array");
 			}			
 			break;
+		case 'Pair':
+			{
+				ret[vname] = {};			
+				var childs = value.arguments;				
+				if(Array.isArray(childs) && childs.length == 2){
+					var x = toSimpleData({
+						vname: 'x',
+						type: getTypeString(typeTree.childTypes[0]),
+						value: childs[0]
+					});
+
+					var y = toSimpleData({
+						vname: 'y',
+						type: getTypeString(typeTree.childTypes[1]),
+						value: childs[1]
+					});
+					
+					ret[vname].x = x.x;
+					ret[vname].y = y.y;
+					
+				} else{
+					throw new TypeError("Map item must is an array");
+				}
+				break;
+			}
 		case 'Uint32':
 		case 'Uint64':
 		case 'Uint128':
