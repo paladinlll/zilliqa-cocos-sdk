@@ -194,6 +194,121 @@ function toSimpleData(node){
 	return ret;
 }
 
+function toStraightData(node){
+	var vname = node.vname;
+	var type = node.type;
+	var value = node.value;
+	var ret = {
+		vname : node.vname,
+		type : node.type,
+	};	
+	var typeTree = parseTypeTree(type);		
+	switch (typeTree.type)
+	{
+		case 'Bool':
+			ret.value = value['constructor'].toLowerCase() == 'true';
+			break;
+		case 'String':
+		case 'ByStr20':
+			ret.value = value;
+			break;
+		case 'Option':
+			if(value['constructor'] == 'Some'){
+				var op = toStraightData({
+					vname: 'op',
+					type: getTypeString(typeTree.childTypes[0]),
+					value: value.arguments[0]
+				});
+
+				ret.value = op.value;
+			} else{
+				ret.value = '';
+			}
+			break;
+		case 'Map':
+		{
+			ret.value = {};
+			
+			var childs = value;
+			if(Array.isArray(childs)){
+				for (var c of childs) {
+					var key = toStraightData({
+						vname: 'key',
+						type: getTypeString(typeTree.childTypes[0]),
+						value: c.key
+					});
+					
+					var val = toStraightData({
+						vname: 'val',
+						type: getTypeString(typeTree.childTypes[1]),
+						value: c.val
+					});
+					
+					ret.value[key.value] = val.value;					
+				}
+				
+			} else{
+				throw new TypeError("Map item must is an array");
+			}
+			break;
+		}
+		case 'List':
+			ret.value = [];
+			var childs = value;
+			if(Array.isArray(childs)){
+				for (var c of childs) {					
+					var c = toStraightData({
+						vname: 'c',
+						type: getTypeString(typeTree.childTypes[0]),
+						value: c
+					});
+					ret.value.push(c.value);
+				}
+				
+			} else{
+				throw new TypeError("List item must is an array");
+			}			
+			break;
+		case 'Pair':
+			{
+				ret.value = {};			
+				var childs = value.arguments;				
+				if(Array.isArray(childs) && childs.length == 2){
+					var x = toStraightData({
+						vname: 'x',
+						type: getTypeString(typeTree.childTypes[0]),
+						value: childs[0]
+					});
+
+					var y = toStraightData({
+						vname: 'y',
+						type: getTypeString(typeTree.childTypes[1]),
+						value: childs[1]
+					});
+					
+					ret.value.x = x.value;
+					ret.value.y = y.value;
+					
+				} else{
+					throw new TypeError("Map item must is an array");
+				}
+				break;
+			}
+		case 'Uint32':
+		case 'Uint64':
+		case 'Uint128':
+		case 'Int32':
+		case 'Int64':
+		case 'Int128':
+			ret.value = parseInt(value);
+			break;
+		default:
+			ret.value = value;
+			break;
+	};	
+	return ret;
+}
+
 function getEmptyData(node){
 	if(isObject(node)){
 		return {};
@@ -203,7 +318,7 @@ function getEmptyData(node){
 	return '';
 }
 
-function convertToSimpleJson(input){	
+function convertToSimpleJson(input, bStraight = false){	
 	var stackIns = [];
 	var stackParents = [];
 	var stackOuts = [];
@@ -217,7 +332,7 @@ function convertToSimpleJson(input){
 		var curIn = stackIns[k];	
 		
 		if(isZilliqaData(curIn)){
-			stackOuts[k] = toSimpleData(curIn);		
+			stackOuts[k] = bStraight ? toStraightData(curIn) : toSimpleData(curIn);
 		} else if(isObject(curIn)){
 		} else if(Array.isArray(curIn)){
 			for (var p of input) {
