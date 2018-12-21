@@ -10,10 +10,7 @@
 
 const {ccclass, property} = cc._decorator;
 
-import { 
-    ZilliqaNetwork,     
-} from '../..';
-
+import ZilliqaNetwork from '../../ZilliqaNetwork';
 import ErrorPopup from '../ErrorPopup';
 import AuthenticationPopup from './AuthenticationPopup';
 import ContractsPopup from './ContractsPopup'

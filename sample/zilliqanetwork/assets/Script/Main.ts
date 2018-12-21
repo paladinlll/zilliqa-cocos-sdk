@@ -12,15 +12,16 @@ const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class Main extends cc.Component {
-
-    @property(cc.Prefab)
-    zilliqaPopupPrefab: cc.Prefab = null;
-
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        var zilliqaNode = cc.instantiate(this.zilliqaPopupPrefab);
-        this.node.addChild(zilliqaNode);             
+        cc.loader.loadRes('ZilliqaPopup', cc.Prefab, (err, prefab: cc.Prefab) => {
+            if (err) {
+                cc.error(err.message || err);
+                return;
+            }
+            this.node.addChild(cc.instantiate(prefab));      
+        });           
     }
 
     start () {

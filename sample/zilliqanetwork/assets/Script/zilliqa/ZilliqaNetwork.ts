@@ -11,7 +11,7 @@
 //const {ccclass, property} = cc._decorator;
 //import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
 //import Zilliqa from './zilliqa-sdk/zilliqa';
-import {Zilliqa, BN, Long} from './zilliqa-sdk/zilliqa.cocos'
+import {Zilliqa, BN, Long} from './zilliqa.cocos'
 
 
 declare type callback = (error: any, data: any) => any;
@@ -31,7 +31,7 @@ export default class ZilliqaNetwork{
         return this.instance;
     } 
 
-    public zilliqaClient: Zilliqa = null;
+    public zilliqaClient: any = null;
     //private privateKey: string = null;//'79A965ED6F516933838C4EC94D3B9512EB888DC02DC84115C40D274B7B76C99D';
     private address: string = null;//'8df0010571b2142329e13d80d530407e298fde8e';
     private encryptedData: string = null;

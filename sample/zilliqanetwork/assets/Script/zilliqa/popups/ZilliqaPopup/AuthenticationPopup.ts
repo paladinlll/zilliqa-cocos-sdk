@@ -10,9 +10,7 @@
 
 const {ccclass, property} = cc._decorator;
 import AccountEntry from './AccountEntry';
-import { 
-    ZilliqaNetwork
-} from '../..';
+import ZilliqaNetwork from '../../ZilliqaNetwork';
 
 @ccclass
 export default class AuthenticationPopup extends cc.Component {

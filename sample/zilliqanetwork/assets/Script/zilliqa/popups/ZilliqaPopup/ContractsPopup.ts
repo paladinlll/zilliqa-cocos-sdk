@@ -73,15 +73,6 @@ export default class ContractsPopup extends cc.Component {
         }
     }
 
-    refresh(){
-        for(let i=0;i<this.contractEntries.length;i++){
-            if(this.contractEntries[i].node.active){
-                this.contractEntries[i].refresh();
-            }
-        }
-    }
-
-
     // onLoad () {}
 
     start () {

@@ -1,4 +1,4 @@
-import ZilliqaNetwork from './ZilliqaNetwork';
+import ZilliqaNetwork from './zilliqa/ZilliqaNetwork';
 
 export { 
   ZilliqaNetwork, 
