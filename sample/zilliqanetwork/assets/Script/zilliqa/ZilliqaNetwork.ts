@@ -121,23 +121,29 @@ export default class ZilliqaNetwork{
             cb('Please connect to network first!', null);		
         } else if(this.address == null){            	
             cb('Please login first!', null);		
-        } else{            
-            this.zilliqaClient.wallet.addByPrivateKey('3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8');            
+        } else{
+            var genesiskey = '2A995ADB71F9110B519AAEE4959B6E611218FE42F1C554B3D0175DB5D5F54759';
+	        var genesisAddr = this.zilliqaClient.wallet.addByPrivateKey(genesiskey);
             var that = this;
-            this.getBalance('8254b2c9acdf181d5d6796d63320fbb20d4edd12', function(err, data) {
+            this.getBalance(genesisAddr, function(err, data) {
                 if(err){
-                    that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');                    
+                    that.zilliqaClient.wallet.remove(genesisAddr);                    
                     cb(err, null);
                     return;                
-                }                  
+                }
+                if(data.error){
+                    that.zilliqaClient.wallet.remove(genesisAddr);                    
+                    cb('Invalid genesis account', null);
+                    return; 
+                }
                 if(data.result.balance < 1000000){
-                    that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');                    
+                    that.zilliqaClient.wallet.remove(genesisAddr);                    
                     cb('Master account has not enough balance', null);
                     return;                
                 }  
                 
                                 
-                that.zilliqaClient.wallet.setDefault('8254b2c9acdf181d5d6796d63320fbb20d4edd12'.toLowerCase());                
+                that.zilliqaClient.wallet.setDefault(genesisAddr.toLowerCase());                
                 
                 const tx = that.zilliqaClient.transactions.new({
                     version: 1,
@@ -152,13 +158,13 @@ export default class ZilliqaNetwork{
                     .createTransaction(tx)
                     .then((tx) => {                        
                         // do something with then confirmed tx
-                        that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');
+                        that.zilliqaClient.wallet.remove(genesisAddr);
                         that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
                         cb(null, tx);
                     })
                     .catch((err) => {                   
                         // handle the error
-                        that.zilliqaClient.wallet.remove('8254b2c9acdf181d5d6796d63320fbb20d4edd12');
+                        that.zilliqaClient.wallet.remove(genesisAddr);
                         that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
                         cb(err, null);
                     });                                
@@ -228,7 +234,7 @@ export default class ZilliqaNetwork{
         } else{
             this.zilliqaClient
                 .blockchain.getBalance(address)
-                .then(function(data) {
+                .then(function(data) {                    
                     cb(null, data);
                 }).catch((e) => cb(e, null));       
         }  

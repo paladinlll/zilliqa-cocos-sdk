@@ -106,8 +106,8 @@ export default class ZilliqaPopup extends cc.Component {
             this.errorPopup.show(err);
             this.responseText.string = err;
         } else if (data.error) {
-            this.errorPopup.show(data.error);
-            this.responseText.string = data.error;
+            this.errorPopup.show(data.error.message);
+            this.responseText.string = JSON.stringify(data.error);
         }
     }
 

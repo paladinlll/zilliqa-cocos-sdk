@@ -9,10 +9,9 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@zilliqa-js/zilliqa": "^0.2.9"
-  },
   "devDependencies": {
+    "scilla-data-parser": "^0.0.8",
+    "@zilliqa-js/zilliqa": "^0.3.1",
     "replace-in-file-webpack-plugin": "^1.0.6",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.23.1",
