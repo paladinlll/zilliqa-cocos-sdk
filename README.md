@@ -3,7 +3,7 @@
 = `Hello Zilliqa`
 
 ## I. Init HelloWorld
-* Create new cocos creator project.
+Create new cocos creator project.\
 ![](./images/hz_1.png)![](./images/hz_2.png)
 ## II. Generate ZilliqaJS SDK
 ```shell
