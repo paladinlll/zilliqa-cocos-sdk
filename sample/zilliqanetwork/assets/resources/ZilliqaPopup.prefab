@@ -15389,6 +15389,12 @@
     "responseText": {
       "__id__": 414
     },
+    "minimizeLayer": {
+      "__id__": 419
+    },
+    "maximizeLayer": {
+      "__id__": 2
+    },
     "networkLabel": {
       "__id__": 422
     },

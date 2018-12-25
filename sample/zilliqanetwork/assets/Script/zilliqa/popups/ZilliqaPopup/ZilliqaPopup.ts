@@ -46,6 +46,12 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Label)
     responseText: cc.Label = null;
 
+    @property(cc.Node)
+    minimizeLayer: cc.Node = null;
+
+    @property(cc.Node)
+    maximizeLayer: cc.Node = null;
+
     @property(cc.Label)
     networkLabel: cc.Label = null;
 
@@ -66,7 +72,7 @@ export default class ZilliqaPopup extends cc.Component {
         this.errorPopup.node.active = false;
         this.messagePopup.node.active = false;
         
-
+        this.onMaximize();
         var that = this;
         this.authenticationPopup.node.on('error', (msg:string) => {
             that.errorPopup.show(msg);
@@ -99,6 +105,17 @@ export default class ZilliqaPopup extends cc.Component {
 
     updateBalance(data){
         this.balanceLabel.string = "" + (data.balance || 0);
+    }
+
+    onMaximize(){
+        this.maximizeLayer.active = true;
+        this.minimizeLayer.active = false;
+    }
+
+    onMinimize(){
+        this.maximizeLayer.active = false;
+        this.minimizeLayer.active = true;
+        this.node.emit('minimize');
     }
 
     handleError(err, data){        
