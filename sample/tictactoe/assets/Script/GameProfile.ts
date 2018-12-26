@@ -1,5 +1,5 @@
 import TicTacToeBinding from './contracts/TicTacToeBinding'
-import ZilliqaNetwork from './ZilliqaNetwork'
+import ZilliqaNetwork from './zilliqa/ZilliqaNetwork'
 import * as crypto from 'crypto'
 
 export default class GameProfile{

@@ -297,6 +297,10 @@ export default class ZilliqaNetwork{
                     cb(err, null);
                     return;                
                 }
+                if(data.error){                    
+                    cb(data.error.message, null);
+                    return; 
+                }
                 if(data.result.balance < 2000000){
                     cb('Require 2000000 ZILs or more!', null);
                     return; 

@@ -9,11 +9,10 @@
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 //import ZilliqaNetwork from '../ZilliqaNetwork';
 import { 
-    ZilliqaNetwork,     
-    ZilliqaParser
+    ZilliqaNetwork    
 } from '..';
 
-import {BN, Long} from '../zilliqa-sdk/zilliqa.cocos'
+import {BN, Long, ScillaDataParser} from '../zilliqa/zilliqa.cocos'
 export default class TicTacToeBinding{
     address: string = '';
     bindContract = null; 
@@ -79,7 +78,7 @@ export default class TicTacToeBinding{
             } else if (data.result.Error) {
                 cb(data.result.Error, null);
             } else {                                
-                var stateInit = ZilliqaParser.convertToSimpleJson(data.result);            
+                var stateInit = ScillaDataParser.convertToSimpleJson(data.result);            
                 that.contractInit = stateInit;
                 cb(null, stateInit);
             }            
@@ -99,7 +98,7 @@ export default class TicTacToeBinding{
             } else if (data.result.Error) {
                 cb(data.result.Error, null);
             } else {                                
-                var stateData = ZilliqaParser.convertToSimpleJson(data.result);                
+                var stateData = ScillaDataParser.convertToSimpleJson(data.result);                
                 that.contractState = stateData;
                 cb(null, stateData);
             }            
@@ -134,15 +133,21 @@ export default class TicTacToeBinding{
     callAnswerChallenge(b:boolean, cb: any){
         if(this.bindContract == null) return cb('null contract', null);
         console.log('callAnswerChallenge');
-        this.bindContract.call('answerChallenge', [{
+
+        // {
+        //     "vname": "b", 
+        //     "type": "Bool",
+        //     "value": {
+        //         "argtypes": [],
+        //         "arguments": [],
+        //         "constructor": b ? "True" : "False"
+        //     }            
+        // }
+        this.bindContract.call('answerChallenge', ScillaDataParser.convertToScillaDataList([{
             "vname": "b", 
             "type": "Bool",
-            "value": {
-                "argtypes": [],
-                "arguments": [],
-                "constructor": b ? "True" : "False"
-            }            
-        }], new BN(0), Long.fromNumber(5000), new BN(100))
+            "value": b
+        }]), new BN(0), Long.fromNumber(5000), new BN(100))
         .then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
@@ -153,15 +158,11 @@ export default class TicTacToeBinding{
     callChangeOpenStatus(b:boolean, cb: any){
         if(this.bindContract == null) return cb('null contract', null);
         console.log('callChangeOpenStatus to ', b);
-        this.bindContract.call('changeOpenStatus', [{
+        this.bindContract.call('changeOpenStatus', ScillaDataParser.convertToScillaDataList([{
             "vname": "b", 
             "type": "Bool",
-            "value": {
-                "argtypes": [],
-                "arguments": [],
-                "constructor": b ? "True" : "False"
-            }            
-        }], new BN(0), Long.fromNumber(5000), new BN(100)
+            "value": b
+        }]), new BN(0), Long.fromNumber(5000), new BN(100)
         ).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  

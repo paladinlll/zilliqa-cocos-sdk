@@ -118,13 +118,14 @@ export default class TictactoeStatePopup extends cc.Component {
     
     deployTicTacToe(){
         this.stateLabel.string = "deploying TicTacToe...";
-        console.log('deployTicTacToe');
+        
         var that = this;
         this.connectingNode.active = true;
 
         GameProfile.getInstance().getTictactoeCode((data) => {
+            console.log('deployTicTacToe data.checksum', data.checksum);
             if(data.code == ''){                    
-                //that.handleError('Code not found!', {});
+                that.handleError('Code not found!');
                 that.connectingNode.active = false;
                 return;                
             }
@@ -133,6 +134,7 @@ export default class TictactoeStatePopup extends cc.Component {
 
             ZilliqaNetwork.getInstance().deployContract(data.code, init, function(err, hello) {
                 if (err) {                    
+                    that.handleError(err);
                     that.connectingNode.active = false;
                 } else {
                     GameProfile.getInstance().setActiveTicTacToeAddress(hello.address);
