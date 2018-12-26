@@ -1,6 +1,20 @@
+# Content:
+ * [What is Cocos SDK](#1-what-is-cocos-sdk)
+ * [Features](#2-features)
+ * [Getting Started](#3-getting-started)
+   - [Init HelloWorld](#a-init-helloworld)
+   - [Generate ZilliqaJS SDK](#b-generate-zilliqajs-sdk)
+   - [Integrate to Creator Game](#c-integrate-to-creator-game)
+   - [Add some tests](#d-add-some-tests)
+       - [Connect](#connect)
+       - [Check Balance of an given address](#check-balance-of-an-given-address)
+       - [Using sample assets](#using-sample-assets)
+ * [Samples](#4-sample)
+ 
+
 # 1. What is Cocos SDK
-`Cocos Creator` is a complete package of game development tools and workflow, including a game engine (based on Cocos2d-x), resource management, scene editing, game preview, debug and publish one project to multiple platforms.
-The `Zilliqa Cocos SDK` will allows developers easy to build a dapp on cocos creator run on `zilliqa blockchain`.
+* `Cocos Creator` is a complete package of game development tools and workflow, including a game engine (based on Cocos2d-x), resource management, scene editing, game preview, debug and publish one project to multiple platforms.
+* The `Zilliqa Cocos SDK` will allows developers easy to build a dapp on cocos creator run on `zilliqa blockchain`.
 
 you can download Cocos Creator from [here](www.cocos.com/creator) , and install.
 
@@ -105,7 +119,7 @@ Because create, store, and load an account are have many components and codes so
 ![](./images/hz_4.png)
 
 
-# 4. Sample
+# 4. Samples
 There have two Sample project:
 * [zilliqanetwork](https://github.com/paladinlll/zilliqa-cocos-sdk/tree/master/sample/zilliqanetwork) the final of Hello Zilliqa project.
 * [tic-tac-toe](https://github.com/paladinlll/zilliqa-cocos-sdk/tree/master/sample/tictactoe) use zilliqa sdk in a real game.
