@@ -87,7 +87,7 @@ import ZilliqaNetwork from '../zilliqa/ZilliqaNetwork';
 ![](./images/hz_8.png)
 
 ##### Using sample assets
-Because create, store, and load an account is have many components and code so please try use my final asset
+Because create, store, and load an account are have many components and codes so please try use my final asset.
 * Import `sample/zilliqanetwork.zip` to project.
 * Create zilliqa popup in `HelloWorld` class.
  ```ts
@@ -103,7 +103,7 @@ Because create, store, and load an account is have many components and code so p
     }
  ```
 ![](./images/hz_4.png)
-![](./images/hz_5.png)
+
 
 # 4. Sample
 There have two Sample project:
