@@ -229,7 +229,7 @@ export default class ZilliqaNetwork{
         }
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
-        } else if(this.address == null){            	
+        } else if(address == null){            	
             cb('Please login first!', null);		
         } else{
             this.zilliqaClient
@@ -296,10 +296,6 @@ export default class ZilliqaNetwork{
                 if(err){                    
                     cb(err, null);
                     return;                
-                }
-                if(data.error){                    
-                    cb(data.error.message, null);
-                    return; 
                 }
                 if(data.result.balance < 2000000){
                     cb('Require 2000000 ZILs or more!', null);

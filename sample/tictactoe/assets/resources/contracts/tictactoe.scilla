@@ -1,3 +1,5 @@
+scilla_version 0
+
 (* TicTacToe contract *)
 
 import ListUtils

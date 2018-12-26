@@ -162,8 +162,12 @@ export default class TicTacToeBinding{
             "vname": "b", 
             "type": "Bool",
             "value": b
-        }]), new BN(0), Long.fromNumber(5000), new BN(100)
-        ).then((_) => {
+        }]), {
+            // amount, gasPrice and gasLimit must be explicitly provided
+            amount: new BN(0),
+            gasPrice: new BN(100),
+            gasLimit: Long.fromNumber(2500),
+        }).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);
