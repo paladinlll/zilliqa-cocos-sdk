@@ -297,6 +297,10 @@ export default class ZilliqaNetwork{
                     cb(err, null);
                     return;                
                 }
+                if(data.error){                    
+                    cb(data.error.message, null);
+                    return; 
+                }
                 if(data.result.balance < 2000000){
                     cb('Require 2000000 ZILs or more!', null);
                     return; 
@@ -304,8 +308,12 @@ export default class ZilliqaNetwork{
 
                 const contract = that.zilliqaClient.contracts.new(code, init);                
                 // if you are in a function, you can also use async/await
-                contract.deploy(new BN(100), Long.fromNumber(20000))
-                .then((hello) => {                                            
+
+                var gasMultiplier = new BN(1000000000);
+                contract.deploy({
+                    gasPrice: new BN(1).mul(gasMultiplier),
+                    gasLimit: Long.fromNumber(500000)
+                }).then(([deployTx, hello]) => {                                            
                     if (hello.isDeployed()) {
                         return cb(null, hello);
                     }

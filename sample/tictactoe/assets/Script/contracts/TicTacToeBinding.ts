@@ -18,10 +18,16 @@ export default class TicTacToeBinding{
     bindContract = null; 
     contractInit = null;
     contractState = null;
+    gasMultiplier = new BN(1000000000);
 
     getContractInit(owner:string, checksum:string){
         return [
-            {
+            // this parameter is mandatory for all init arrays
+            { 
+                vname : '_scilla_version',
+                type : 'Uint32',
+                value : '0',
+            },{
                 vname: 'owner',
                 type: 'ByStr20',
                 value: '0x' + owner.toLowerCase()
@@ -29,8 +35,8 @@ export default class TicTacToeBinding{
                 vname: 'checksum',
                 type: 'String',
                 value: checksum
-            }
-        ]
+            },
+        ];
     }
 
     bindFromAddress(addr:string, cb: any){
@@ -70,7 +76,7 @@ export default class TicTacToeBinding{
 
     fetchInit(contract, cb: any){       
         var that = this;
-        ZilliqaNetwork.getInstance().getSmartContractInit(contract.address, function(err, data) {
+        ZilliqaNetwork.getInstance().getSmartContractInit(contract.address, function(err, data) {            
             if (err) {
                 cb(err, null);
             } else if (data.error) {
@@ -78,7 +84,7 @@ export default class TicTacToeBinding{
             } else if (data.result.Error) {
                 cb(data.result.Error, null);
             } else {                                
-                var stateInit = ScillaDataParser.convertToSimpleJson(data.result);            
+                var stateInit = ScillaDataParser.convertToSimpleJson(data.result);                   
                 that.contractInit = stateInit;
                 cb(null, stateInit);
             }            
@@ -122,8 +128,12 @@ export default class TicTacToeBinding{
             vname: 'mess',
             type: 'String',
             value: 'Hello There',            
-        }], new BN(0), Long.fromNumber(5000), new BN(100)
-        ).then((_) => {
+        }], {
+            // amount, gasPrice and gasLimit must be explicitly provided
+            amount: new BN(0),
+            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasLimit: Long.fromNumber(2500),
+        }).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);
@@ -147,8 +157,12 @@ export default class TicTacToeBinding{
             "vname": "b", 
             "type": "Bool",
             "value": b
-        }]), new BN(0), Long.fromNumber(5000), new BN(100))
-        .then((_) => {
+        }]), {
+            // amount, gasPrice and gasLimit must be explicitly provided
+            amount: new BN(0),
+            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasLimit: Long.fromNumber(2500),
+        }).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);
@@ -165,7 +179,7 @@ export default class TicTacToeBinding{
         }]), {
             // amount, gasPrice and gasLimit must be explicitly provided
             amount: new BN(0),
-            gasPrice: new BN(100),
+            gasPrice: new BN(1).mul(this.gasMultiplier),
             gasLimit: Long.fromNumber(2500),
         }).then((_) => {
             cb(null, 'Done');
@@ -181,8 +195,12 @@ export default class TicTacToeBinding{
             "vname": "slot", 
             "type": "Uint32",
             "value": slot.toString()
-        }], new BN(0), Long.fromNumber(5000), new BN(100)
-        ).then((_) => {
+        }], {
+            // amount, gasPrice and gasLimit must be explicitly provided
+            amount: new BN(0),
+            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasLimit: Long.fromNumber(5000),
+        }).then((_) => {
             cb(null, 'Done');
         }).catch((err) => {                                                  
             cb(err, null);
