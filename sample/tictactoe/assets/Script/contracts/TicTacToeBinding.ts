@@ -40,21 +40,8 @@ export default class TicTacToeBinding{
     }
 
     bindFromAddress(addr:string, cb: any){
-        this.address = addr
-        this.contractInit = null;
-        this.contractState = null;
         var contract = ZilliqaNetwork.getInstance().loadContractFromAddress(addr);
-
-        var that = this;
-        this.fetchInit(contract, (err, data) => {
-            if(err){
-                cb(err, null);
-            } else{                
-                that.bindContract = contract;
-                that.contractInit = data;
-                cb(null, data);
-            }
-        });
+        this.bindFromContract(contract, cb);
     }
 
     bindFromContract(contract, cb: any){
