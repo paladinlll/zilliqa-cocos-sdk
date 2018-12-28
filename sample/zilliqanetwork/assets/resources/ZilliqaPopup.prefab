@@ -14599,7 +14599,7 @@
         "__id__": 434
       }
     ],
-    "_active": false,
+    "_active": true,
     "_level": 2,
     "_components": [
       {
@@ -15400,6 +15400,9 @@
     },
     "balanceLabel": {
       "__id__": 426
+    },
+    "balanceRequireNodeLabel": {
+      "__id__": 435
     },
     "_id": ""
   },

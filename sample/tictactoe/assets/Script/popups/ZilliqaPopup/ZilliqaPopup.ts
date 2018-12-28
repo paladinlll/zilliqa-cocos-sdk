@@ -63,11 +63,25 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Label)
     balanceLabel: cc.Label = null;
 
+    @property(cc.Label)
+    balanceRequireNodeLabel: cc.Label = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     //onLoad () {}
 
-    start () {      
+    start () {
+        var minBalanceString = ZilliqaNetwork.BALANCE_REQUIRE.toString(10);
+        var z = 0;
+        for(let i=minBalanceString.length - 1;i>=0;i--){
+            if(minBalanceString[i] != '0') break;
+            z++;
+        }
+        if(z > 0 && minBalanceString != '0'){
+            minBalanceString = minBalanceString.substr(0, minBalanceString.length - z) + "x10^" + z.toString();
+        }
+        this.balanceRequireNodeLabel.string = "Make sure you have at least " + minBalanceString + "Qa to deploy contract. Click on lelt button if you want some.";
+
         if(ZilliqaNetwork.getInstance().wasAuthenticated()){
             this.offChainNode.active = false;
             this.onChainNode.active = true;
@@ -232,31 +246,9 @@ export default class ZilliqaPopup extends cc.Component {
                 that.handleError(err, data);
             } else {               
                 //that.responseText.string = JSON.stringify(data.result);
-                that.contractsPopup.show(data.result);
+                that.contractsPopup.show(data.result || []);
             }
             that.connectingNode.active = false;
-        });
-    }
-
-    deployHelloWorld(){
-        var that = this;
-        this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().deployHelloWorld(function(err, hello) {
-            if (err) {                
-                that.handleError(err, {});
-                that.connectingNode.active = false;
-            } else {
-                that.responseText.string = 'Deployed to ' + hello.address + '. Calling setHello';
-                ZilliqaNetwork.getInstance().callSetHello(hello, function(err, _) {
-                    if (err) {                
-                        that.handleError(err, {});
-                    } else {                       
-                        that.responseText.string = 'Done';
-                    }
-                    that.getBalance();
-                    that.connectingNode.active = false;
-                });                
-            }            
         });
     }
 

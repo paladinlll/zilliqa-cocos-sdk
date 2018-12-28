@@ -31,7 +31,7 @@ you can download Cocos Creator from [here](www.cocos.com/creator) , and install.
 Create new cocos creator project.\
 ![](./images/hz_1.png)![](./images/hz_2.png)
 ## b. Generate ZilliqaJS SDK
-*Currently I using zilliqa-js@0.3.1 and scilla-data-parser@0.0.8*
+*Currently I using zilliqa-js@0.3.1 and scilla-data-parser@0.0.9*
 ```shell
 cd deps
 yarn install

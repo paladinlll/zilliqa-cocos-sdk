@@ -17,8 +17,7 @@ export default class TicTacToeBinding{
     address: string = '';
     bindContract = null; 
     contractInit = null;
-    contractState = null;
-    gasMultiplier = new BN(1000000000);
+    contractState = null;    
 
     getContractInit(owner:string, checksum:string){
         return [
@@ -118,7 +117,7 @@ export default class TicTacToeBinding{
         }], {
             // amount, gasPrice and gasLimit must be explicitly provided
             amount: new BN(0),
-            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
             gasLimit: Long.fromNumber(2500),
         }).then((_) => {
             cb(null, 'Done');
@@ -147,7 +146,7 @@ export default class TicTacToeBinding{
         }]), {
             // amount, gasPrice and gasLimit must be explicitly provided
             amount: new BN(0),
-            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
             gasLimit: Long.fromNumber(2500),
         }).then((_) => {
             cb(null, 'Done');
@@ -166,7 +165,7 @@ export default class TicTacToeBinding{
         }]), {
             // amount, gasPrice and gasLimit must be explicitly provided
             amount: new BN(0),
-            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
             gasLimit: Long.fromNumber(2500),
         }).then((_) => {
             cb(null, 'Done');
@@ -185,7 +184,7 @@ export default class TicTacToeBinding{
         }], {
             // amount, gasPrice and gasLimit must be explicitly provided
             amount: new BN(0),
-            gasPrice: new BN(1).mul(this.gasMultiplier),
+            gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
             gasLimit: Long.fromNumber(5000),
         }).then((_) => {
             cb(null, 'Done');

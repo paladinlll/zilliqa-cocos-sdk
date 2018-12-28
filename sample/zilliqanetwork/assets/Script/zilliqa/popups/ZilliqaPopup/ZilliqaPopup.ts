@@ -58,11 +58,25 @@ export default class ZilliqaPopup extends cc.Component {
     @property(cc.Label)
     balanceLabel: cc.Label = null;
 
+    @property(cc.Label)
+    balanceRequireNodeLabel: cc.Label = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     //onLoad () {}
 
-    start () {      
+    start () {
+        var minBalanceString = ZilliqaNetwork.BALANCE_REQUIRE.toString(10);
+        var z = 0;
+        for(let i=minBalanceString.length - 1;i>=0;i--){
+            if(minBalanceString[i] != '0') break;
+            z++;
+        }
+        if(z > 0 && minBalanceString != '0'){
+            minBalanceString = minBalanceString.substr(0, minBalanceString.length - z) + "x10^" + z.toString();
+        }
+        this.balanceRequireNodeLabel.string = "Make sure you have at least " + minBalanceString + "Qa to deploy contract. Click on lelt button if you want some.";
+		
         this.offChainNode.active = true;
         this.onChainNode.active = false;        
         this.addressEditBox.string = "";
@@ -209,7 +223,7 @@ export default class ZilliqaPopup extends cc.Component {
             if (err || data.error) {                
                 that.handleError(err, data);
             } else {                               
-                that.contractsPopup.show(data.result);
+                that.contractsPopup.show(data.result || []);
             }
             that.connectingNode.active = false;
         });
@@ -226,7 +240,11 @@ export default class ZilliqaPopup extends cc.Component {
                 return;                
             }
             const init = [
-                {
+                { 
+                    vname : '_scilla_version',
+                    type : 'Uint32',
+                    value : '0',
+                }, {
                     vname: 'owner',
                     type: 'ByStr20',
                     value: '0x' + ZilliqaNetwork.getInstance().getUserAddress().toLowerCase()
