@@ -43,6 +43,12 @@ export default class ZilliqaNetwork{
     
     public static GAS_MULTIPLIER = new BN(1000000000);
     public static BALANCE_REQUIRE = new BN(20000).mul(ZilliqaNetwork.GAS_MULTIPLIER);
+
+    public static DEFAULT_CALL_PARAMS = {        
+        amount: new BN(0),
+        gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
+        gasLimit: Long.fromNumber(2500),
+    }
     
     getAllAccounts() {return this.accounts;}
     getUserAddress() {return this.address;}
@@ -273,20 +279,6 @@ export default class ZilliqaNetwork{
         }  
     }
 
-    callSetHello(hello: any, cb: any){
-        hello.call('setHello', [
-            {
-                vname: 'msg',
-                type: 'String',
-                value: 'Hello World',
-            }
-        ]).then((_) => {                            
-            cb(null, 'Done');
-        }).catch((err) => {                                                  
-            cb(err, null);
-        });
-    }
-
     deployContract(code: any, init: any, cb: callback){
         //return this.deployHelloWorldb(cb);
         if(this.zilliqaClient == null){            	
@@ -313,7 +305,7 @@ export default class ZilliqaNetwork{
                 
                 contract.deploy({
                     gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
-                    gasLimit: Long.fromNumber(500000)
+                    gasLimit: Long.fromNumber(20000)
                 }).then(([deployTx, hello]) => {                                            
                     if (hello.isDeployed()) {
                         return cb(null, hello);

@@ -257,9 +257,20 @@ export default class ZilliqaPopup extends cc.Component {
                     that.connectingNode.active = false;
                 } else {
                     that.responseText.string = 'Deployed to ' + hello.address + '. Calling setHello';
-                    that.connectingNode.active = false;
-                }      
-                that.getBalance();      
+                    hello.call('setHello', [
+                        {
+                            vname: 'msg',
+                            type: 'String',
+                            value: 'Hello World',
+                        }
+                    ], ZilliqaNetwork.DEFAULT_CALL_PARAMS)
+                    .then((_) => {                            
+                        that.connectingNode.active = false;
+                    }).catch((err) => {                                                  
+                        that.connectingNode.active = false;
+                        that.handleError(err, {});
+                    });                    
+                }                
             });
         });
     }
