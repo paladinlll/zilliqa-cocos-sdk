@@ -40,8 +40,9 @@ You already have this in [here](https://github.com/paladinlll/zilliqa-cocos-sdk)
 ![](./../../images/ii.1.png)
 
 #### Create UI TictactoeStatePopup in LobbyPopup:
+* Create tictactoeStatePopup property in LobbyPopup then link to TictactoeStatePopup 
 ![](./../../images/ii.2.png)
-
+![](./../../images/ii.2b.png)
 #### Handle onDeploy :
 * TictactoeStatePopup have function `show(address string)`. We'll link onlick event of deploy button to call that function.
 ```ts
@@ -123,7 +124,7 @@ export default class TictactoeStatePopup extends cc.Component {
         });
     }
 ```
-*After deploy a contract, you need store the address by some way. At now let do it manual by copy it then set to yourContractAddress property (of LobbyPopup) *
+*After deploy a contract, you need store the address by some way. At now let do it manual by copy it then set to yourContractAddress property (of LobbyPopup)*
 
 ## c. Show contract state
 Let back to LobbyPopup. Continue, we'll handle show TictactoeStatePopup with a contract address.
@@ -133,8 +134,8 @@ Let back to LobbyPopup. Continue, we'll handle show TictactoeStatePopup with a c
 import ZilliqaNetwork from '../zilliqa/ZilliqaNetwork'
 import {BN, Long, ScillaDataParser} from '../zilliqa/zilliqa.cocos'
 export default class TicTacToeBinding{
-	getContractInit{...}
-	
+    getContractInit{...}
+    
     contractInit = null;
     fetchInit(contract, cb: any){       
         var that = this;
@@ -155,13 +156,13 @@ export default class TicTacToeBinding{
 ```
 * We can bind this class to a contract via an address or a direct contract.
 ```ts
-bindFromAddress(addr:string, cb: any){
+    bindFromAddress(addr:string, cb: any){
         var contract = ZilliqaNetwork.getInstance().loadContractFromAddress(addr);
         this.bindFromContract(contract, cb);
     }
     
-	address = '';
-	bindContract = null;
+    address = '';
+    bindContract = null;
     bindFromContract(contract, cb: any){
         this.address = contract.address;        
         this.contractInit = null;        
@@ -199,8 +200,8 @@ bindFromAddress(addr:string, cb: any){
 #### getSmartContractState:
 * Implement fetchState in  TicTacToeBinding. Use ScillaDataParser to convert data to simple json objects.
 ```ts
-contractState = null;
-fetchState(cb: any){
+    contractState = null;
+    fetchState(cb: any){
         this.contractState = null;
         if(this.bindContract == null) return cb('null contract', null);
 
@@ -224,44 +225,44 @@ fetchState(cb: any){
 * After bindFromAddress successed. We'll call to getContractState
 ```ts
     show(addr:string){
-					...
+                    ...
                     ///todo show contract state
                     that.contractBinding = binding;
-					that.getContractState();
-					...
-	}
-					
+                    that.getContractState();
+                    ...
+    }
+                    
     getContractState() {        
         var that = this;        
         if(this.contractBinding == null) return;
         this.contractBinding.fetchState(function(err, data) {
-			if(err){
-				console.error(err);        
-				return; 
-			}
+            if(err){
+                console.error(err);        
+                return; 
+            }
             that.stateLabel.string = JSON.stringify(data);
         })
     }
 ```
 
 ## d. Invoke first transaction
-* Create Open button. Add some code to make sure it just be show after getContractState successed. Link onclick event to onChangeState
+* Create Open button. Add some code to make sure it just be show after getContractState successed. Link onclick event to onChangeState\
 ![](./../../images/ii.3.png)
 ```ts
     @property(cc.Button)
     openButton: cc.Button = null;
-	show(addr:string){
-		this.openButton.node.active = false;
-		...
-	}
-	getContractState() {
-		...
-		that.stateLabel.string = JSON.stringify(data);
+    show(addr:string){
+        this.openButton.node.active = false;
+        ...
+    }
+    getContractState() {
+        ...
+        that.stateLabel.string = JSON.stringify(data);
         that.openButton.node.active = true;
-	}
-	
-	onChangeState(){
-		/// todo
+    }
+    
+    onChangeState(){
+        /// todo
     }
 ```
 * Next we'll implement a function to invoke changeOpenStatus transaction in TicTacToeBinding. Use ScillaDataParser to generate scilla data format.
@@ -281,7 +282,7 @@ fetchState(cb: any){
 ```
 * Update the TictactoeStatePopup.onChangeState function
 ```ts
-onChangeState(){
+    onChangeState(){
         var that = this;        
         if(this.contractBinding == null) return;
         
@@ -289,10 +290,10 @@ onChangeState(){
         this.contractBinding.callChangeOpenStatus(new_state, function(err, data) {            
             if (err) {
                 console.error(err);        
-				return; 
+                return; 
             } else if (data.error) {
                 console.error(data.error);        
-				return; 
+                return; 
             } else {                
                 that.getContractState();
             }              
