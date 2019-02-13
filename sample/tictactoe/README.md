@@ -173,6 +173,7 @@ export default class TicTacToeBinding{
                 cb(err, null);
             } else{                
                 that.bindContract = contract;
+				that.contractInit = data;   
                 cb(null, data);
             }
         });

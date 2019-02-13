@@ -75,7 +75,7 @@ export default class ZilliqaPopup extends cc.Component {
         if(z > 0 && minBalanceString != '0'){
             minBalanceString = minBalanceString.substr(0, minBalanceString.length - z) + "x10^" + z.toString();
         }
-        this.balanceRequireNodeLabel.string = "Make sure you have at least " + minBalanceString + "Qa to deploy contract. Click on lelt button if you want some.";
+        this.balanceRequireNodeLabel.string = "Make sure you have at least " + minBalanceString + "Qa to deploy contract.";
 		
         this.offChainNode.active = true;
         this.onChainNode.active = false;        
@@ -150,9 +150,9 @@ export default class ZilliqaPopup extends cc.Component {
         var that = this;
         this.connectingNode.active = true;
 
-        let URL = 'https://api.zilliqa.com/';
-        //let URL = 'https://api-scilla.zilliqa.com';
-        ZilliqaNetwork.getInstance().connect(URL, function(err, data) {
+        //let URL = 'https://api.zilliqa.com/';
+        let URL = 'https://dev-api.zilliqa.com';
+        ZilliqaNetwork.getInstance().connect(URL, 333, 1, function(err, data) {
             if (err || data.error) {                         
                 that.handleError(err, data);
             } else {
@@ -203,17 +203,17 @@ export default class ZilliqaPopup extends cc.Component {
     }
 
     sendFaucetRequest() {
-        var that = this;
-        this.connectingNode.active = true;
-        ZilliqaNetwork.getInstance().sendFaucetRequest(function(err) {
-            if (err) {                
-                that.handleError(err, {});
-            } else {            
-                that.responseText.string = 'Done';
-                that.getBalance();
-            }
-            that.connectingNode.active = false;
-        });
+        //var that = this;
+        //this.connectingNode.active = true;
+        // ZilliqaNetwork.getInstance().sendFaucetRequest(function(err) {
+        //     if (err) {                
+        //         that.handleError(err, {});
+        //     } else {            
+        //         that.responseText.string = 'Done';
+        //         that.getBalance();
+        //     }
+        //     that.connectingNode.active = false;
+        // });
     }
 
     getSmartContracts(){
@@ -263,7 +263,7 @@ export default class ZilliqaPopup extends cc.Component {
                             type: 'String',
                             value: 'Hello World',
                         }
-                    ], ZilliqaNetwork.DEFAULT_CALL_PARAMS)
+                    ], ZilliqaNetwork.getInstance().getCallParams())
                     .then((_) => {                            
                         that.connectingNode.active = false;
                     }).catch((err) => {                                                  

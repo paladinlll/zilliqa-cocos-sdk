@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "scilla-data-parser": "^0.0.9",
-    "@zilliqa-js/zilliqa": "^0.3.1",
+    "@zilliqa-js/zilliqa": "^0.5.1",
     "replace-in-file-webpack-plugin": "^1.0.6",
+    "scilla-data-parser": "^0.0.9",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.23.1",
     "webpack-cli": "^3.1.2"

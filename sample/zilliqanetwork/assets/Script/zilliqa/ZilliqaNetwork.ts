@@ -11,7 +11,7 @@
 //const {ccclass, property} = cc._decorator;
 //import {Zilliqa} from './zilliqa-sdk/zilliqa.cocos';
 //import Zilliqa from './zilliqa-sdk/zilliqa';
-import {Zilliqa, BN, Long} from './zilliqa.cocos'
+import {Zilliqa, BN, Long, bytes, units} from './zilliqa.cocos'
 
 
 declare type callback = (error: any, data: any) => any;
@@ -31,23 +31,27 @@ export default class ZilliqaNetwork{
         return this.instance;
     } 
 
-    public zilliqaClient: any = null;
-    //private privateKey: string = null;//'79A965ED6F516933838C4EC94D3B9512EB888DC02DC84115C40D274B7B76C99D';
-    private address: string = null;//'8df0010571b2142329e13d80d530407e298fde8e';
-    private encryptedData: string = null;
+    public zilliqaClient: any = null;    
+    private version : string = null;
+    private address: string = null;
+    
 
     private accounts = {};
     
-    private static s_dataFileName: string = 'UserKeyStores';
+    //private static s_dataFileName: string = 'UserKeyStores';
+    private static s_dataFileName: string = 'UserKeyStores2';
 
     
-    public static GAS_MULTIPLIER = new BN(1000000000);
-    public static BALANCE_REQUIRE = new BN(20000).mul(ZilliqaNetwork.GAS_MULTIPLIER);
+    public static DEFAULT_GAS_PRICES = units.toQa('1000', units.Units.Li);
+    public static BALANCE_REQUIRE = new BN(20000).mul(ZilliqaNetwork.DEFAULT_GAS_PRICES);
 
-    public static DEFAULT_CALL_PARAMS = {        
-        amount: new BN(0),
-        gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
-        gasLimit: Long.fromNumber(2500),
+    getCallParams(gasLimit:number = 2500){
+        return {        
+            version: this.version,
+            amount: new BN(0),            
+            gasPrice: ZilliqaNetwork.DEFAULT_GAS_PRICES,
+            gasLimit: Long.fromNumber(gasLimit || 2500),
+        }
     }
     
     getAllAccounts() {return this.accounts;}
@@ -96,7 +100,7 @@ export default class ZilliqaNetwork{
         var file = {
             accounts: this.accounts
         }     
-        console.log('saveKeyStore', JSON.stringify(this.accounts));
+        
         if (cc.sys.isNative)
         {
             var path = jsb.fileUtils.getWritablePath();
@@ -110,11 +114,11 @@ export default class ZilliqaNetwork{
         }
     }
 
-    connect(URL:string, cb: callback){
+    connect(URL:string, chainId: number, msgVer: number, cb: callback){
         if(Zilliqa == null){            
             cb('Zilliqa is undefined!', null);		
         } else{
-            //greet();            
+            this.version = bytes.pack(chainId, msgVer);    
             this.zilliqaClient = new Zilliqa(URL);
             var that = this;
             this.getNetworkId(function(err, data) {
@@ -126,60 +130,6 @@ export default class ZilliqaNetwork{
         }  
     }
 
-    sendFaucetRequest(cb: callback) {
-        if(this.zilliqaClient == null){            	
-            cb('Please connect to network first!', null);		
-        } else if(this.address == null){            	
-            cb('Please login first!', null);		
-        } else{
-            var genesiskey = 'b3ccf5a3acbcb6081a8f48968e32fe88ee6358cdbb069c7f6ea8036594b95ceb'
-	        var genesisAddr = this.zilliqaClient.wallet.addByPrivateKey(genesiskey);
-            var that = this;
-            this.getBalance(genesisAddr, function(err, data) {
-                if(err){
-                    that.zilliqaClient.wallet.remove(genesisAddr);                    
-                    cb(err, null);
-                    return;                
-                }
-                if(data.error){
-                    that.zilliqaClient.wallet.remove(genesisAddr);                    
-                    cb('Invalid genesis account', null);
-                    return; 
-                }
-                if(data.result.balance < ZilliqaNetwork.BALANCE_REQUIRE){
-                    that.zilliqaClient.wallet.remove(genesisAddr);                    
-                    cb('Master account has not enough balance', null);
-                    return;                
-                }  
-                
-                                
-                that.zilliqaClient.wallet.setDefault(genesisAddr.toLowerCase());                
-                
-                const tx = that.zilliqaClient.transactions.new({
-                    version: 1,
-                    toAddr: that.address,
-                    amount: ZilliqaNetwork.BALANCE_REQUIRE,
-                    gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),                    
-                    gasLimit: Long.fromNumber(100)
-                });  
-                
-                that.zilliqaClient.blockchain
-                    .createTransaction(tx)
-                    .then((tx) => {                        
-                        // do something with then confirmed tx
-                        that.zilliqaClient.wallet.remove(genesisAddr);
-                        that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
-                        cb(null, tx);
-                    })
-                    .catch((err) => {                   
-                        // handle the error
-                        that.zilliqaClient.wallet.remove(genesisAddr);
-                        that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
-                        cb(err, null);
-                    });                                
-            });
-        } 
-    }
     generateNewAccount(password:string, cb: callback){
         if(this.zilliqaClient == null){            	
             cb('Please connect to network first!', null);		
@@ -226,6 +176,8 @@ export default class ZilliqaNetwork{
             that.address = addr;
             cb(null, that.address);
             that.zilliqaClient.wallet.setDefault(that.address.toLowerCase());
+
+            //console.log(this.zilliqaClient.wallet.defaultAccount.privateKey);
         })
         .catch((err) => {                                                       
             cb(err, null);
@@ -303,10 +255,7 @@ export default class ZilliqaNetwork{
 
                 const contract = that.zilliqaClient.contracts.new(code, init);                
                 
-                contract.deploy({
-                    gasPrice: new BN(1).mul(ZilliqaNetwork.GAS_MULTIPLIER),
-                    gasLimit: Long.fromNumber(20000)
-                }).then(([deployTx, hello]) => {                                            
+                contract.deploy(that.getCallParams(8000)).then(([deployTx, hello]) => {                                            
                     if (hello.isDeployed()) {
                         return cb(null, hello);
                     }
